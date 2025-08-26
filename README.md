@@ -1,14 +1,20 @@
-# Data Dashboard
+# Healthcare Budget Dashboard
 
-A Next.js application displaying sales and revenue analytics with interactive charts.
+A Next.js application for visualizing healthcare claims, expenses, and budget tracking with interactive charts.
 
 ## Features
 
-- Interactive bar chart visualization showing monthly sales and revenue data
-- Built with Next.js 15.5.0 and React 19.1.0
-- Responsive design with Tailwind CSS
-- Uses Recharts for data visualization
-- Clean, centered layout optimized for data presentation
+- **Combined Chart Visualization**: Bar and line charts showing budget vs actual expenses
+- **Healthcare Financial Data**: 24 months of claims and budget data (2025-2026)
+- **Expense Categories**:
+  - Medical Claims (Domestic & Non-Domestic)
+  - Prescription (Rx) Claims
+  - Administrative Fees
+  - Stop Loss Fees
+- **Budget Tracking**: Visual comparison of allocated budget vs actual expenses
+- **Professional Styling**: Cream white theme with responsive design
+- **Currency Formatting**: Proper USD formatting with tooltips
+- Built with Next.js 15.5.0, React 19.1.0, and Recharts 3.1.2
 
 ## Getting Started
 
@@ -37,48 +43,120 @@ npm run dev
 
 4. Open [http://localhost:3005](http://localhost:3005) in your browser to see the dashboard.
 
+### Troubleshooting
+
+If you encounter issues:
+
+**Windows PowerShell** - "'next' is not recognized":
+```powershell
+npm install    # Install dependencies first
+npm run dev    # Then start the server
+```
+
+**WSL/Linux** - "Port already in use":
+```bash
+# Find and kill the process using port 3005
+lsof -i :3005
+kill -9 [PID]
+# Or change the port in package.json
+```
+
+## Dashboard Overview
+
+The dashboard displays:
+- **Stacked Bar Charts**: Shows breakdown of medical claims, Rx claims, admin fees, and stop loss fees
+- **Budget Line (Red)**: Monthly allocated budget
+- **Total Expenses Line (Green Dashed)**: Actual total monthly expenses
+- **Time Period**: January 2025 through December 2026
+- **Interactive Tooltips**: Hover to see detailed currency values
+
 ## Development
 
-The main chart component is located in `app/page.tsx`. The application uses:
+### Tech Stack
 
-- **Next.js** with Turbopack for fast development builds
-- **Tailwind CSS** for styling
-- **Recharts** for chart components
+- **Next.js 15.5.0** with Turbopack for fast development
+- **React 19.1.0** for UI components
+- **Recharts 3.1.2** for data visualization
+- **Tailwind CSS 4.x** for styling
 - **TypeScript** for type safety
 
-## Available Scripts
-
-- `npm run dev` - Starts the development server on port 3005
-- `npm run build` - Creates an optimized production build
-- `npm start` - Runs the production server on port 3005
-
-## Project Structure
+### Project Structure
 
 ```
 data-prototype/
 ├── app/
-│   ├── page.tsx       # Main dashboard page with chart
-│   ├── layout.tsx     # Root layout component
-│   └── globals.css    # Global styles
+│   ├── page.tsx       # Main dashboard with healthcare budget chart
+│   ├── layout.tsx     # Root layout with metadata
+│   └── globals.css    # Global styles with cream theme
 ├── public/            # Static assets
 ├── package.json       # Dependencies and scripts
-└── next.config.ts     # Next.js configuration
+├── next.config.ts     # Next.js configuration
+└── README.md          # This file
+```
+
+### Available Scripts
+
+- `npm run dev` - Starts development server on port 3005
+- `npm run build` - Creates optimized production build
+- `npm start` - Runs production server on port 3005
+
+## Customization
+
+### Updating Chart Data
+
+Edit the `data` array in `app/page.tsx` to update the healthcare financial data:
+
+```typescript
+const data = [
+  {
+    month: "Jan '25",
+    medicalClaims: 70330,
+    rxClaims: 57561,
+    adminFees: 1050000,
+    stopLossFees: 150000,
+    totalExpenses: 1267943,
+    budget: 1229905,
+  },
+  // ... more months
+];
+```
+
+### Changing Theme Colors
+
+Modify `app/globals.css` to adjust the cream white theme:
+
+```css
+:root {
+  --background: #FAF8F3;  /* Cream white background */
+  --foreground: #2C2C2C;  /* Dark text */
+}
 ```
 
 ## Deployment
 
-This Next.js app can be deployed to various platforms:
+### Vercel (Recommended)
 
-- [Vercel](https://vercel.com) (recommended for Next.js apps)
-- [Netlify](https://netlify.com)
-- Any Node.js hosting service
+1. Push your code to GitHub
+2. Import project in [Vercel](https://vercel.com)
+3. Deploy with default settings
 
-For production deployment, run:
+### Other Platforms
+
+For production deployment:
 ```bash
 npm run build
 npm start
 ```
 
+Supports deployment to:
+- Netlify
+- AWS/Azure/GCP
+- Any Node.js hosting service
+
+## Contributing
+
+Feel free to submit issues and enhancement requests!
+
 ## License
 
-This project is open source and available for educational purposes.
+This project is open source and available for educational and commercial purposes.
