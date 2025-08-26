@@ -132,7 +132,7 @@ const Home: React.FC = () => {
                 animate={{ y: 0, opacity: 1 }}
                 className="text-3xl font-bold text-gray-800"
               >
-                Healthcare Analytics Dashboard
+                Reporting Dashboard
               </motion.h1>
               <motion.button
                 initial={{ scale: 0 }}
