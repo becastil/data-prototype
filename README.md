@@ -1,20 +1,26 @@
-# Healthcare Budget Dashboard
+# Healthcare Analytics Dashboard
 
-A Next.js application for visualizing healthcare claims, expenses, and budget tracking with interactive charts.
+A modern Next.js application for healthcare data visualization and analysis with dual CSV upload capability and interactive MUI X Charts.
 
 ## Features
 
-- **Combined Chart Visualization**: Bar and line charts showing budget vs actual expenses
-- **Healthcare Financial Data**: 24 months of claims and budget data (2025-2026)
-- **Expense Categories**:
-  - Medical Claims (Domestic & Non-Domestic)
-  - Prescription (Rx) Claims
-  - Administrative Fees
-  - Stop Loss Fees
-- **Budget Tracking**: Visual comparison of allocated budget vs actual expenses
-- **Professional Styling**: Cream white theme with responsive design
-- **Currency Formatting**: Proper USD formatting with tooltips
-- Built with Next.js 15.5.0, React 19.1.0, and Recharts 3.1.2
+- **Dual CSV Upload System**: Upload budget and claims data separately with drag-and-drop support
+- **4-Tile Analytics Dashboard**:
+  - Budget vs Expenses Trend (Rolling 12 Months)
+  - HCC Band Distribution Scatter Chart
+  - Enrollment Trends with Employee Count tracking
+  - HCC Data Table with sorting and filtering
+- **Advanced Chart Visualizations**:
+  - Stacked bar charts with budget line overlay
+  - Rolling 12-month data window for focused analysis
+  - Real-time data processing from CSV files
+- **Data Processing Capabilities**:
+  - Smart column detection for various CSV formats
+  - Automatic data aggregation (admin fees + stop loss fees)
+  - Employee Count extraction for enrollment tracking
+- **Professional Design**: Modern UI with Tailwind CSS and Framer Motion animations
+- **MUI X Charts Integration**: High-performance charts with built-in interactivity
+- Built with Next.js 15.5.0, React 19.1.0, MUI X Charts 8.10.2, and Tailwind CSS 4.x
 
 ## Getting Started
 
@@ -63,12 +69,34 @@ kill -9 [PID]
 
 ## Dashboard Overview
 
-The dashboard displays:
-- **Stacked Bar Charts**: Shows breakdown of medical claims, Rx claims, admin fees, and stop loss fees
-- **Budget Line (Red)**: Monthly allocated budget
-- **Total Expenses Line (Green Dashed)**: Actual total monthly expenses
-- **Time Period**: January 2025 through December 2026
-- **Interactive Tooltips**: Hover to see detailed currency values
+The dashboard features a 4-tile layout displaying:
+
+### Tile 1: Budget vs Expenses Trend
+- **Simplified Stacked Bar Chart** with 5 layers:
+  - Total Fixed Cost (sum of all admin + stop loss fees)
+  - Stop Loss Reimbursements
+  - Rx Rebates
+  - Medical Claims
+  - Rx (Prescription) costs
+- **Budget Line Overlay**: Shows monthly budget targets
+- **Rolling 12-Month View**: Automatically displays the latest 12 months of data
+
+### Tile 2: HCC Band Distribution
+- **Scatter Chart**: Visualizes cost band distribution across claimants
+- **Dual Axis**: Medical costs (left) and Rx costs (right)
+- **Color-Coded Bands**: $0-25K, $25K-50K, $50K-75K, $75K-100K, $100K+
+- **Interactive Tooltips**: Shows detailed claimant information
+
+### Tile 3: Enrollment Trends
+- **Line Chart**: Tracks Employee Count over time
+- **Statistics Cards**: Current enrollment, change percentage, and average
+- **Trend Indicators**: Visual indicators for growth or decline
+- **Real Data**: Uses actual Employee Count from uploaded CSV
+
+### Tile 4: HCC Data Table
+- **Sortable Columns**: Click headers to sort data
+- **Filterable Content**: Search and filter capabilities
+- **Comprehensive View**: Display all claims data in tabular format
 
 ## Development
 
@@ -76,22 +104,36 @@ The dashboard displays:
 
 - **Next.js 15.5.0** with Turbopack for fast development
 - **React 19.1.0** for UI components
-- **Recharts 3.1.2** for data visualization
+- **MUI X Charts 8.10.2** for advanced data visualization
+- **MUI Material 7.3.1** for UI components
 - **Tailwind CSS 4.x** for styling
 - **TypeScript** for type safety
+- **Framer Motion 12.23.12** for animations
+- **PapaParse 5.5.3** for CSV parsing
 
 ### Project Structure
 
 ```
 data-prototype/
 ├── app/
-│   ├── page.tsx       # Main dashboard with healthcare budget chart
-│   ├── layout.tsx     # Root layout with metadata
-│   └── globals.css    # Global styles with cream theme
-├── public/            # Static assets
-├── package.json       # Dependencies and scripts
-├── next.config.ts     # Next.js configuration
-└── README.md          # This file
+│   ├── components/
+│   │   ├── DualCSVLoader.tsx        # Dual CSV upload interface
+│   │   ├── MUIBudgetChart.tsx       # Budget vs Expenses chart (MUI)
+│   │   ├── MUIEnrollmentChart.tsx   # Enrollment trends chart (MUI)
+│   │   ├── MUIChartContainer.tsx    # MUI-Tailwind isolation wrapper
+│   │   ├── CostBandScatterChart.tsx # HCC band distribution
+│   │   └── HCCDataTable.tsx         # Claims data table
+│   ├── utils/
+│   │   └── chartDataProcessors.ts   # Data transformation utilities
+│   ├── constants/
+│   │   └── chartColors.ts           # Centralized color scheme
+│   ├── page.tsx                     # Main dashboard page
+│   ├── layout.tsx                   # Root layout with metadata
+│   └── globals.css                  # Global styles
+├── public/                          # Static assets
+├── package.json                     # Dependencies and scripts
+├── next.config.ts                   # Next.js configuration
+└── README.md                        # This file
 ```
 
 ### Available Scripts
@@ -100,26 +142,31 @@ data-prototype/
 - `npm run build` - Creates optimized production build
 - `npm start` - Runs production server on port 3005
 
-## Customization
+## Usage
 
-### Updating Chart Data
+### Uploading Data
 
-Edit the `data` array in `app/page.tsx` to update the healthcare financial data:
+1. **Start the application** and navigate to the homepage
+2. **Upload CSV Files**:
+   - Drag and drop or click to upload Budget Data (left panel)
+   - Drag and drop or click to upload Claims Data (right panel)
+3. **View Dashboard**: Once both files are uploaded, the dashboard automatically displays
 
-```typescript
-const data = [
-  {
-    month: "Jan '25",
-    medicalClaims: 70330,
-    rxClaims: 57561,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1267943,
-    budget: 1229905,
-  },
-  // ... more months
-];
-```
+### CSV Format Requirements
+
+**Budget Data CSV** should include columns like:
+- Month/Period
+- Medical Claims, Rx, Admin Fees, Stop Loss Fees
+- Budget/Target amounts
+- Employee Count (for enrollment tracking)
+
+**Claims Data CSV** should include columns like:
+- Claimant Number
+- Medical and Rx costs
+- Service Type
+- Total amounts
+
+The system uses smart column detection to identify data regardless of exact column naming.
 
 ### Changing Theme Colors
 
