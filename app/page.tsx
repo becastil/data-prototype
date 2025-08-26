@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import DualCSVLoader from './components/DualCSVLoader';
 import CostBandScatterChart from './components/CostBandScatterChart';
 import HCCDataTable from './components/HCCDataTable';
-import MUIBudgetChart from './components/MUIBudgetChart';
+import RechartsBudgetChart from './components/RechartsBudgetChart';
 import MUIEnrollmentChart from './components/MUIEnrollmentChart';
 import { ParsedCSVData } from './components/CSVLoader';
 import { RotateCcw } from 'lucide-react';
@@ -93,13 +93,13 @@ const Home: React.FC = () => {
 
           {/* Dashboard Grid */}
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Tile 1: Budget vs Expenses Chart with MUI */}
+            {/* Tile 1: Budget vs Expenses Chart with Recharts */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <MUIBudgetChart data={budgetData?.rows || []} />
+              <RechartsBudgetChart data={budgetData?.rows || []} />
             </motion.div>
 
             {/* Tile 2: Cost Band Scatter Chart */}
