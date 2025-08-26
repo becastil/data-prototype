@@ -102,7 +102,7 @@ const CostBandScatterChart: React.FC<CostBandScatterChartProps> = ({ data }) => 
   return (
     <div className="w-full h-full">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">Cost Band Distribution</h3>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">HCC Band Distribution</h3>
         <div className="flex flex-wrap gap-4">
           {Object.entries(bandStats).map(([band, stats]) => (
             <motion.div
@@ -162,11 +162,11 @@ const CostBandScatterChart: React.FC<CostBandScatterChartProps> = ({ data }) => 
               <div className="flex justify-center space-x-4 mt-4">
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-blue-500 rounded-full" />
-                  <span className="text-sm">Medical (Left Axis)</span>
+                  <span className="text-sm text-black">Medical (Left Axis)</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-green-500 rounded-full" />
-                  <span className="text-sm">Rx (Right Axis)</span>
+                  <span className="text-sm text-black">Rx (Right Axis)</span>
                 </div>
               </div>
             )}

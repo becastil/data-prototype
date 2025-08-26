@@ -5,19 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import DualCSVLoader from './components/DualCSVLoader';
 import CostBandScatterChart from './components/CostBandScatterChart';
 import HCCDataTable from './components/HCCDataTable';
-import EnrollmentLineChart from './components/EnrollmentLineChart';
+import MUIBudgetChart from './components/MUIBudgetChart';
+import MUIEnrollmentChart from './components/MUIEnrollmentChart';
 import { ParsedCSVData } from './components/CSVLoader';
-import {
-  ComposedChart,
-  Bar,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
 import { RotateCcw } from 'lucide-react';
 
 const Home: React.FC = () => {
@@ -44,53 +34,6 @@ const Home: React.FC = () => {
     setClaimsData(null);
     setError('');
   };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-4 rounded shadow-lg border border-gray-200">
-          <p className="font-semibold mb-2">{label}</p>
-          {payload.map((entry: any, index: number) => (
-            <p key={index} style={{ color: entry.color }}>
-              {entry.name}: {formatCurrency(entry.value)}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
-
-  // Process budget data for the chart
-  const processChartData = () => {
-    if (!budgetData) return [];
-    
-    return budgetData.rows.map(row => {
-      const processedRow: any = {};
-      Object.keys(row).forEach(key => {
-        const value = row[key];
-        // Try to parse as number for numeric columns
-        if (key.toLowerCase() === 'month') {
-          processedRow.month = value;
-        } else {
-          const numValue = parseFloat(String(value).replace(/[$,]/g, ''));
-          processedRow[key] = isNaN(numValue) ? value : numValue;
-        }
-      });
-      return processedRow;
-    });
-  };
-
-  const chartData = processChartData();
 
   return (
     <AnimatePresence mode="wait">
@@ -150,70 +93,13 @@ const Home: React.FC = () => {
 
           {/* Dashboard Grid */}
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Tile 1: Budget vs Expenses Chart */}
+            {/* Tile 1: Budget vs Expenses Chart with MUI */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-xl shadow-lg p-6"
             >
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                Budget vs Expenses Trend
-              </h2>
-              <div className="h-[400px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart
-                    data={chartData}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                    <XAxis
-                      dataKey="month"
-                      angle={-45}
-                      textAnchor="end"
-                      height={100}
-                      tick={{ fontSize: 11 }}
-                    />
-                    <YAxis
-                      tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
-                      tick={{ fontSize: 11 }}
-                    />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                    
-                    {/* Dynamically render bars for numeric columns */}
-                    {chartData[0] && Object.keys(chartData[0])
-                      .filter(key => 
-                        key !== 'month' && 
-                        typeof chartData[0][key] === 'number' &&
-                        !key.toLowerCase().includes('total') &&
-                        !key.toLowerCase().includes('budget')
-                      )
-                      .map((key, index) => (
-                        <Bar
-                          key={key}
-                          dataKey={key}
-                          stackId="expenses"
-                          fill={`hsl(${index * 60}, 70%, 50%)`}
-                          name={key.replace(/([A-Z])/g, ' $1').trim()}
-                        />
-                      ))
-                    }
-                    
-                    {/* Budget line if exists */}
-                    {chartData[0] && 'budget' in chartData[0] && (
-                      <Line
-                        type="monotone"
-                        dataKey="budget"
-                        stroke="#DC2626"
-                        strokeWidth={3}
-                        dot={{ r: 3 }}
-                        name="Budget"
-                      />
-                    )}
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </div>
+              <MUIBudgetChart data={budgetData?.rows || []} />
             </motion.div>
 
             {/* Tile 2: Cost Band Scatter Chart */}
@@ -226,14 +112,13 @@ const Home: React.FC = () => {
               <CostBandScatterChart data={claimsData?.rows || []} />
             </motion.div>
 
-            {/* Tile 3: Enrollment Line Chart */}
+            {/* Tile 3: Enrollment Line Chart with MUI */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-white rounded-xl shadow-lg p-6"
             >
-              <EnrollmentLineChart budgetData={chartData} />
+              <MUIEnrollmentChart data={budgetData?.rows || []} />
             </motion.div>
 
             {/* Tile 4: HCC Data Table */}
