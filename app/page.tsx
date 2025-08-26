@@ -1,5 +1,12 @@
-"use client";
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import DualCSVLoader from './components/DualCSVLoader';
+import CostBandScatterChart from './components/CostBandScatterChart';
+import HCCDataTable from './components/HCCDataTable';
+import EnrollmentLineChart from './components/EnrollmentLineChart';
+import { ParsedCSVData } from './components/CSVLoader';
 import {
   ComposedChart,
   Bar,
@@ -11,315 +18,268 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-
-const data = [
-  {
-    month: "Jan '25",
-    medicalClaims: 70330,
-    rxClaims: 57561,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1267943,
-    budget: 1229905,
-  },
-  {
-    month: "Feb '25",
-    medicalClaims: 58612,
-    rxClaims: 76826,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1275688,
-    budget: 1237417,
-  },
-  {
-    month: "Mar '25",
-    medicalClaims: 69335,
-    rxClaims: 92102,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1308002,
-    budget: 1268762,
-  },
-  {
-    month: "Apr '25",
-    medicalClaims: 58974,
-    rxClaims: 71852,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1269595,
-    budget: 1231507,
-  },
-  {
-    month: "May '25",
-    medicalClaims: 61144,
-    rxClaims: 60970,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1255489,
-    budget: 1217824,
-  },
-  {
-    month: "Jun '25",
-    medicalClaims: 50198,
-    rxClaims: 90267,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1285459,
-    budget: 1246895,
-  },
-  {
-    month: "Jul '25",
-    medicalClaims: 63913,
-    rxClaims: 75198,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1270115,
-    budget: 1232012,
-  },
-  {
-    month: "Aug '25",
-    medicalClaims: 97038,
-    rxClaims: 56891,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1303399,
-    budget: 1264297,
-  },
-  {
-    month: "Sep '25",
-    medicalClaims: 66181,
-    rxClaims: 64028,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1276819,
-    budget: 1238514,
-  },
-  {
-    month: "Oct '25",
-    medicalClaims: 74149,
-    rxClaims: 98298,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1314613,
-    budget: 1275175,
-  },
-  {
-    month: "Nov '25",
-    medicalClaims: 84297,
-    rxClaims: 66819,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1296825,
-    budget: 1257920,
-  },
-  {
-    month: "Dec '25",
-    medicalClaims: 99004,
-    rxClaims: 95250,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1322565,
-    budget: 1282888,
-  },
-  {
-    month: "Jan '26",
-    medicalClaims: 64959,
-    rxClaims: 82699,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1287496,
-    budget: 1248871,
-  },
-  {
-    month: "Feb '26",
-    medicalClaims: 51486,
-    rxClaims: 71668,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1272497,
-    budget: 1234322,
-  },
-  {
-    month: "Mar '26",
-    medicalClaims: 94055,
-    rxClaims: 94779,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1327686,
-    budget: 1287855,
-  },
-  {
-    month: "Apr '26",
-    medicalClaims: 78802,
-    rxClaims: 88966,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1295765,
-    budget: 1256892,
-  },
-  {
-    month: "May '26",
-    medicalClaims: 98649,
-    rxClaims: 82422,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1323014,
-    budget: 1283324,
-  },
-  {
-    month: "Jun '26",
-    medicalClaims: 65672,
-    rxClaims: 61369,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1269831,
-    budget: 1231736,
-  },
-  {
-    month: "Jul '26",
-    medicalClaims: 96076,
-    rxClaims: 75759,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1313557,
-    budget: 1274150,
-  },
-  {
-    month: "Aug '26",
-    medicalClaims: 67092,
-    rxClaims: 90777,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1289764,
-    budget: 1251071,
-  },
-  {
-    month: "Sep '26",
-    medicalClaims: 63664,
-    rxClaims: 82464,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1286725,
-    budget: 1248123,
-  },
-  {
-    month: "Oct '26",
-    medicalClaims: 83293,
-    rxClaims: 62780,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1299077,
-    budget: 1260105,
-  },
-  {
-    month: "Nov '26",
-    medicalClaims: 63045,
-    rxClaims: 95118,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1302408,
-    budget: 1263336,
-  },
-  {
-    month: "Dec '26",
-    medicalClaims: 92042,
-    rxClaims: 81994,
-    adminFees: 1050000,
-    stopLossFees: 150000,
-    totalExpenses: 1303480,
-    budget: 1264376,
-  },
-];
-
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-};
-
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white p-4 rounded shadow-lg border border-gray-200">
-        <p className="font-semibold mb-2">{label}</p>
-        {payload.map((entry: any, index: number) => (
-          <p key={index} style={{ color: entry.color }}>
-            {entry.name}: {formatCurrency(entry.value)}
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
+import { RotateCcw } from 'lucide-react';
 
 const Home: React.FC = () => {
+  const [showDashboard, setShowDashboard] = useState(false);
+  const [budgetData, setBudgetData] = useState<ParsedCSVData | null>(null);
+  const [claimsData, setClaimsData] = useState<ParsedCSVData | null>(null);
+  const [error, setError] = useState<string>('');
+
+  const handleBothFilesLoaded = (budget: ParsedCSVData, claims: ParsedCSVData) => {
+    setBudgetData(budget);
+    setClaimsData(claims);
+    setShowDashboard(true);
+    setError('');
+  };
+
+  const handleError = (errorMessage: string) => {
+    setError(errorMessage);
+    console.error(errorMessage);
+  };
+
+  const handleReset = () => {
+    setShowDashboard(false);
+    setBudgetData(null);
+    setClaimsData(null);
+    setError('');
+  };
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-4 rounded shadow-lg border border-gray-200">
+          <p className="font-semibold mb-2">{label}</p>
+          {payload.map((entry: any, index: number) => (
+            <p key={index} style={{ color: entry.color }}>
+              {entry.name}: {formatCurrency(entry.value)}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  // Process budget data for the chart
+  const processChartData = () => {
+    if (!budgetData) return [];
+    
+    return budgetData.rows.map(row => {
+      const processedRow: any = {};
+      Object.keys(row).forEach(key => {
+        const value = row[key];
+        // Try to parse as number for numeric columns
+        if (key.toLowerCase() === 'month') {
+          processedRow.month = value;
+        } else {
+          const numValue = parseFloat(String(value).replace(/[$,]/g, ''));
+          processedRow[key] = isNaN(numValue) ? value : numValue;
+        }
+      });
+      return processedRow;
+    });
+  };
+
+  const chartData = processChartData();
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800">Healthcare Budget vs Claims & Expenses</h1>
-      <div className="w-full h-[600px] max-w-7xl bg-white rounded-lg shadow-lg p-6">
-        <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart
-            data={data}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 40,
-              bottom: 60,
-            }}
+    <AnimatePresence mode="wait">
+      {!showDashboard ? (
+        <motion.div
+          key="uploader"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <DualCSVLoader
+            onBothFilesLoaded={handleBothFilesLoaded}
+            onError={handleError}
+          />
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="fixed bottom-8 right-8 bg-red-50 border border-red-200 rounded-lg p-4 max-w-md"
+            >
+              <p className="text-red-800 font-medium">Error</p>
+              <p className="text-red-600 text-sm mt-1">{error}</p>
+            </motion.div>
+          )}
+        </motion.div>
+      ) : (
+        <motion.div
+          key="dashboard"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6"
+        >
+          {/* Header */}
+          <div className="max-w-7xl mx-auto mb-6">
+            <div className="flex justify-between items-center">
+              <motion.h1
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                className="text-3xl font-bold text-gray-800"
+              >
+                Healthcare Analytics Dashboard
+              </motion.h1>
+              <motion.button
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleReset}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Upload New Data
+              </motion.button>
+            </div>
+          </div>
+
+          {/* Dashboard Grid */}
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Tile 1: Budget vs Expenses Chart */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-xl shadow-lg p-6"
+            >
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                Budget vs Expenses Trend
+              </h2>
+              <div className="h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart
+                    data={chartData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                    <XAxis
+                      dataKey="month"
+                      angle={-45}
+                      textAnchor="end"
+                      height={100}
+                      tick={{ fontSize: 11 }}
+                    />
+                    <YAxis
+                      tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+                      tick={{ fontSize: 11 }}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                    
+                    {/* Dynamically render bars for numeric columns */}
+                    {chartData[0] && Object.keys(chartData[0])
+                      .filter(key => 
+                        key !== 'month' && 
+                        typeof chartData[0][key] === 'number' &&
+                        !key.toLowerCase().includes('total') &&
+                        !key.toLowerCase().includes('budget')
+                      )
+                      .map((key, index) => (
+                        <Bar
+                          key={key}
+                          dataKey={key}
+                          stackId="expenses"
+                          fill={`hsl(${index * 60}, 70%, 50%)`}
+                          name={key.replace(/([A-Z])/g, ' $1').trim()}
+                        />
+                      ))
+                    }
+                    
+                    {/* Budget line if exists */}
+                    {chartData[0] && 'budget' in chartData[0] && (
+                      <Line
+                        type="monotone"
+                        dataKey="budget"
+                        stroke="#DC2626"
+                        strokeWidth={3}
+                        dot={{ r: 3 }}
+                        name="Budget"
+                      />
+                    )}
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+            </motion.div>
+
+            {/* Tile 2: Cost Band Scatter Chart */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-xl shadow-lg p-6"
+            >
+              <CostBandScatterChart data={claimsData?.rows || []} />
+            </motion.div>
+
+            {/* Tile 3: Enrollment Line Chart */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="bg-white rounded-xl shadow-lg p-6"
+            >
+              <EnrollmentLineChart budgetData={chartData} />
+            </motion.div>
+
+            {/* Tile 4: HCC Data Table */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="bg-white rounded-xl shadow-lg p-6 overflow-hidden"
+            >
+              <HCCDataTable data={claimsData?.rows || []} />
+            </motion.div>
+          </div>
+
+          {/* Summary Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="max-w-7xl mx-auto mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4"
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-            <XAxis 
-              dataKey="month" 
-              angle={-45}
-              textAnchor="end"
-              height={100}
-              tick={{ fontSize: 12 }}
-            />
-            <YAxis 
-              tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`}
-              tick={{ fontSize: 12 }}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend 
-              wrapperStyle={{ paddingTop: '20px' }}
-              iconType="rect"
-            />
-            
-            {/* Bar charts for expenses - stacked */}
-            <Bar dataKey="medicalClaims" stackId="expenses" fill="#3B82F6" name="Medical Claims" />
-            <Bar dataKey="rxClaims" stackId="expenses" fill="#10B981" name="Rx Claims" />
-            <Bar dataKey="adminFees" stackId="expenses" fill="#8B5CF6" name="Admin Fees" />
-            <Bar dataKey="stopLossFees" stackId="expenses" fill="#F59E0B" name="Stop Loss Fees" />
-            
-            {/* Line charts for budget and total */}
-            <Line 
-              type="monotone" 
-              dataKey="budget" 
-              stroke="#DC2626" 
-              strokeWidth={3}
-              dot={{ r: 4 }}
-              name="Budget"
-            />
-            <Line 
-              type="monotone" 
-              dataKey="totalExpenses" 
-              stroke="#059669" 
-              strokeWidth={2}
-              strokeDasharray="5 5"
-              dot={{ r: 3 }}
-              name="Total Expenses"
-            />
-          </ComposedChart>
-        </ResponsiveContainer>
-      </div>
-      <div className="mt-6 text-sm text-gray-600 max-w-4xl text-center">
-        <p>Monthly healthcare claims and expenses compared to budget allocation for 2025-2026</p>
-      </div>
-    </div>
+            <div className="bg-white rounded-lg shadow p-4">
+              <p className="text-sm text-gray-600">Total Budget Rows</p>
+              <p className="text-2xl font-bold text-blue-600">
+                {budgetData?.rowCount || 0}
+              </p>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4">
+              <p className="text-sm text-gray-600">Total Claims</p>
+              <p className="text-2xl font-bold text-purple-600">
+                {claimsData?.rowCount || 0}
+              </p>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4">
+              <p className="text-sm text-gray-600">Data Columns</p>
+              <p className="text-2xl font-bold text-green-600">
+                {(budgetData?.headers.length || 0) + (claimsData?.headers.length || 0)}
+              </p>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4">
+              <p className="text-sm text-gray-600">Files Loaded</p>
+              <p className="text-2xl font-bold text-orange-600">2</p>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

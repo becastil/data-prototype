@@ -1,0 +1,21 @@
+Claimant Number,Service Type,ICD-10-CM Code,Medical Description,Layman's Term,Medical,Rx,Total
+1,Inpatient,I10,Essential (primary) hypertension,High blood pressure,$73433,$54248,$127681
+2,Outpatient,E11.9,Type 2 diabetes mellitus without complications,Type 2 diabetes,$77599,$95690,$173289
+3,Emergency,J06.9,Acute upper respiratory infection unspecified,Common cold,$81390,$55942,$137332
+4,Pharmacy,N39.0,Urinary tract infection site not specified,Bladder infection,$57270,$51536,$108806
+5,Outpatient,R07.9,Chest pain unspecified,Chest pain,$99528,$69967,$169495
+6,Inpatient,M79.3,Panniculitis unspecified,Inflammation under skin,$45230,$22150,$67380
+7,Emergency,K92.2,Gastrointestinal hemorrhage unspecified,Stomach bleeding,$92845,$38200,$131045
+8,Outpatient,F41.9,Anxiety disorder unspecified,Anxiety,$23450,$48920,$72370
+9,Pharmacy,J44.0,COPD with acute lower respiratory infection,Lung disease,$38950,$82340,$121290
+10,Inpatient,I50.9,Heart failure unspecified,Heart failure,$156789,$45600,$202389
+11,Outpatient,M25.561,Pain in right knee,Knee pain,$12300,$8500,$20800
+12,Emergency,R50.9,Fever unspecified,Fever,$28900,$15600,$44500
+13,Inpatient,A41.9,Sepsis unspecified organism,Blood infection,$189500,$96300,$285800
+14,Pharmacy,G43.909,Migraine unspecified not intractable without status migrainosus,Migraine,$8900,$32100,$41000
+15,Outpatient,E78.5,Hyperlipidemia unspecified,High cholesterol,$15600,$28900,$44500
+16,Emergency,S72.001A,Fracture of unspecified part of neck of right femur initial encounter,Hip fracture,$125600,$18900,$144500
+17,Inpatient,J18.9,Pneumonia unspecified organism,Lung infection,$98700,$52300,$151000
+18,Pharmacy,K21.9,Gastro-esophageal reflux disease without esophagitis,Acid reflux,$12500,$18900,$31400
+19,Outpatient,L03.90,Cellulitis unspecified,Skin infection,$34500,$26700,$61200
+20,Emergency,T78.40XA,Allergy unspecified initial encounter,Allergic reaction,$18900,$9800,$28700
