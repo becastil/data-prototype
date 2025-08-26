@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Data Dashboard
+
+A Next.js application displaying sales and revenue analytics with interactive charts.
+
+## Features
+
+- Interactive bar chart visualization showing monthly sales and revenue data
+- Built with Next.js 15.5.0 and React 19.1.0
+- Responsive design with Tailwind CSS
+- Uses Recharts for data visualization
+- Clean, centered layout optimized for data presentation
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js (version 18 or higher recommended)
+- npm or yarn package manager
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/becastil/data-prototype.git
+cd data-prototype
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3005](http://localhost:3005) in your browser to see the dashboard.
 
-## Learn More
+## Development
 
-To learn more about Next.js, take a look at the following resources:
+The main chart component is located in `app/page.tsx`. The application uses:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Next.js** with Turbopack for fast development builds
+- **Tailwind CSS** for styling
+- **Recharts** for chart components
+- **TypeScript** for type safety
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Available Scripts
 
-## Deploy on Vercel
+- `npm run dev` - Starts the development server on port 3005
+- `npm run build` - Creates an optimized production build
+- `npm start` - Runs the production server on port 3005
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+data-prototype/
+├── app/
+│   ├── page.tsx       # Main dashboard page with chart
+│   ├── layout.tsx     # Root layout component
+│   └── globals.css    # Global styles
+├── public/            # Static assets
+├── package.json       # Dependencies and scripts
+└── next.config.ts     # Next.js configuration
+```
+
+## Deployment
+
+This Next.js app can be deployed to various platforms:
+
+- [Vercel](https://vercel.com) (recommended for Next.js apps)
+- [Netlify](https://netlify.com)
+- Any Node.js hosting service
+
+For production deployment, run:
+```bash
+npm run build
+npm start
+```
+
+## License
+
+This project is open source and available for educational purposes.
