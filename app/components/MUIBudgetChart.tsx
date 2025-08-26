@@ -1,7 +1,14 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { BarChart } from '@mui/x-charts/BarChart';
+import { ChartContainer } from '@mui/x-charts/ChartContainer';
+import { BarPlot } from '@mui/x-charts/BarChart';
+import { LinePlot, MarkPlot } from '@mui/x-charts/LineChart';
+import { ChartsXAxis } from '@mui/x-charts/ChartsXAxis';
+import { ChartsYAxis } from '@mui/x-charts/ChartsYAxis';
+import { ChartsGrid } from '@mui/x-charts/ChartsGrid';
+import { ChartsTooltip } from '@mui/x-charts/ChartsTooltip';
+import { ChartsLegend } from '@mui/x-charts/ChartsLegend';
 import { chartColors } from '../constants/chartColors';
 import { processFinancialData, formatCurrency } from '../utils/chartDataProcessors';
 import MUIChartContainer from './MUIChartContainer';
@@ -58,7 +65,7 @@ const MUIBudgetChart: React.FC<MUIBudgetChartProps> = ({
       error={error}
     >
       <div className="h-[400px] w-full">
-        <BarChart
+        <ChartContainer
           width={undefined}
           height={400}
           series={[
@@ -109,6 +116,7 @@ const MUIBudgetChart: React.FC<MUIBudgetChartProps> = ({
               id: 'budget',
               type: 'line' as const,
               curve: 'linear' as const,
+              showMark: true,
             },
           ]}
           xAxis={[
@@ -135,22 +143,26 @@ const MUIBudgetChart: React.FC<MUIBudgetChartProps> = ({
             },
           ]}
           margin={{ top: 20, right: 80, bottom: 100, left: 80 }}
-          grid={{ horizontal: true, vertical: true }}
-          slotProps={{
-            legend: {
-              direction: 'row',
-              position: { vertical: 'bottom', horizontal: 'middle' },
-              padding: 0,
-              itemMarkWidth: 12,
-              itemMarkHeight: 12,
-              markGap: 4,
-              itemGap: 10,
-              labelStyle: {
-                fontSize: 12,
-              },
-            },
-          }}
-        />
+        >
+          <ChartsGrid horizontal vertical />
+          <BarPlot />
+          <LinePlot />
+          <MarkPlot />
+          <ChartsXAxis />
+          <ChartsYAxis />
+          <ChartsTooltip />
+          <ChartsLegend 
+            direction="row"
+            position={{ vertical: 'bottom', horizontal: 'middle' }}
+            itemMarkWidth={12}
+            itemMarkHeight={12}
+            markGap={4}
+            itemGap={10}
+            labelStyle={{
+              fontSize: 12,
+            }}
+          />
+        </ChartContainer>
       </div>
     </MUIChartContainer>
   );
