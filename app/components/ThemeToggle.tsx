@@ -71,8 +71,10 @@ const ThemeToggle: React.FC = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all text-white border border-white/20 shadow-lg btn"
-        aria-label="Toggle theme"
+        className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all text-white border border-white/20 shadow-lg btn touch-md focus:ring-2 focus:ring-white/50 focus:outline-none"
+        aria-label="Toggle theme menu"
+        aria-expanded={isOpen}
+        aria-haspopup="true"
       >
         {getIcon()}
         <span className="text-sm font-medium hidden sm:inline">{getLabel()}</span>
@@ -87,27 +89,33 @@ const ThemeToggle: React.FC = () => {
         >
           <button
             onClick={() => handleThemeChange('light')}
-            className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+            className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700 ${
               theme === 'light' ? 'bg-gray-100 dark:bg-gray-700' : ''
             }`}
+            role="menuitem"
+            tabIndex={0}
           >
             <Sun className="w-4 h-4" />
             Light
           </button>
           <button
             onClick={() => handleThemeChange('dark')}
-            className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+            className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700 ${
               theme === 'dark' ? 'bg-gray-100 dark:bg-gray-700' : ''
             }`}
+            role="menuitem"
+            tabIndex={0}
           >
             <Moon className="w-4 h-4" />
             Dark
           </button>
           <button
             onClick={() => handleThemeChange('system')}
-            className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+            className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700 ${
               theme === 'system' ? 'bg-gray-100 dark:bg-gray-700' : ''
             }`}
+            role="menuitem"
+            tabIndex={0}
           >
             <Monitor className="w-4 h-4" />
             System

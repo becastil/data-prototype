@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import CircularProgress from './CircularProgress';
+import AccessibleIcon from './AccessibleIcon';
 import {
   TrendingUp,
   TrendingDown,
@@ -260,15 +261,21 @@ const DashboardSummaryTiles: React.FC<DashboardSummaryTilesProps> = ({
               <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 font-body">
                 {tile.title}
               </h3>
-              <motion.div 
-                className={`p-2.5 ${tile.bgColor} transition-all circular flex items-center justify-center`}
-                whileHover={{ 
-                  rotate: [0, -10, 10, -10, 0],
-                  transition: { duration: 0.5 }
-                }}
-              >
-                {tile.icon}
-              </motion.div>
+              <AccessibleIcon
+                icon={tile.icon}
+                label={tile.title}
+                size="md"
+                variant={
+                  tile.id === 'budget' ? 'primary' :
+                  tile.id === 'enrollment' ? 'info' :
+                  tile.id === 'lossRatio' ? 
+                    (metrics.lossRatio < 85 ? 'success' : metrics.lossRatio < 95 ? 'warning' : 'danger') :
+                  'primary'
+                }
+                showTooltip={true}
+                tooltipPosition="left"
+                animate={true}
+              />
             </div>
 
             {/* Value and Progress */}

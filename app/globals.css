@@ -21,18 +21,18 @@
   --primary-blue-lighter: #4A6FA5; /* Lighter blue */
   --primary-blue-lightest: #E8F0FF; /* Very light blue */
   
-  /* Semantic Status Colors - Brand Aligned */
-  --status-success: #10B981;      /* Green for positive */
-  --status-success-light: #34D399;
+  /* Semantic Status Colors - Brand Aligned - WCAG AA Compliant */
+  --status-success: #047857;      /* Darker green for 4.5:1 contrast on white */
+  --status-success-light: #10B981;
   --status-success-bg: #D1FAE5;
-  --status-warning: #e87823;      /* Keenan Tango */
-  --status-warning-light: #FF8400; /* Gallagher Orange */
+  --status-warning: #C2410C;      /* Darker orange for better contrast */
+  --status-warning-light: #e87823; /* Keenan Tango */
   --status-warning-bg: #FEF3E2;
-  --status-danger: #DC2626;       /* Red for critical */
-  --status-danger-light: #EF4444;
+  --status-danger: #B91C1C;       /* Darker red for 4.5:1 contrast */
+  --status-danger-light: #DC2626;
   --status-danger-bg: #FEE2E2;
-  --status-info: #00aeef;         /* Gallagher Blue */
-  --status-info-light: #38BDF8;
+  --status-info: #0369A1;         /* Darker blue for accessibility */
+  --status-info-light: #00aeef;   /* Gallagher Blue */
   --status-info-bg: #E0F7FF;
   
   /* Data Visualization Palette - Brand Aligned */
@@ -397,6 +397,20 @@ input, textarea, select {
   --radius-button: 9999px;   /* Fully rounded buttons */
   --radius-input: 8px;       /* Input fields */
   --radius-badge: 9999px;    /* Pills/badges */
+  
+  /* Icon Size System - WCAG Compliant */
+  --icon-xs: 16px;           /* Extra small icons */
+  --icon-sm: 20px;           /* Small icons */
+  --icon-md: 24px;           /* Medium icons (default) */
+  --icon-lg: 32px;           /* Large icons */
+  --icon-xl: 40px;           /* Extra large icons */
+  
+  /* Touch Target Sizes - Minimum 44x44px for accessibility */
+  --touch-target-xs: 32px;   /* Minimum for desktop */
+  --touch-target-sm: 36px;   /* Small touch target */
+  --touch-target-md: 44px;   /* WCAG AA standard */
+  --touch-target-lg: 52px;   /* Comfortable touch */
+  --touch-target-xl: 60px;   /* Large touch target */
 }
 
 /* Glassmorphism Panel - Primary elevated style */
@@ -862,4 +876,72 @@ input, textarea, select {
   --chart-senary: #56B4E9;
   --chart-septenary: #F0E442;
   --chart-octonary: #D55E00;
+}
+
+/* Icon Utility Classes */
+.icon-xs { width: var(--icon-xs); height: var(--icon-xs); }
+.icon-sm { width: var(--icon-sm); height: var(--icon-sm); }
+.icon-md { width: var(--icon-md); height: var(--icon-md); }
+.icon-lg { width: var(--icon-lg); height: var(--icon-lg); }
+.icon-xl { width: var(--icon-xl); height: var(--icon-xl); }
+
+/* Touch Target Classes */
+.touch-xs { min-width: var(--touch-target-xs); min-height: var(--touch-target-xs); }
+.touch-sm { min-width: var(--touch-target-sm); min-height: var(--touch-target-sm); }
+.touch-md { min-width: var(--touch-target-md); min-height: var(--touch-target-md); }
+.touch-lg { min-width: var(--touch-target-lg); min-height: var(--touch-target-lg); }
+.touch-xl { min-width: var(--touch-target-xl); min-height: var(--touch-target-xl); }
+
+/* Icon Animation Classes */
+@keyframes icon-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes icon-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+@keyframes icon-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.icon-spin { animation: icon-spin 2s linear infinite; }
+.icon-pulse { animation: icon-pulse 2s ease-in-out infinite; }
+.icon-bounce { animation: icon-bounce 1s ease-in-out infinite; }
+
+/* Icon hover effects */
+.icon-hover-lift:hover { transform: translateY(-2px); transition: transform 0.2s ease; }
+.icon-hover-grow:hover { transform: scale(1.1); transition: transform 0.2s ease; }
+.icon-hover-rotate:hover { transform: rotate(15deg); transition: transform 0.2s ease; }
+
+/* Focus Visible Styles for Keyboard Navigation */
+*:focus-visible {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--primary-blue);
+  outline-offset: 2px;
+}
+
+.dark *:focus-visible {
+  outline-color: var(--primary-blue-light);
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  *:focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+  
+  .icon-xs, .icon-sm, .icon-md, .icon-lg, .icon-xl {
+    filter: contrast(1.2);
+  }
 }

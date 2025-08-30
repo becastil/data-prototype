@@ -16,6 +16,7 @@ import ThemeToggle from './components/ThemeToggle';
 import GooeyFilter from './components/GooeyFilter';
 import GooeyLoader from './components/GooeyLoader';
 import MetaballSuccess from './components/MetaballSuccess';
+import AccessibleIcon from './components/AccessibleIcon';
 import { ParsedCSVData } from './components/CSVLoader';
 import { RotateCcw, TableIcon, ChartBar, ArrowLeft, ArrowRight } from 'lucide-react';
 
@@ -152,8 +153,17 @@ const Home: React.FC = () => {
                   whileTap={{ scale: 0.95 }}
                   onClick={handleReset}
                   className="px-5 py-2.5 gradient-keenan text-white hover:opacity-90 transition-all shadow-lg flex items-center gap-2 btn"
+                  aria-label="Upload new data files"
                 >
-                  <RotateCcw className="w-4 h-4" />
+                  <AccessibleIcon
+                    icon={<RotateCcw />}
+                    label="Reset and upload new files"
+                    size="sm"
+                    variant="default"
+                    showTooltip={false}
+                    animate={true}
+                    className="!bg-transparent !border-0 !p-0 !shadow-none hover:!bg-transparent"
+                  />
                   Upload New Data
                 </motion.button>
               </div>
