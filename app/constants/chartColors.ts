@@ -36,32 +36,32 @@ export const getChartColors = () => {
   };
 };
 
-// Static colors for SSR and fallback - CEO Dashboard Palette
+// Static colors for SSR and fallback - Minimalist Monochrome
 export const chartColors = {
-  // Financial chart colors - Teal/Green/Cyan palette
-  totalFixedCost: '#14B8A6',     // Teal
-  stopLossReimb: '#10B981',      // Emerald
-  rxRebates: '#22D3EE',          // Cyan
-  medicalClaims: '#06B6D4',      // Dark Cyan
-  rx: '#0EA5E9',                 // Sky
-  budget: '#F59E0B',             // Amber/Orange - budget line
+  // Financial chart colors - Grayscale with patterns
+  totalFixedCost: '#000000',     // Black - solid
+  stopLossReimb: '#333333',      // Charcoal - dashed
+  rxRebates: '#666666',          // Gray - dotted
+  medicalClaims: '#999999',      // Light gray - solid thick
+  rx: '#CCCCCC',                 // Pale gray - solid thin
+  budget: '#000000',             // Black - budget line (solid thick)
   
-  // Enrollment colors
-  enrollment: '#14B8A6',         // Teal - primary
-  activeEmployees: '#10B981',    // Emerald - active
-  dependents: '#F59E0B',         // Amber - dependents
-  retirees: '#94A3B8',           // Slate - retired
+  // Enrollment colors - Different shades
+  enrollment: '#000000',         // Black - primary
+  activeEmployees: '#333333',    // Charcoal - active
+  dependents: '#666666',         // Gray - dependents
+  retirees: '#999999',           // Light gray - retired
   
   // UI colors
-  gridColor: '#E5E7EB',          // Gray 200
-  textColor: '#374151',          // Gray 700
-  backgroundColor: '#FFFFFF',
+  gridColor: '#E0E0E0',          // Light gray grid
+  textColor: '#000000',          // Black text
+  backgroundColor: '#FFFFFF',    // White background
   
-  // Status colors - CEO Dashboard aligned
-  positive: '#10B981',           // Emerald
-  negative: '#EF4444',           // Red
-  warning: '#F59E0B',            // Amber
-  info: '#06B6D4',               // Cyan
+  // Status colors - Monochrome with icons
+  positive: '#000000',           // Black (use with ✓ icon)
+  negative: '#333333',           // Charcoal (use with ✗ icon)
+  warning: '#666666',            // Gray (use with ⚠ icon)
+  info: '#999999',               // Light gray (use with ℹ icon)
 };
 
 export const chartTheme = {
@@ -69,14 +69,14 @@ export const chartTheme = {
   fontFamily: 'var(--font-body, "Open Sans", system-ui, -apple-system, sans-serif)',
 };
 
-// Color-blind safe palette option - Brand Compatible
+// Color-blind safe palette option - Monochrome (inherently safe)
 export const colorBlindSafeColors = {
-  primary: '#00205c',    // Keenan Midnight (safe)
-  secondary: '#FF8400',  // Gallagher Orange (safe)
-  tertiary: '#00aeef',   // Gallagher Blue (safe)
-  quaternary: '#575A5D', // Gallagher Charcoal (safe)
-  quinary: '#10B981',    // Green (safe)
-  senary: '#0032E1',     // AP Blue (safe)
-  septenary: '#e87823',  // Keenan Tango (safe)
-  octonary: '#DC2626',   // Red (use sparingly)
+  primary: '#000000',    // Black
+  secondary: '#333333',  // Charcoal
+  tertiary: '#666666',   // Gray
+  quaternary: '#999999', // Light gray
+  quinary: '#CCCCCC',    // Pale gray
+  senary: '#1a1a1a',     // Off-black
+  septenary: '#808080',  // Medium gray
+  octonary: '#B0B0B0',   // Light medium gray
 };

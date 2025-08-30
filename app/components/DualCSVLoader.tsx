@@ -58,7 +58,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
 
   return (
     <motion.div 
-      className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-8"
+      className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-gray-100 p-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -85,10 +85,10 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
             transition={{ delay: 0.3 }}
             className="relative"
           >
-            <div className="absolute -top-6 left-4 bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold z-10">
+            <div className="absolute -top-6 left-4 bg-black text-white px-4 py-1 rounded-full text-sm font-semibold z-10">
               Budget & Expenses Data
             </div>
-            <div className="bg-white rounded-xl shadow-lg p-6 pt-8 border-2 border-blue-100">
+            <div className="bg-white rounded-xl shadow-lg p-6 pt-8 border-2 border-gray-200">
               <div className="mb-4">
                 <h3 className="text-lg font-semibold text-gray-700 mb-2">Required Columns:</h3>
                 <ul className="text-sm text-gray-600 space-y-1">
@@ -106,7 +106,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="mt-4 flex items-center justify-center text-green-600"
+                  className="mt-4 flex items-center justify-center text-black"
                 >
                   <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -123,10 +123,10 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
             transition={{ delay: 0.4 }}
             className="relative"
           >
-            <div className="absolute -top-6 left-4 bg-purple-600 text-white px-4 py-1 rounded-full text-sm font-semibold z-10">
+            <div className="absolute -top-6 left-4 bg-gray-800 text-white px-4 py-1 rounded-full text-sm font-semibold z-10">
               Claims & HCC Data
             </div>
-            <div className="bg-white rounded-xl shadow-lg p-6 pt-8 border-2 border-purple-100">
+            <div className="bg-white rounded-xl shadow-lg p-6 pt-8 border-2 border-gray-300">
               <div className="mb-4">
                 <h3 className="text-lg font-semibold text-gray-700 mb-2">Required Columns:</h3>
                 <ul className="text-sm text-gray-600 space-y-1">
@@ -145,7 +145,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="mt-4 flex items-center justify-center text-green-600"
+                  className="mt-4 flex items-center justify-center text-black"
                 >
                   <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -164,7 +164,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
             className="mt-8 text-center text-gray-600"
           >
             <div className="inline-flex items-center space-x-2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black"></div>
               <span>Waiting for {budgetData ? 'claims' : 'budget'} data...</span>
             </div>
           </motion.div>

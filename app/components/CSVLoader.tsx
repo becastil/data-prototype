@@ -31,8 +31,8 @@ const dropZoneVariants: Variants = {
   },
   hover: {
     scale: 1.02,
-    borderColor: 'rgb(59, 130, 246)',
-    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+    borderColor: 'rgb(0, 0, 0)',
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
     transition: {
       duration: 0.2,
       ease: 'easeInOut'
@@ -40,21 +40,21 @@ const dropZoneVariants: Variants = {
   },
   active: {
     scale: 0.98,
-    borderColor: 'rgb(16, 185, 129)',
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    borderColor: 'rgb(51, 51, 51)',
+    backgroundColor: 'rgba(51, 51, 51, 0.1)',
     transition: {
       duration: 0.1
     }
   },
   success: {
     scale: 1,
-    borderColor: 'rgb(16, 185, 129)',
-    backgroundColor: 'rgba(16, 185, 129, 0.05)',
+    borderColor: 'rgb(0, 0, 0)',
+    backgroundColor: 'rgba(245, 245, 220, 0.3)',
   },
   error: {
     scale: 1,
-    borderColor: 'rgb(239, 68, 68)',
-    backgroundColor: 'rgba(239, 68, 68, 0.05)',
+    borderColor: 'rgb(102, 102, 102)',
+    backgroundColor: 'rgba(102, 102, 102, 0.05)',
     x: [0, -5, 5, -5, 5, 0],
     transition: {
       x: {
@@ -327,13 +327,13 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
   const getIcon = () => {
     switch (loadingState) {
       case 'loading':
-        return <Loader2 className="w-12 h-12 text-blue-500" />;
+        return <Loader2 className="w-12 h-12 text-gray-600" />;
       case 'success':
-        return <CheckCircle className="w-12 h-12 text-green-500" />;
+        return <CheckCircle className="w-12 h-12 text-black" />;
       case 'error':
-        return <XCircle className="w-12 h-12 text-red-500" />;
+        return <XCircle className="w-12 h-12 text-gray-800" />;
       default:
-        return <FileSpreadsheet className="w-12 h-12 text-gray-400" />;
+        return <FileSpreadsheet className="w-12 h-12 text-gray-500" />;
     }
   };
 
@@ -394,7 +394,7 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
                 transition={{ duration: 0.3 }}
               >
                 <motion.div
-                  className="h-full bg-blue-500"
+                  className="h-full bg-black"
                   initial={{ width: 0 }}
                   animate={{ width: `${uploadProgress}%` }}
                   transition={{ duration: 0.2 }}
@@ -409,20 +409,20 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
         {errorMessage && (
           <motion.div
             key="error"
-            className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3"
+            className="bg-gray-100 border border-gray-400 rounded-lg p-4 flex items-start space-x-3"
             variants={alertVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
           >
-            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-black flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-red-800 font-medium">Upload Error</p>
-              <p className="text-red-600 text-sm mt-1">{errorMessage}</p>
+              <p className="text-gray-800 font-medium">Upload Error</p>
+              <p className="text-gray-700 text-sm mt-1">{errorMessage}</p>
             </div>
             <button
               onClick={resetState}
-              className="text-red-500 hover:text-red-700 transition-colors"
+              className="text-gray-600 hover:text-black transition-colors"
             >
               <XCircle className="w-5 h-5" />
             </button>
@@ -432,16 +432,16 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
         {successMessage && (
           <motion.div
             key="success"
-            className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start space-x-3"
+            className="bg-gray-50 border border-gray-300 rounded-lg p-4 flex items-start space-x-3"
             variants={alertVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
           >
-            <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+            <CheckCircle className="w-5 h-5 text-black flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="text-green-800 font-medium">Upload Complete</p>
-              <p className="text-green-600 text-sm mt-1">{successMessage}</p>
+              <p className="text-gray-800 font-medium">Upload Complete</p>
+              <p className="text-gray-600 text-sm mt-1">{successMessage}</p>
             </div>
           </motion.div>
         )}
@@ -493,7 +493,7 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
                       animate="visible"
                       exit="exit"
                       className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
-                      whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.05)' }}
+                      whileHover={{ backgroundColor: 'rgba(245, 245, 220, 0.3)' }}
                     >
                       {previewData.headers.map((header, cellIndex) => (
                         <td
@@ -523,7 +523,7 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
               </p>
               <button
                 onClick={resetState}
-                className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                className="text-sm text-black hover:text-gray-700 font-medium transition-colors"
               >
                 Upload Another File
               </button>

@@ -298,15 +298,15 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
   // Get cell color based on value and type
   const getCellColor = (value: number, category: string, isVariance: boolean = false) => {
     if (isVariance) {
-      if (value > 0) return 'bg-green-50';
-      if (value < 0) return 'bg-red-50';
+      if (value > 0) return 'bg-gray-100';
+      if (value < 0) return 'bg-gray-200';
       return 'bg-gray-50';
     }
     
-    if (category === 'expense') return 'bg-red-50';
-    if (category === 'revenue') return 'bg-green-50';
-    if (category === 'total') return 'bg-blue-50 font-semibold';
-    if (category === 'budget') return 'bg-purple-50';
+    if (category === 'expense') return 'bg-gray-50';
+    if (category === 'revenue') return 'bg-gray-100';
+    if (category === 'total') return 'bg-gray-200 font-semibold';
+    if (category === 'budget') return 'bg-gray-100';
     return '';
   };
 
@@ -431,7 +431,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
             </button>
             <button
               onClick={exportToCSV}
-              className="px-4 py-2 gradient-accent text-white rounded-lg hover:opacity-90 transition-all shadow-md flex items-center gap-2"
+              className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-all shadow-md flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
               Export
@@ -450,7 +450,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
               onClick={() => setDateRangeType('rolling12')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 dateRangeType === 'rolling12'
-                  ? 'gradient-keenan text-white shadow-md'
+                  ? 'bg-black text-white shadow-md'
                   : 'bg-white/70 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-800/50'
               }`}
             >
@@ -460,7 +460,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
               onClick={() => setDateRangeType('ytd')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 dateRangeType === 'ytd'
-                  ? 'gradient-keenan text-white shadow-md'
+                  ? 'bg-black text-white shadow-md'
                   : 'bg-white/70 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-800/50'
               }`}
             >
@@ -470,7 +470,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
               onClick={() => setDateRangeType('all')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 dateRangeType === 'all'
-                  ? 'gradient-keenan text-white shadow-md'
+                  ? 'bg-black text-white shadow-md'
                   : 'bg-white/70 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-800/50'
               }`}
             >
@@ -480,7 +480,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
               onClick={() => setDateRangeType('custom')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 dateRangeType === 'custom'
-                  ? 'gradient-keenan text-white shadow-md'
+                  ? 'bg-black text-white shadow-md'
                   : 'bg-white/70 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-800/50'
               }`}
             >
@@ -495,7 +495,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
                 type="month"
                 value={customStartDate}
                 onChange={(e) => setCustomStartDate(e.target.value)}
-                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
                 placeholder="Start"
               />
               <span className="text-gray-500">to</span>
@@ -503,7 +503,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
                 type="month"
                 value={customEndDate}
                 onChange={(e) => setCustomEndDate(e.target.value)}
-                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
                 placeholder="End"
               />
             </div>
@@ -519,7 +519,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
               placeholder="Search line items..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-3 py-2 w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+              className="pl-9 pr-3 py-2 w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             />
           </div>
         </div>
@@ -541,7 +541,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
                   className={`px-3 py-1 text-xs rounded-full transition-colors ${
                     hiddenColumns.has(index)
                       ? 'bg-gray-200 text-gray-500'
-                      : 'bg-blue-100 text-blue-700'
+                      : 'bg-gray-100 text-black'
                   }`}
                 >
                   {hiddenColumns.has(index) ? <EyeOff className="w-3 h-3 inline mr-1" /> : <Eye className="w-3 h-3 inline mr-1" />}
@@ -591,8 +591,8 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
                   animate={{ opacity: 1 }}
                   transition={{ delay: rowIndex * 0.01 }}
                   className={`hover:bg-gray-50 ${
-                    item.category === 'total' ? 'bg-blue-50 font-semibold' : ''
-                  } ${item.category === 'budget' ? 'bg-purple-50' : ''}`}
+                    item.category === 'total' ? 'bg-gray-200 font-semibold' : ''
+                  } ${item.category === 'budget' ? 'bg-gray-100' : ''}`}
                 >
                   <td className={`sticky left-0 z-10 px-4 py-3 text-sm ${
                     item.category === 'total' || item.category === 'budget' ? 'font-semibold' : ''
@@ -625,7 +625,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
                           getCellColor(value, item.category, isVariance)
                         } ${
                           selectedCell?.row === item.key && selectedCell?.month === month
-                            ? 'ring-2 ring-blue-500 ring-inset'
+                            ? 'ring-2 ring-black ring-inset'
                             : ''
                         }`}
                       >
@@ -637,14 +637,14 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
                         }
                         {isVariance && value !== 0 && (
                           <span className="ml-1">
-                            {value > 0 ? <TrendingUp className="w-3 h-3 inline text-green-600" /> : <TrendingDown className="w-3 h-3 inline text-red-600" />}
+                            {value > 0 ? <TrendingUp className="w-3 h-3 inline text-black" /> : <TrendingDown className="w-3 h-3 inline text-gray-600" />}
                           </span>
                         )}
                       </td>
                     );
                   })}
                   <td className={`px-4 py-3 text-sm text-right font-semibold border-l border-gray-200 bg-gray-50 font-data ${
-                    item.key === 'variance' && total !== 0 ? (total > 0 ? 'text-green-700' : 'text-red-700') : ''
+                    item.key === 'variance' && total !== 0 ? (total > 0 ? 'text-black' : 'text-gray-700') : ''
                   }`}>
                     {(item.key === 'variance_percent' || item.key === 'loss_ratio')
                       ? formatPercentage(average)  // For percentages, show average not total
@@ -652,7 +652,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
                     }
                   </td>
                   <td className={`px-4 py-3 text-sm text-right bg-gray-50 font-data ${
-                    item.key === 'variance' && average !== 0 ? (average > 0 ? 'text-green-700' : 'text-red-700') : ''
+                    item.key === 'variance' && average !== 0 ? (average > 0 ? 'text-black' : 'text-gray-700') : ''
                   }`}>
                     {(item.key === 'variance_percent' || item.key === 'loss_ratio')
                       ? formatPercentage(average)
@@ -671,7 +671,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
         <div className="flex justify-between items-center mb-3">
           <div className="text-sm text-gray-600">
             <span className="font-medium">Current View: </span>
-            <span className="text-blue-600 font-semibold">
+            <span className="text-black font-semibold">
               {dateRangeType === 'rolling12' && 'Rolling 12 Months'}
               {dateRangeType === 'ytd' && 'Plan Year to Date'}
               {dateRangeType === 'all' && 'All Available Data'}
@@ -685,7 +685,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
             <p className="text-xs text-gray-600 font-body">Total Budget (YTD)</p>
-            <p className="text-lg font-semibold text-purple-700 font-data">
+            <p className="text-lg font-semibold text-black font-data">
               {formatCurrency(
                 matrixData.months.reduce((sum, month) => 
                   sum + (matrixData.matrix['budget']?.[month] || 0), 0
@@ -695,7 +695,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
           </div>
           <div>
             <p className="text-xs text-gray-600 font-body">Total Net Cost (YTD)</p>
-            <p className="text-lg font-semibold text-blue-700 font-data">
+            <p className="text-lg font-semibold text-gray-800 font-data">
               {formatCurrency(
                 matrixData.months.reduce((sum, month) => 
                   sum + (matrixData.matrix['net_cost']?.[month] || 0), 0
@@ -707,8 +707,8 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
             <p className="text-xs text-gray-600 font-body">Total Variance (YTD)</p>
             <p className={`text-lg font-semibold font-data ${
               matrixData.months.reduce((sum, month) => sum + (matrixData.matrix['variance']?.[month] || 0), 0) >= 0
-                ? 'text-green-700'
-                : 'text-red-700'
+                ? 'text-black'
+                : 'text-gray-700'
             }`}>
               {formatCurrency(
                 matrixData.months.reduce((sum, month) => 
@@ -721,8 +721,8 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
             <p className="text-xs text-gray-600 font-body">Avg Monthly Variance %</p>
             <p className={`text-lg font-semibold font-data ${
               matrixData.months.reduce((sum, month) => sum + (matrixData.matrix['variance_percent']?.[month] || 0), 0) / matrixData.months.length >= 0
-                ? 'text-green-700'
-                : 'text-red-700'
+                ? 'text-black'
+                : 'text-gray-700'
             }`}>
               {formatPercentage(
                 matrixData.months.reduce((sum, month) => 

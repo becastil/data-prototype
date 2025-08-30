@@ -1,49 +1,50 @@
 @import "tailwindcss";
 
 :root {
-  --background: #FAFBFC;
-  --foreground: #00205c; /* Keenan Midnight Blue */
+  --background: #FFFFFF;
+  --foreground: #000000; /* Pure Black */
   
-  /* Brand Colors - Keenan/AP/Gallagher Hierarchy */
-  --keenan-midnight: #00205c;
-  --keenan-twilight: #fdffff;
-  --keenan-tango: #e87823;
-  --ap-blue: #0032E1;
-  --gallagher-orange: #FF8400;
-  --gallagher-blue: #00aeef;
-  --gallagher-charcoal: #575A5D;
-  --gallagher-light-charcoal: #e6e7e8;
+  /* Minimalist Monochrome Palette */
+  --black: #000000;           /* Pure black */
+  --off-black: #1a1a1a;       /* Soft black */
+  --charcoal: #333333;        /* Dark gray */
+  --gray: #666666;            /* Medium gray */
+  --light-gray: #999999;      /* Light gray */
+  --pale-gray: #CCCCCC;       /* Pale gray */
+  --cream: #F5F5DC;           /* Warm cream */
+  --off-white: #FAFAFA;       /* Cool white */
+  --white: #FFFFFF;           /* Pure white */
   
-  /* Primary Palette - Keenan Brand */
-  --primary-blue: #00205c;        /* Keenan Midnight */
-  --primary-blue-dark: #001640;   /* Darker variant */
-  --primary-blue-light: #0032E1;  /* AP Blue accent */
-  --primary-blue-lighter: #4A6FA5; /* Lighter blue */
-  --primary-blue-lightest: #E8F0FF; /* Very light blue */
+  /* Primary Palette - Minimalist */
+  --primary: #000000;              /* Black primary */
+  --primary-dark: #1a1a1a;        /* Dark variant */
+  --primary-light: #333333;       /* Light variant */
+  --primary-lighter: #666666;     /* Lighter variant */
+  --primary-lightest: #F5F5DC;    /* Cream accent */
   
-  /* Semantic Status Colors - Brand Aligned - WCAG AA Compliant */
-  --status-success: #047857;      /* Darker green for 4.5:1 contrast on white */
-  --status-success-light: #10B981;
-  --status-success-bg: #D1FAE5;
-  --status-warning: #C2410C;      /* Darker orange for better contrast */
-  --status-warning-light: #e87823; /* Keenan Tango */
-  --status-warning-bg: #FEF3E2;
-  --status-danger: #B91C1C;       /* Darker red for 4.5:1 contrast */
-  --status-danger-light: #DC2626;
-  --status-danger-bg: #FEE2E2;
-  --status-info: #0369A1;         /* Darker blue for accessibility */
-  --status-info-light: #00aeef;   /* Gallagher Blue */
-  --status-info-bg: #E0F7FF;
+  /* Semantic Status Colors - Monochrome - WCAG AAA Compliant */
+  --status-success: #000000;      /* Black with success icon */
+  --status-success-light: #333333;
+  --status-success-bg: #F5F5DC;   /* Cream background */
+  --status-warning: #333333;      /* Charcoal with warning icon */
+  --status-warning-light: #666666;
+  --status-warning-bg: #FAFAFA;   /* Off-white background */
+  --status-danger: #000000;       /* Black with danger icon */
+  --status-danger-light: #1a1a1a;
+  --status-danger-bg: #F0F0F0;    /* Light gray background */
+  --status-info: #333333;         /* Charcoal with info icon */
+  --status-info-light: #666666;
+  --status-info-bg: #F5F5DC;      /* Cream background */
   
-  /* Data Visualization Palette - Brand Aligned */
-  --chart-primary: #00205c;      /* Keenan Midnight */
-  --chart-secondary: #00aeef;    /* Gallagher Blue */
-  --chart-tertiary: #e87823;     /* Keenan Tango */
-  --chart-quaternary: #0032E1;   /* AP Blue */
-  --chart-quinary: #FF8400;      /* Gallagher Orange */
-  --chart-senary: #575A5D;       /* Gallagher Charcoal */
-  --chart-septenary: #4A6FA5;    /* Mid Blue */
-  --chart-octonary: #10B981;     /* Success Green */
+  /* Data Visualization Palette - Monochrome */
+  --chart-primary: #000000;       /* Black */
+  --chart-secondary: #333333;     /* Charcoal */
+  --chart-tertiary: #666666;      /* Gray */
+  --chart-quaternary: #999999;    /* Light gray */
+  --chart-quinary: #CCCCCC;       /* Pale gray */
+  --chart-senary: #1a1a1a;        /* Off-black */
+  --chart-septenary: #4d4d4d;     /* Mid gray */
+  --chart-octonary: #808080;      /* Standard gray */
   
   /* Neutral Scale - Light Mode */
   --gray-950: #0F172A;
@@ -58,11 +59,11 @@
   --gray-100: #F5F7FA;
   --gray-50: #FAFBFC;
   
-  /* Gradient Colors - Light Mode (Brand) */
-  --gradient-start: #E8F0FF;     /* Light blue tint */
-  --gradient-mid: #B8D4FF;       /* Mid blue tint */
-  --gradient-end: #4A6FA5;       /* Deeper brand blue */
-  --gradient-accent: #00205c;    /* Keenan Midnight accent */
+  /* Gradient Colors - Light Mode (Minimalist) */
+  --gradient-start: #FFFFFF;      /* Pure white */
+  --gradient-mid: #F5F5DC;        /* Cream */
+  --gradient-end: #F0F0F0;        /* Light gray */
+  --gradient-accent: #000000;     /* Black accent */
   
   /* Typography System */
   --font-heading: 'TASA Orbiter Display', system-ui, -apple-system, sans-serif;
@@ -98,39 +99,39 @@
 
 /* Dark Mode Variables */
 [data-theme="dark"] {
-  --background: #0A0E1A;  /* Very dark blue-black */
-  --foreground: #F1F5F9;
+  --background: #1a1a1a;  /* Off-black background */
+  --foreground: #FAFAFA;  /* Off-white text */
   
-  /* Brand Colors Dark Mode Adjusted */
-  --primary-blue: #4A6FA5;        /* Lighter for visibility */
-  --primary-blue-dark: #00205c;   /* Original midnight */
-  --primary-blue-light: #00aeef;  /* Gallagher blue */
-  --primary-blue-lighter: #7FA3D0;
-  --primary-blue-lightest: #1A2332;
+  /* Minimalist Dark Mode */
+  --primary: #FAFAFA;              /* White primary */
+  --primary-dark: #F5F5DC;         /* Cream */
+  --primary-light: #CCCCCC;        /* Light gray */
+  --primary-lighter: #999999;      /* Lighter gray */
+  --primary-lightest: #333333;     /* Charcoal */
   
   /* Semantic Status Colors - Dark Mode */
-  --status-success: #34D399;
-  --status-success-light: #6EE7B7;
-  --status-success-bg: #064E3B;
-  --status-warning: #FF8400;      /* Gallagher Orange */
-  --status-warning-light: #FFA947;
-  --status-warning-bg: #7C2D12;
-  --status-danger: #F87171;
-  --status-danger-light: #FCA5A5;
-  --status-danger-bg: #7F1D1D;
-  --status-info: #38BDF8;         /* Bright blue for dark */
-  --status-info-light: #7DD3FC;
-  --status-info-bg: #0C4A6E;
+  --status-success: #FAFAFA;       /* White with icon */
+  --status-success-light: #CCCCCC;
+  --status-success-bg: #333333;
+  --status-warning: #F5F5DC;       /* Cream with icon */
+  --status-warning-light: #999999;
+  --status-warning-bg: #2a2a2a;
+  --status-danger: #FFFFFF;        /* Pure white with icon */
+  --status-danger-light: #F0F0F0;
+  --status-danger-bg: #2a2a2a;
+  --status-info: #CCCCCC;          /* Light gray with icon */
+  --status-info-light: #999999;
+  --status-info-bg: #333333;
   
-  /* Data Visualization - Dark Mode Optimized */
-  --chart-primary: #00aeef;      /* Gallagher Blue */
-  --chart-secondary: #38BDF8;    /* Bright Blue */
-  --chart-tertiary: #FF8400;     /* Gallagher Orange */
-  --chart-quaternary: #7FA3D0;   /* Light brand blue */
-  --chart-quinary: #FFA947;      /* Light orange */
-  --chart-senary: #90A4AE;       /* Gray */
-  --chart-septenary: #34D399;    /* Green */
-  --chart-octonary: #A78BFA;     /* Purple accent */
+  /* Data Visualization - Dark Mode */
+  --chart-primary: #FFFFFF;        /* White */
+  --chart-secondary: #CCCCCC;      /* Light gray */
+  --chart-tertiary: #999999;       /* Medium gray */
+  --chart-quaternary: #666666;     /* Dark gray */
+  --chart-quinary: #F5F5DC;        /* Cream */
+  --chart-senary: #FAFAFA;         /* Off-white */
+  --chart-septenary: #808080;      /* Gray */
+  --chart-octonary: #B0B0B0;       /* Light medium gray */
   
   /* Neutral Scale - Dark Mode */
   --gray-950: #F8FAFC;
@@ -146,10 +147,10 @@
   --gray-50: #020617;
   
   /* Dark Mode Gradients */
-  --gradient-start: #0A0E1A;     /* Very dark */
-  --gradient-mid: #001640;       /* Dark brand blue */
-  --gradient-end: #00205c;       /* Keenan Midnight */
-  --gradient-accent: #00aeef;    /* Gallagher Blue accent */
+  --gradient-start: #1a1a1a;      /* Off-black */
+  --gradient-mid: #2a2a2a;        /* Dark gray */
+  --gradient-end: #333333;        /* Charcoal */
+  --gradient-accent: #FAFAFA;     /* Off-white accent */
 }
 
 /* System Preference Respect */
@@ -319,42 +320,42 @@ input, textarea, select {
   font-weight: var(--weight-regular);
 }
 
-/* Gradient Backgrounds */
-.gradient-teal {
+/* Gradient Backgrounds - Minimalist */
+.gradient-minimal {
   background: linear-gradient(180deg, 
-    var(--gradient-start) 0%, 
-    var(--gradient-mid) 50%, 
-    var(--gradient-end) 100%
+    #FFFFFF 0%, 
+    #F5F5DC 50%, 
+    #FAFAFA 100%
   );
   min-height: 100vh;
 }
 
-.gradient-teal-diagonal {
+.gradient-cream {
   background: linear-gradient(135deg, 
-    var(--gradient-start) 0%, 
-    var(--gradient-mid) 40%, 
-    var(--gradient-end) 100%
+    #FFFFFF 0%, 
+    #F5F5DC 40%, 
+    #F0F0F0 100%
   );
   min-height: 100vh;
 }
 
-.gradient-teal-radial {
+.gradient-subtle {
   background: radial-gradient(ellipse at top center, 
-    var(--gradient-start) 0%, 
-    var(--gradient-mid) 50%, 
-    var(--gradient-end) 100%
+    #FFFFFF 0%, 
+    #FAFAFA 50%, 
+    #F5F5DC 100%
   );
   min-height: 100vh;
 }
 
-/* Enhanced gradient with brand colors */
-.gradient-teal-smooth {
+/* Enhanced gradient - minimalist */
+.gradient-smooth {
   background: linear-gradient(180deg,
-    #E8F0FF 0%,      /* Very light brand blue */
-    #B8D4FF 25%,     /* Light blue */
-    #7FA3D0 50%,     /* Mid blue */
-    #4A6FA5 75%,     /* Deeper blue */
-    #00205c 100%     /* Keenan Midnight */
+    #FFFFFF 0%,      /* Pure white */
+    #FAFAFA 25%,     /* Off-white */
+    #F5F5DC 50%,     /* Cream */
+    #F0F0F0 75%,     /* Light gray */
+    #E8E8E8 100%     /* Pale gray */
   );
   min-height: 100vh;
   position: relative;
@@ -441,32 +442,28 @@ input, textarea, select {
   --touch-target-xl: 60px;   /* Large touch target */
 }
 
-/* Glassmorphism Panel - Primary elevated style */
+/* Minimalist Panel - Clean elevated style */
 .panel-elevated {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 8px 32px 0 rgba(0, 32, 92, 0.15),
-              0 2px 8px 0 rgba(0, 32, 92, 0.08);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08),
+              0 1px 2px 0 rgba(0, 0, 0, 0.04);
   border-radius: var(--radius-card);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .panel-elevated:hover {
-  box-shadow: 0 12px 40px 0 rgba(0, 32, 92, 0.18),
-              0 4px 12px 0 rgba(0, 32, 92, 0.10);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.12),
+              0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
 }
 
 [data-theme="dark"] .panel-elevated {
-  background: rgba(30, 41, 59, 0.65);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(26, 26, 26, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4),
-              0 2px 8px 0 rgba(0, 0, 0, 0.2),
-              inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.6),
+              0 1px 2px 0 rgba(0, 0, 0, 0.3),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
 }
 
 /* Neumorphic Elements */
@@ -555,43 +552,43 @@ input, textarea, select {
   border: 1px solid var(--status-info-light);
 }
 
-/* Improved Gradient Backgrounds - Brand */
+/* Improved Gradient Backgrounds - Minimalist */
 .gradient-primary {
   background: linear-gradient(135deg, 
-    var(--primary-blue-light) 0%, 
-    var(--primary-blue) 100%
+    #FFFFFF 0%, 
+    #F5F5DC 100%
   );
 }
 
-.gradient-keenan {
+.gradient-monochrome {
   background: linear-gradient(135deg,
-    var(--keenan-midnight) 0%,
-    var(--ap-blue) 100%
+    #F0F0F0 0%,
+    #CCCCCC 100%
   );
 }
 
 .gradient-accent {
   background: linear-gradient(135deg,
-    var(--keenan-tango) 0%,
-    var(--gallagher-orange) 100%
+    #000000 0%,
+    #333333 100%
   );
 }
 
-.gradient-subtle {
+.gradient-soft {
   background: linear-gradient(180deg,
-    var(--gray-50) 0%,
-    var(--gray-100) 100%
+    #FAFAFA 0%,
+    #F5F5DC 100%
   );
 }
 
-/* Dark Mode Gradient - Brand Aligned */
-[data-theme="dark"] .gradient-teal-smooth {
+/* Dark Mode Gradient - Minimalist */
+[data-theme="dark"] .gradient-smooth {
   background: linear-gradient(180deg,
-    #0A0E1A 0%,      /* Very dark */
-    #001640 25%,     /* Dark blue */
-    #00205c 50%,     /* Keenan Midnight */
-    #001640 75%,     /* Dark blue */
-    #0A0E1A 100%     /* Very dark */
+    #1a1a1a 0%,      /* Off-black */
+    #2a2a2a 25%,     /* Dark gray */
+    #333333 50%,     /* Charcoal */
+    #2a2a2a 75%,     /* Dark gray */
+    #1a1a1a 100%     /* Off-black */
   );
 }
 
@@ -643,8 +640,8 @@ input, textarea, select {
   height: var(--size);
   border-radius: 50%;
   background: conic-gradient(
-    var(--primary-blue) calc(var(--progress) * 1%),
-    var(--gray-200) calc(var(--progress) * 1%) 100%
+    #000000 calc(var(--progress) * 1%),
+    #E0E0E0 calc(var(--progress) * 1%) 100%
   );
   display: flex;
   align-items: center;
@@ -665,7 +662,7 @@ input, textarea, select {
 .hexagon {
   width: 100px;
   height: 55px;
-  background: var(--primary-blue);
+  background: #000000;
   position: relative;
   margin: 27.5px 0;
 }
@@ -681,12 +678,12 @@ input, textarea, select {
 
 .hexagon:before {
   bottom: 100%;
-  border-bottom: 27.5px solid var(--primary-blue);
+  border-bottom: 27.5px solid #000000;
 }
 
 .hexagon:after {
   top: 100%;
-  border-top: 27.5px solid var(--primary-blue);
+  border-top: 27.5px solid #000000;
 }
 
 /* Gooey Morphing Effects - Modern Organic UI */
@@ -742,7 +739,7 @@ input, textarea, select {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--primary-blue);
+  background: #000000;
   top: 50%;
   transform: translateY(-50%);
 }
@@ -765,7 +762,7 @@ input, textarea, select {
 /* Liquid Navigation Indicator */
 .liquid-indicator {
   position: absolute;
-  background: var(--primary-blue);
+  background: #000000;
   height: 100%;
   border-radius: var(--radius-lg);
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
@@ -808,7 +805,7 @@ input, textarea, select {
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: var(--primary-blue);
+  background: #F5F5DC;
   transform: translate(-50%, -50%);
   transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1),
               height 0.6s cubic-bezier(0.23, 1, 0.32, 1);
@@ -821,15 +818,15 @@ input, textarea, select {
   height: 120%;
 }
 
-/* Blob Backgrounds */
+/* Blob Backgrounds - Minimalist */
 .blob-1 {
   position: absolute;
   width: 200px;
   height: 200px;
-  background: linear-gradient(45deg, var(--primary-blue), var(--keenan-tango));
+  background: linear-gradient(45deg, #F5F5DC, #E0E0E0);
   border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
   animation: liquid-shift 8s ease-in-out infinite;
-  opacity: 0.7;
+  opacity: 0.3;
   filter: blur(40px);
 }
 
@@ -837,10 +834,10 @@ input, textarea, select {
   position: absolute;
   width: 150px;
   height: 150px;
-  background: linear-gradient(45deg, var(--gallagher-blue), var(--ap-blue));
+  background: linear-gradient(45deg, #CCCCCC, #F0F0F0);
   border-radius: 50% 50% 30% 70% / 60% 40% 60% 40%;
   animation: liquid-shift 10s ease-in-out infinite reverse;
-  opacity: 0.6;
+  opacity: 0.25;
   filter: blur(30px);
 }
 
@@ -947,19 +944,19 @@ input, textarea, select {
 
 /* Focus Visible Styles for Keyboard Navigation */
 *:focus-visible {
-  outline: 2px solid var(--primary-blue);
+  outline: 2px solid #000000;
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
 
 button:focus-visible,
 a:focus-visible {
-  outline: 3px solid var(--primary-blue);
+  outline: 3px solid #000000;
   outline-offset: 2px;
 }
 
 .dark *:focus-visible {
-  outline-color: var(--primary-blue-light);
+  outline-color: #FFFFFF;
 }
 
 /* High Contrast Mode Support */

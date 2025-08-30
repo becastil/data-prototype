@@ -98,12 +98,12 @@ const HCCDataTable: React.FC<HCCDataTableProps> = ({ data }) => {
 
   const getServiceTypeColor = (serviceType: string) => {
     const colors: Record<string, string> = {
-      'Inpatient': 'bg-red-100 text-red-800',
-      'Outpatient': 'bg-blue-100 text-blue-800',
-      'Emergency': 'bg-yellow-100 text-yellow-800',
-      'Pharmacy': 'bg-green-100 text-green-800',
+      'Inpatient': 'bg-black text-white',
+      'Outpatient': 'bg-gray-800 text-white',
+      'Emergency': 'bg-gray-600 text-white',
+      'Pharmacy': 'bg-gray-400 text-black',
     };
-    return colors[serviceType] || 'bg-gray-100 text-gray-800';
+    return colors[serviceType] || 'bg-gray-200 text-gray-800';
   };
 
   return (
@@ -119,12 +119,12 @@ const HCCDataTable: React.FC<HCCDataTableProps> = ({ data }) => {
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-full sm:w-48"
+              className="pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm w-full sm:w-48"
             />
           </div>
           <button
             onClick={exportToCSV}
-            className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
+            className="px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-sm"
           >
             <Download className="w-4 h-4" />
             Export
@@ -149,13 +149,13 @@ const HCCDataTable: React.FC<HCCDataTableProps> = ({ data }) => {
                       <ChevronUp 
                         className={`w-3 h-3 ${
                           sortField === header && sortDirection === 'asc' 
-                            ? 'text-blue-600' : 'text-gray-400'
+                            ? 'text-black' : 'text-gray-400'
                         }`}
                       />
                       <ChevronDown 
                         className={`w-3 h-3 -mt-1 ${
                           sortField === header && sortDirection === 'desc' 
-                            ? 'text-blue-600' : 'text-gray-400'
+                            ? 'text-black' : 'text-gray-400'
                         }`}
                       />
                     </div>
@@ -173,7 +173,7 @@ const HCCDataTable: React.FC<HCCDataTableProps> = ({ data }) => {
                 transition={{ delay: index * 0.05 }}
                 className={`${
                   index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                } hover:bg-blue-50 transition-colors`}
+                } hover:bg-gray-50 transition-colors`}
               >
                 {Object.entries(row).map(([key, value], cellIndex) => (
                   <td 
@@ -231,7 +231,7 @@ const HCCDataTable: React.FC<HCCDataTableProps> = ({ data }) => {
                 onClick={() => setCurrentPage(pageNum)}
                 className={`px-3 py-1 rounded-lg text-sm ${
                   pageNum === currentPage
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-black text-white'
                     : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                 }`}
               >
