@@ -13,6 +13,9 @@ import ClaimsBreakdownChart from './components/ClaimsBreakdownChart';
 import MedicalClaimsBreakdownChart from './components/MedicalClaimsBreakdownChart';
 import DomesticVsNonDomesticChart from './components/DomesticVsNonDomesticChart';
 import ThemeToggle from './components/ThemeToggle';
+import GooeyFilter from './components/GooeyFilter';
+import GooeyLoader from './components/GooeyLoader';
+import MetaballSuccess from './components/MetaballSuccess';
 import { ParsedCSVData } from './components/CSVLoader';
 import { RotateCcw, TableIcon, ChartBar, ArrowLeft, ArrowRight } from 'lucide-react';
 
@@ -22,12 +25,22 @@ const Home: React.FC = () => {
   const [claimsData, setClaimsData] = useState<ParsedCSVData | null>(null);
   const [error, setError] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<'table' | 'charts'>('table');
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleBothFilesLoaded = (budget: ParsedCSVData, claims: ParsedCSVData) => {
-    setBudgetData(budget);
-    setClaimsData(claims);
-    setShowDashboard(true);
-    setError('');
+    setIsLoading(true);
+    setTimeout(() => {
+      setBudgetData(budget);
+      setClaimsData(claims);
+      setIsLoading(false);
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowDashboard(true);
+        setShowSuccess(false);
+      }, 1500);
+      setError('');
+    }, 1000);
   };
 
   const handleError = (errorMessage: string) => {
@@ -43,19 +56,57 @@ const Home: React.FC = () => {
   };
 
   return (
-    <AnimatePresence mode="wait">
-      {!showDashboard ? (
-        <motion.div
-          key="uploader"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <DualCSVLoader
-            onBothFilesLoaded={handleBothFilesLoaded}
-            onError={handleError}
-          />
-          {error && (
+    <>
+      <GooeyFilter />
+      <AnimatePresence mode="wait">
+        {!showDashboard ? (
+          <motion.div
+            key="uploader"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="relative"
+          >
+            <DualCSVLoader
+              onBothFilesLoaded={handleBothFilesLoaded}
+              onError={handleError}
+            />
+            
+            {/* Loading Animation */}
+            {isLoading && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+              >
+                <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-2xl">
+                  <GooeyLoader size="lg" />
+                  <p className="text-center mt-4 text-gray-600 dark:text-gray-400 font-subheading">
+                    Processing your data...
+                  </p>
+                </div>
+              </motion.div>
+            )}
+            
+            {/* Success Animation */}
+            {showSuccess && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+              >
+                <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-2xl">
+                  <MetaballSuccess isVisible={true} size="lg" />
+                  <p className="text-center mt-4 text-gray-600 dark:text-gray-400 font-subheading">
+                    Data loaded successfully!
+                  </p>
+                </div>
+              </motion.div>
+            )}
+            
+            {error && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -81,7 +132,8 @@ const Home: React.FC = () => {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="w-2 h-8 gradient-accent rounded-full"
+                  className="w-2 h-8 gradient-accent"
+                  style={{ borderRadius: 'var(--radius-full)' }}
                 />
                 <motion.h1
                   initial={{ y: -20, opacity: 0 }}
@@ -99,7 +151,7 @@ const Home: React.FC = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleReset}
-                  className="px-4 py-2 gradient-keenan text-white rounded-lg hover:opacity-90 transition-all shadow-lg flex items-center gap-2"
+                  className="px-5 py-2.5 gradient-keenan text-white hover:opacity-90 transition-all shadow-lg flex items-center gap-2 btn"
                 >
                   <RotateCcw className="w-4 h-4" />
                   Upload New Data
@@ -108,10 +160,10 @@ const Home: React.FC = () => {
             </div>
             
             {/* Page Navigation Tabs */}
-            <div className="flex gap-2 panel-elevated rounded-lg shadow-lg p-1 inline-flex">
+            <div className="flex gap-2 panel-elevated shadow-lg p-1.5 inline-flex">
               <button
                 onClick={() => setCurrentPage('table')}
-                className={`px-6 py-2 rounded-lg transition-all flex items-center gap-2 ${
+                className={`px-6 py-2 transition-all flex items-center gap-2 btn-squared ${
                   currentPage === 'table'
                     ? 'gradient-keenan text-white shadow-md'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
@@ -122,7 +174,7 @@ const Home: React.FC = () => {
               </button>
               <button
                 onClick={() => setCurrentPage('charts')}
-                className={`px-6 py-2 rounded-lg transition-all flex items-center gap-2 ${
+                className={`px-6 py-2 transition-all flex items-center gap-2 btn-squared ${
                   currentPage === 'charts'
                     ? 'gradient-keenan text-white shadow-md'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
@@ -279,6 +331,7 @@ const Home: React.FC = () => {
         </motion.div>
       )}
     </AnimatePresence>
+    </>
   );
 };
 

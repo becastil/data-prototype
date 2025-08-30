@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
+import CircularProgress from './CircularProgress';
 import {
   TrendingUp,
   TrendingDown,
@@ -157,6 +158,11 @@ const DashboardSummaryTiles: React.FC<DashboardSummaryTilesProps> = ({
     if (ratio < 95) return <AlertCircle className="w-5 h-5" />;
     return <XCircle className="w-5 h-5" />;
   };
+  
+  // Calculate progress percentage for circular indicators
+  const getProgressPercentage = (value: number, max: number) => {
+    return Math.min((value / max) * 100, 100);
+  };
 
   const tiles = [
     {
@@ -194,7 +200,10 @@ const DashboardSummaryTiles: React.FC<DashboardSummaryTilesProps> = ({
       color: 'gradient-primary',
       bgColor: getLossRatioColor(metrics.lossRatio),
       statusIcon: getLossRatioIcon(metrics.lossRatio),
-      detail: 'Target: < 85%'
+      detail: 'Target: < 85%',
+      showProgress: true,
+      progressValue: metrics.lossRatio,
+      progressColor: metrics.lossRatio < 85 ? 'success' : metrics.lossRatio < 95 ? 'warning' : 'danger'
     },
     {
       id: 'claims',
@@ -206,7 +215,10 @@ const DashboardSummaryTiles: React.FC<DashboardSummaryTilesProps> = ({
       icon: <FileText className="w-6 h-6" />,
       color: 'gradient-primary',
       bgColor: metrics.claimsVsBudget < 100 ? 'text-success bg-success' : 'text-danger bg-danger',
-      detail: 'Medical + Pharmacy'
+      detail: 'Medical + Pharmacy',
+      showProgress: true,
+      progressValue: metrics.claimsVsBudget,
+      progressColor: metrics.claimsVsBudget < 100 ? 'success' : 'danger'
     }
   ];
 
@@ -218,54 +230,92 @@ const DashboardSummaryTiles: React.FC<DashboardSummaryTilesProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
-          className="panel-elevated rounded-xl shadow-lg overflow-hidden transition-all hover:shadow-xl"
+          className="panel-elevated overflow-hidden transition-all hover:shadow-xl group relative"
+          whileHover={{ scale: 1.02 }}
         >
-          {/* Gradient Header */}
-          <div className={`h-2 ${tile.color}`} />
+          {/* Gradient Header Bar */}
+          <div className={`h-1 ${tile.color} transition-all group-hover:h-1.5`} />
           
           <div className="p-5">
+            {/* Gooey hover blob */}
+            <motion.div
+              className="absolute -top-10 -right-10 w-20 h-20 rounded-full opacity-0 group-hover:opacity-30 pointer-events-none"
+              style={{
+                background: `radial-gradient(circle, ${tile.color === 'gradient-primary' ? 'var(--primary-blue)' : 'var(--keenan-tango)'}, transparent)`,
+                filter: 'blur(20px)',
+              }}
+              animate={{
+                x: [0, 10, 0],
+                y: [0, -10, 0],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+
             {/* Title Row */}
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 font-body">
                 {tile.title}
               </h3>
-              <div className={`p-2 rounded-lg ${tile.bgColor} transition-colors`}>
+              <motion.div 
+                className={`p-2.5 ${tile.bgColor} transition-all circular flex items-center justify-center`}
+                whileHover={{ 
+                  rotate: [0, -10, 10, -10, 0],
+                  transition: { duration: 0.5 }
+                }}
+              >
                 {tile.icon}
-              </div>
+              </motion.div>
             </div>
 
-            {/* Value */}
-            <div className="mb-2">
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 font-data">
-                {tile.value}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-body mt-1">
-                {tile.subtitle}
-              </p>
+            {/* Value and Progress */}
+            <div className="mb-2 flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 font-data">
+                  {tile.value}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-body mt-1">
+                  {tile.subtitle}
+                </p>
+              </div>
+              {tile.showProgress && (
+                <CircularProgress 
+                  value={tile.progressValue} 
+                  max={100}
+                  size="sm"
+                  color={tile.progressColor as any}
+                  showPercentage={false}
+                />
+              )}
             </div>
 
             {/* Change Indicator */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1">
-                {tile.changeType === 'positive' ? (
-                  <TrendingUp className="w-4 h-4 text-success" />
-                ) : tile.changeType === 'negative' ? (
-                  <TrendingDown className="w-4 h-4 text-danger" />
-                ) : tile.changeType === 'status' ? (
-                  tile.statusIcon
-                ) : (
-                  <Minus className="w-4 h-4 text-gray-400" />
-                )}
-                <span className={`text-sm font-medium ${
-                  tile.changeType === 'positive' ? 'text-success' : 
-                  tile.changeType === 'negative' ? 'text-danger' : 
+              <div className="flex items-center gap-2">
+                <div className={`badge ${
+                  tile.changeType === 'positive' ? 'badge-success' : 
+                  tile.changeType === 'negative' ? 'badge-danger' : 
                   tile.changeType === 'status' ? 
-                    (tile.change === 'Good' ? 'text-success' : 
-                     tile.change === 'Warning' ? 'text-warning' : 'text-danger') : 
-                  'text-gray-600 dark:text-gray-400'
+                    (tile.change === 'Good' ? 'badge-success' : 
+                     tile.change === 'Warning' ? 'badge-warning' : 'badge-danger') : 
+                  'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                 }`}>
-                  {tile.change}
-                </span>
+                  {tile.changeType === 'positive' ? (
+                    <TrendingUp className="w-3 h-3" />
+                  ) : tile.changeType === 'negative' ? (
+                    <TrendingDown className="w-3 h-3" />
+                  ) : tile.changeType === 'status' ? (
+                    <span className="w-3 h-3">{tile.statusIcon}</span>
+                  ) : (
+                    <Minus className="w-3 h-3" />
+                  )}
+                  <span className="text-xs font-medium">
+                    {tile.change}
+                  </span>
+                </div>
               </div>
               <span className="text-xs text-gray-500 dark:text-gray-400 font-body">
                 {tile.detail}

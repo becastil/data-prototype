@@ -71,7 +71,7 @@ const ThemeToggle: React.FC = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all text-white border border-white/20 shadow-lg"
+        className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all text-white border border-white/20 shadow-lg btn"
         aria-label="Toggle theme"
       >
         {getIcon()}
@@ -83,11 +83,11 @@ const ThemeToggle: React.FC = () => {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
-          className="absolute right-0 mt-2 w-36 rounded-lg bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50"
+          className="absolute right-0 mt-2 w-36 bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50 card"
         >
           <button
             onClick={() => handleThemeChange('light')}
-            className={`w-full px-4 py-2 text-left text-sm flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+            className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
               theme === 'light' ? 'bg-gray-100 dark:bg-gray-700' : ''
             }`}
           >
@@ -96,7 +96,7 @@ const ThemeToggle: React.FC = () => {
           </button>
           <button
             onClick={() => handleThemeChange('dark')}
-            className={`w-full px-4 py-2 text-left text-sm flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+            className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
               theme === 'dark' ? 'bg-gray-100 dark:bg-gray-700' : ''
             }`}
           >
@@ -105,7 +105,7 @@ const ThemeToggle: React.FC = () => {
           </button>
           <button
             onClick={() => handleThemeChange('system')}
-            className={`w-full px-4 py-2 text-left text-sm flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+            className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
               theme === 'system' ? 'bg-gray-100 dark:bg-gray-700' : ''
             }`}
           >
