@@ -63,7 +63,7 @@ const RechartsBudgetChart: React.FC<RechartsBudgetChartProps> = ({
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
           Budget vs Expenses Trend (Rolling 12 Months)
         </h2>
-        <div className="flex items-center justify-center h-[400px]">
+        <div className="flex items-center justify-center h-[500px]">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -80,7 +80,7 @@ const RechartsBudgetChart: React.FC<RechartsBudgetChartProps> = ({
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
           Budget vs Expenses Trend (Rolling 12 Months)
         </h2>
-        <div className="flex items-center justify-center h-[400px]">
+        <div className="flex items-center justify-center h-[500px]">
           <p className="text-red-500">Error loading chart: {error}</p>
         </div>
       </div>
@@ -93,7 +93,7 @@ const RechartsBudgetChart: React.FC<RechartsBudgetChartProps> = ({
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
           Budget vs Expenses Trend (Rolling 12 Months)
         </h2>
-        <div className="flex items-center justify-center h-[400px]">
+        <div className="flex items-center justify-center h-[500px]">
           <p className="text-gray-500">No data available</p>
         </div>
       </div>
@@ -105,83 +105,113 @@ const RechartsBudgetChart: React.FC<RechartsBudgetChartProps> = ({
       <h2 className="text-xl font-semibold text-gray-800 mb-4">
         Budget vs Expenses Trend (Rolling 12 Months)
       </h2>
-      <div className="h-[400px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart
-            data={chartData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+      <div className="h-[500px] flex">
+        <div className="flex-1">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart
+              data={chartData}
+              margin={{ top: 10, right: 10, left: 10, bottom: 60 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+              
+              <XAxis
+                dataKey="month"
+                angle={-45}
+                textAnchor="end"
+                height={100}
+                tick={{ fontSize: 11 }}
+                interval={0}
+              />
+              
+              <YAxis
+                domain={[0, maxValue * 1.1]}
+                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+                tick={{ fontSize: 11 }}
+              />
+              
+              <Tooltip content={<CustomTooltip />} />
+              
+              {/* Stacked Bars */}
+              <Bar 
+                dataKey="totalFixedCost" 
+                stackId="expenses" 
+                fill={chartColors.totalFixedCost}
+                name="Total Fixed Cost"
+              />
+              <Bar 
+                dataKey="stopLossReimb" 
+                stackId="expenses" 
+                fill={chartColors.stopLossReimb}
+                name="Stop Loss Reimb"
+              />
+              <Bar 
+                dataKey="rxRebates" 
+                stackId="expenses" 
+                fill={chartColors.rxRebates}
+                name="Rx Rebates"
+              />
+              <Bar 
+                dataKey="medicalClaims" 
+                stackId="expenses" 
+                fill={chartColors.medicalClaims}
+                name="Medical Claims"
+              />
+              <Bar 
+                dataKey="rx" 
+                stackId="expenses" 
+                fill={chartColors.rx}
+                name="Rx"
+              />
+              
+              {/* Budget Line */}
+              <Line
+                type="monotone"
+                dataKey="budget"
+                stroke={chartColors.budget}
+                strokeWidth={3}
+                dot={{ r: 4, fill: chartColors.budget }}
+                activeDot={{ r: 6 }}
+                name="Budget"
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+        
+        {/* Custom Legend */}
+        <div className="w-36 pl-2 flex flex-col justify-center">
+          <div className="space-y-1">
+            {/* Expense items */}
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: chartColors.totalFixedCost }}></div>
+              <span className="text-xs text-gray-700">Total Fixed Cost</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: chartColors.stopLossReimb }}></div>
+              <span className="text-xs text-gray-700">Stop Loss Reimb</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: chartColors.rxRebates }}></div>
+              <span className="text-xs text-gray-700">Rx Rebates</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: chartColors.medicalClaims }}></div>
+              <span className="text-xs text-gray-700">Medical Claims</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: chartColors.rx }}></div>
+              <span className="text-xs text-gray-700">Rx</span>
+            </div>
             
-            <XAxis
-              dataKey="month"
-              angle={-45}
-              textAnchor="end"
-              height={100}
-              tick={{ fontSize: 11 }}
-              interval={0}
-            />
+            {/* Divider */}
+            <div className="border-t border-gray-200 my-2"></div>
             
-            <YAxis
-              domain={[0, maxValue * 1.1]}
-              tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
-              tick={{ fontSize: 11 }}
-            />
-            
-            <Tooltip content={<CustomTooltip />} />
-            
-            <Legend 
-              wrapperStyle={{ paddingTop: '20px' }}
-              iconType="rect"
-              formatter={(value: string) => (
-                <span style={{ fontSize: '12px' }}>{value}</span>
-              )}
-            />
-            
-            {/* Stacked Bars */}
-            <Bar 
-              dataKey="totalFixedCost" 
-              stackId="expenses" 
-              fill={chartColors.totalFixedCost}
-              name="Total Fixed Cost"
-            />
-            <Bar 
-              dataKey="stopLossReimb" 
-              stackId="expenses" 
-              fill={chartColors.stopLossReimb}
-              name="Stop Loss Reimb"
-            />
-            <Bar 
-              dataKey="rxRebates" 
-              stackId="expenses" 
-              fill={chartColors.rxRebates}
-              name="Rx Rebates"
-            />
-            <Bar 
-              dataKey="medicalClaims" 
-              stackId="expenses" 
-              fill={chartColors.medicalClaims}
-              name="Medical Claims"
-            />
-            <Bar 
-              dataKey="rx" 
-              stackId="expenses" 
-              fill={chartColors.rx}
-              name="Rx"
-            />
-            
-            {/* Budget Line */}
-            <Line
-              type="monotone"
-              dataKey="budget"
-              stroke={chartColors.budget}
-              strokeWidth={3}
-              dot={{ r: 4, fill: chartColors.budget }}
-              activeDot={{ r: 6 }}
-              name="Budget"
-            />
-          </ComposedChart>
-        </ResponsiveContainer>
+            {/* Budget line */}
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-0.5 rounded" style={{ backgroundColor: chartColors.budget }}></div>
+              <span className="text-xs font-semibold text-gray-800">Budget</span>
+            </div>
+          </div>
+        </div>
       </div>
       
       {/* Summary Stats */}

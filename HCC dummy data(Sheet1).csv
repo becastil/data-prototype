@@ -1,0 +1,6 @@
+﻿Claimant Number,Service Type,ICD-10-CM Code,Medical Description,Layman's Term,Medical,Rx,Total
+1,Inpatient,I10,Essential (primary) hypertension,High blood pressure,"$84,524 ","$50,986 ","$135,510 "
+2,Outpatient,E11.9,Type 2 diabetes mellitus without complications,Type 2 diabetes,"$65,969 ","$74,135 ","$140,104 "
+3,Emergency,J06.9,"Acute upper respiratory infection, unspecified",Common cold,"$54,081 ","$53,205 ","$107,286 "
+4,Pharmacy,N39.0,"Urinary tract infection, site not specified",Bladder infection,"$82,992 ","$99,094 ","$182,086 "
+5,Outpatient,R07.9,"Chest pain, unspecified",Chest pain,"$67,590 ","$63,183 ","$130,773 "
