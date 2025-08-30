@@ -360,6 +360,34 @@ input, textarea, select {
   position: relative;
 }
 
+/* CEO Dashboard Gradient - Vibrant */
+.gradient-ceo-vibrant {
+  background: linear-gradient(135deg,
+    #FF6B6B 0%,      /* Coral/Pink */
+    #FF6B9D 20%,     /* Pink */
+    #C44BC2 40%,     /* Purple */
+    #8B5CF6 60%,     /* Violet */
+    #7C3AED 80%,     /* Purple-Blue */
+    #3B82F6 100%     /* Blue */
+  );
+  min-height: 120px;
+  position: relative;
+}
+
+.gradient-ceo-header {
+  background: linear-gradient(90deg,
+    #FF6B6B 0%,      /* Coral */
+    #FF6B9D 15%,     /* Pink */
+    #C44BC2 30%,     /* Purple */
+    #8B5CF6 45%,     /* Violet */
+    #7C3AED 60%,     /* Purple-Blue */
+    #6366F1 75%,     /* Indigo */
+    #3B82F6 90%,     /* Blue */
+    #06B6D4 100%     /* Cyan */
+  );
+  position: relative;
+}
+
 /* Subtle animated gradient */
 @keyframes gradientShift {
   0% { background-position: 0% 0%; }

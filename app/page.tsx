@@ -17,15 +17,16 @@ import GooeyFilter from './components/GooeyFilter';
 import GooeyLoader from './components/GooeyLoader';
 import MetaballSuccess from './components/MetaballSuccess';
 import AccessibleIcon from './components/AccessibleIcon';
+import Sidebar from './components/Sidebar';
 import { ParsedCSVData } from './components/CSVLoader';
-import { RotateCcw, TableIcon, ChartBar, ArrowLeft, ArrowRight } from 'lucide-react';
+import { RotateCcw, TableIcon, ChartBar, Bell, Search } from 'lucide-react';
 
 const Home: React.FC = () => {
   const [showDashboard, setShowDashboard] = useState(false);
   const [budgetData, setBudgetData] = useState<ParsedCSVData | null>(null);
   const [claimsData, setClaimsData] = useState<ParsedCSVData | null>(null);
   const [error, setError] = useState<string>('');
-  const [currentPage, setCurrentPage] = useState<'table' | 'charts'>('table');
+  const [currentPage, setCurrentPage] = useState<string>('dashboard');
   const [showSuccess, setShowSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -124,111 +125,117 @@ const Home: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="min-h-screen gradient-teal-smooth p-6"
+          className="min-h-screen bg-gray-50 flex"
         >
-          {/* Header */}
-          <div className="max-w-7xl mx-auto mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center gap-3">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="w-2 h-8 gradient-accent"
-                  style={{ borderRadius: 'var(--radius-full)' }}
-                />
-                <motion.h1
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  className="text-3xl font-bold text-white font-heading drop-shadow-lg"
-                >
-                  Keenan Reporting Dashboard
-                </motion.h1>
-              </div>
-              <div className="flex items-center gap-3">
-                <ThemeToggle />
-                <motion.button
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleReset}
-                  className="px-5 py-2.5 gradient-keenan text-white hover:opacity-90 transition-all shadow-lg flex items-center gap-2 btn"
-                  aria-label="Upload new data files"
-                >
-                  <AccessibleIcon
-                    icon={<RotateCcw />}
-                    label="Reset and upload new files"
-                    size="sm"
-                    variant="default"
-                    showTooltip={false}
-                    animate={true}
-                    className="!bg-transparent !border-0 !p-0 !shadow-none hover:!bg-transparent"
-                  />
-                  Upload New Data
-                </motion.button>
-              </div>
+          {/* Sidebar */}
+          <Sidebar currentPage={currentPage} onPageChange={setCurrentPage} />
+          
+          {/* Main Content */}
+          <div className="flex-1 ml-[280px]">
+            {/* CEO Gradient Header */}
+            <div className="gradient-ceo-header h-32 relative overflow-hidden">
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="h-full flex items-center justify-between px-8"
+              >
+                <div>
+                  <h1 className="text-2xl font-bold text-white mb-1">CEO Dashboard</h1>
+                  <p className="text-white/80 text-sm">
+                    Accrual basis Tuesday, April 25, 2023 03:44 AM
+                  </p>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  {/* Search Bar */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search for anything..."
+                      className="w-80 px-4 py-2.5 pl-10 bg-white/20 backdrop-blur-md text-white placeholder-white/60 rounded-full border border-white/30 focus:outline-none focus:border-white/50 transition-all"
+                    />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60" />
+                  </div>
+                  
+                  {/* Notifications */}
+                  <button className="relative p-2.5 bg-white/20 backdrop-blur-md rounded-full border border-white/30 hover:bg-white/30 transition-all">
+                    <Bell className="w-5 h-5 text-white" />
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                  </button>
+                  
+                  {/* Export Button */}
+                  <button className="px-6 py-2.5 bg-white/20 backdrop-blur-md text-white rounded-full border border-white/30 hover:bg-white/30 transition-all font-medium text-sm">
+                    Export
+                  </button>
+                  
+                  {/* Share Button */}
+                  <button className="px-6 py-2.5 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-all font-medium text-sm">
+                    Share
+                  </button>
+                </div>
+              </motion.div>
             </div>
             
-            {/* Page Navigation Tabs */}
-            <div className="flex gap-2 panel-elevated shadow-lg p-1.5 inline-flex">
-              <button
-                onClick={() => setCurrentPage('table')}
-                className={`px-6 py-2 transition-all flex items-center gap-2 btn-squared ${
-                  currentPage === 'table'
-                    ? 'gradient-keenan text-white shadow-md'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
-                }`}
-              >
-                <TableIcon className="w-4 h-4" />
-                Financial Table
-              </button>
-              <button
-                onClick={() => setCurrentPage('charts')}
-                className={`px-6 py-2 transition-all flex items-center gap-2 btn-squared ${
-                  currentPage === 'charts'
-                    ? 'gradient-keenan text-white shadow-md'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
-                }`}
-              >
-                <ChartBar className="w-4 h-4" />
-                Charts & Analytics
-              </button>
+            {/* Time Period Selector */}
+            <div className="bg-white border-b px-8 py-3">
+              <div className="flex items-center justify-between">
+                <select className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                  <option>All time</option>
+                  <option>Last 12 months</option>
+                  <option>Last 6 months</option>
+                  <option>Last month</option>
+                  <option>Custom range</option>
+                </select>
+                
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500">View:</span>
+                  <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
+                    <button className="px-3 py-1.5 bg-white rounded text-sm font-medium text-gray-700 shadow-sm">
+                      Monthly
+                    </button>
+                    <button className="px-3 py-1.5 rounded text-sm font-medium text-gray-500 hover:text-gray-700">
+                      Quarterly
+                    </button>
+                    <button className="px-3 py-1.5 rounded text-sm font-medium text-gray-500 hover:text-gray-700">
+                      Yearly
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* Dashboard Summary Tiles - Always visible */}
-          <div className="max-w-7xl mx-auto">
-            <DashboardSummaryTiles 
-              budgetData={budgetData?.rows || []} 
-              claimsData={claimsData?.rows || []}
-            />
-          </div>
+            {/* Main Content Area */}
+            <div className="p-8">
+              {/* Dashboard Summary Tiles */}
+              <DashboardSummaryTiles 
+                budgetData={budgetData?.rows || []} 
+                claimsData={claimsData?.rows || []}
+              />
 
-          {/* Page Content */}
-          <AnimatePresence mode="wait">
-            {currentPage === 'table' ? (
-              <motion.div
-                key="table-page"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.3 }}
-                className="max-w-7xl mx-auto"
-              >
-                <FinancialDataTable 
-                  budgetData={budgetData?.rows || []} 
-                  claimsData={claimsData?.rows || []}
-                />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="charts-page"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6"
-              >
+              {/* Page Content */}
+              <AnimatePresence mode="wait">
+                {(currentPage === 'table' || currentPage === 'dashboard') ? (
+                  <motion.div
+                    key="table-page"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <FinancialDataTable 
+                      budgetData={budgetData?.rows || []} 
+                      claimsData={claimsData?.rows || []}
+                    />
+                  </motion.div>
+                ) : currentPage === 'charts' || currentPage === 'analytics' ? (
+                  <motion.div
+                    key="charts-page"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+                  >
                 {/* Tile 1: Budget vs Expenses Chart with Recharts */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -301,43 +308,21 @@ const Home: React.FC = () => {
                   className="panel-elevated rounded-xl shadow-lg p-6 overflow-hidden"
                 >
                   <HCCDataTable data={claimsData?.rows || []} />
+                  </motion.div>
                 </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Summary Stats - Only show on charts page */}
-          {currentPage === 'charts' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="max-w-7xl mx-auto mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4"
-            >
-              <div className="panel-elevated rounded-lg shadow-lg p-4">
-                <p className="text-sm text-gray-600 font-body">Total Budget Rows</p>
-                <p className="text-2xl font-bold text-cyan-600 font-data">
-                  {budgetData?.rowCount || 0}
-                </p>
-              </div>
-              <div className="panel-elevated rounded-lg shadow-lg p-4">
-                <p className="text-sm text-gray-600 font-body">Total Claims</p>
-                <p className="text-2xl font-bold text-teal-600 font-data">
-                  {claimsData?.rowCount || 0}
-                </p>
-              </div>
-              <div className="panel-elevated rounded-lg shadow-lg p-4">
-                <p className="text-sm text-gray-600 font-body">Data Columns</p>
-                <p className="text-2xl font-bold text-cyan-700 font-data">
-                  {(budgetData?.headers.length || 0) + (claimsData?.headers.length || 0)}
-                </p>
-              </div>
-              <div className="panel-elevated rounded-lg shadow-lg p-4">
-                <p className="text-sm text-gray-600 font-body">Files Loaded</p>
-                <p className="text-2xl font-bold text-teal-700 font-data">2</p>
-              </div>
-            </motion.div>
-          )}
+                ) : (
+                  <motion.div
+                    key="default-page"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center justify-center h-96"
+                  >
+                    <p className="text-gray-500">Select a page from the sidebar</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

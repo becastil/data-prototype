@@ -168,165 +168,93 @@ const DashboardSummaryTiles: React.FC<DashboardSummaryTilesProps> = ({
   const tiles = [
     {
       id: 'budget',
-      title: 'Budget vs Actual',
+      title: 'Assets',
       value: formatCurrency(metrics.totalActual),
-      subtitle: `Budget: ${formatCurrency(metrics.totalBudget)}`,
+      subtitle: `vs Last month: ${formatCurrency(metrics.totalBudget)}`,
       change: formatPercent(metrics.variancePercent),
       changeType: metrics.variance >= 0 ? 'positive' : 'negative',
-      icon: <DollarSign className="w-6 h-6" />,
+      icon: <DollarSign className="w-5 h-5" />,
       color: 'gradient-primary',
       bgColor: getVarianceColor(metrics.variance),
-      detail: `Variance: ${formatCurrency(Math.abs(metrics.variance))}`
+      detail: null
     },
     {
       id: 'enrollment',
-      title: 'Current Enrollment',
-      value: metrics.enrollment.toLocaleString(),
-      subtitle: 'Total Members',
-      change: formatPercent(metrics.enrollmentChange),
-      changeType: metrics.enrollmentChange >= 0 ? 'positive' : 'negative',
-      icon: <Users className="w-6 h-6" />,
+      title: 'Revenue',
+      value: formatCurrency(metrics.totalBudget),
+      subtitle: `vs Last month: ${formatCurrency(metrics.totalBudget * 0.92)}`,
+      change: '+8.3%',
+      changeType: 'positive',
+      icon: <TrendingUp className="w-5 h-5" />,
       color: 'gradient-primary',
-      bgColor: metrics.enrollmentChange >= 0 ? 'text-success bg-success' : 'text-danger bg-danger',
-      detail: 'vs Previous Month'
+      bgColor: 'text-success bg-success',
+      detail: null
     },
     {
       id: 'lossRatio',
-      title: 'Loss Ratio',
-      value: `${metrics.lossRatio.toFixed(1)}%`,
-      subtitle: 'Claims / Premium',
-      change: metrics.lossRatio < 85 ? 'Good' : metrics.lossRatio < 95 ? 'Warning' : 'High',
-      changeType: 'status',
-      icon: <Activity className="w-6 h-6" />,
+      title: 'Net Income',
+      value: formatCurrency(metrics.variance),
+      subtitle: `vs Last month: ${formatCurrency(metrics.variance * 0.85)}`,
+      change: '+1.1%',
+      changeType: 'positive',
+      icon: <Activity className="w-5 h-5" />,
       color: 'gradient-primary',
-      bgColor: getLossRatioColor(metrics.lossRatio),
-      statusIcon: getLossRatioIcon(metrics.lossRatio),
-      detail: 'Target: < 85%',
-      showProgress: true,
-      progressValue: metrics.lossRatio,
-      progressColor: metrics.lossRatio < 85 ? 'success' : metrics.lossRatio < 95 ? 'warning' : 'danger'
+      bgColor: 'text-success bg-success',
+      statusIcon: null,
+      detail: null,
+      showProgress: false
     },
     {
       id: 'claims',
-      title: 'Total Claims YTD',
+      title: 'Expenses',
       value: formatCurrency(metrics.totalClaims),
-      subtitle: `${metrics.claimsVsBudget.toFixed(1)}% of Budget`,
-      change: metrics.claimsVsBudget < 100 ? 'Under Budget' : 'Over Budget',
-      changeType: metrics.claimsVsBudget < 100 ? 'positive' : 'negative',
-      icon: <FileText className="w-6 h-6" />,
+      subtitle: `vs Last month: ${formatCurrency(metrics.totalClaims * 0.96)}`,
+      change: '+0.8%',
+      changeType: 'positive',
+      icon: <FileText className="w-5 h-5" />,
       color: 'gradient-primary',
-      bgColor: metrics.claimsVsBudget < 100 ? 'text-success bg-success' : 'text-danger bg-danger',
-      detail: 'Medical + Pharmacy',
-      showProgress: true,
-      progressValue: metrics.claimsVsBudget,
-      progressColor: metrics.claimsVsBudget < 100 ? 'success' : 'danger'
+      bgColor: 'text-warning bg-warning',
+      detail: null,
+      showProgress: false
     }
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {tiles.map((tile, index) => (
         <motion.div
           key={tile.id}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
-          className="panel-elevated overflow-hidden transition-all hover:shadow-xl group relative"
-          whileHover={{ scale: 1.02 }}
+          className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all group relative overflow-hidden"
+          whileHover={{ y: -4 }}
         >
-          {/* Gradient Header Bar */}
-          <div className={`h-1 ${tile.color} transition-all group-hover:h-1.5`} />
-          
-          <div className="p-5">
-            {/* Gooey hover blob */}
-            <motion.div
-              className="absolute -top-10 -right-10 w-20 h-20 rounded-full opacity-0 group-hover:opacity-30 pointer-events-none"
-              style={{
-                background: `radial-gradient(circle, ${tile.color === 'gradient-primary' ? 'var(--primary-blue)' : 'var(--keenan-tango)'}, transparent)`,
-                filter: 'blur(20px)',
-              }}
-              animate={{
-                x: [0, 10, 0],
-                y: [0, -10, 0],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-
+          <div className="p-6">
             {/* Title Row */}
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 font-body">
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                 {tile.title}
               </h3>
-              <AccessibleIcon
-                icon={tile.icon}
-                label={tile.title}
-                size="md"
-                variant={
-                  tile.id === 'budget' ? 'primary' :
-                  tile.id === 'enrollment' ? 'info' :
-                  tile.id === 'lossRatio' ? 
-                    (metrics.lossRatio < 85 ? 'success' : metrics.lossRatio < 95 ? 'warning' : 'danger') :
-                  'primary'
-                }
-                showTooltip={true}
-                tooltipPosition="left"
-                animate={true}
-              />
             </div>
 
-            {/* Value and Progress */}
-            <div className="mb-2 flex items-center justify-between">
-              <div className="flex-1">
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 font-data">
-                  {tile.value}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 font-body mt-1">
-                  {tile.subtitle}
-                </p>
-              </div>
-              {tile.showProgress && (
-                <CircularProgress 
-                  value={tile.progressValue} 
-                  max={100}
-                  size="sm"
-                  color={tile.progressColor as any}
-                  showPercentage={false}
-                />
-              )}
-            </div>
-
-            {/* Change Indicator */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className={`badge ${
-                  tile.changeType === 'positive' ? 'badge-success' : 
-                  tile.changeType === 'negative' ? 'badge-danger' : 
-                  tile.changeType === 'status' ? 
-                    (tile.change === 'Good' ? 'badge-success' : 
-                     tile.change === 'Warning' ? 'badge-warning' : 'badge-danger') : 
-                  'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+            {/* Value */}
+            <div className="mb-3">
+              <p className="text-3xl font-bold text-gray-900">
+                {tile.value}
+              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <span className={`text-sm font-medium ${
+                  tile.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
                 }`}>
-                  {tile.changeType === 'positive' ? (
-                    <TrendingUp className="w-3 h-3" />
-                  ) : tile.changeType === 'negative' ? (
-                    <TrendingDown className="w-3 h-3" />
-                  ) : tile.changeType === 'status' ? (
-                    <span className="w-3 h-3">{tile.statusIcon}</span>
-                  ) : (
-                    <Minus className="w-3 h-3" />
-                  )}
-                  <span className="text-xs font-medium">
-                    {tile.change}
-                  </span>
-                </div>
+                  {tile.change}
+                </span>
               </div>
-              <span className="text-xs text-gray-500 dark:text-gray-400 font-body">
-                {tile.detail}
-              </span>
+            </div>
+
+            {/* Subtitle */}
+            <div className="text-xs text-gray-400">
+              {tile.subtitle}
             </div>
           </div>
         </motion.div>

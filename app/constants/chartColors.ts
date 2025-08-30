@@ -36,32 +36,32 @@ export const getChartColors = () => {
   };
 };
 
-// Static colors for SSR and fallback - Keenan Brand Aligned
+// Static colors for SSR and fallback - CEO Dashboard Palette
 export const chartColors = {
-  // Financial chart colors - Brand palette
-  totalFixedCost: '#10B981',     // Green - positive/fixed
-  stopLossReimb: '#00aeef',      // Gallagher Blue - insurance
-  rxRebates: '#0032E1',          // AP Blue - rebates
-  medicalClaims: '#e87823',      // Keenan Tango - claims
-  rx: '#FF8400',                 // Gallagher Orange - pharmacy
-  budget: '#00205c',             // Keenan Midnight - budget line
+  // Financial chart colors - Teal/Green/Cyan palette
+  totalFixedCost: '#14B8A6',     // Teal
+  stopLossReimb: '#10B981',      // Emerald
+  rxRebates: '#22D3EE',          // Cyan
+  medicalClaims: '#06B6D4',      // Dark Cyan
+  rx: '#0EA5E9',                 // Sky
+  budget: '#F59E0B',             // Amber/Orange - budget line
   
   // Enrollment colors
-  enrollment: '#00205c',         // Keenan Midnight - primary
-  activeEmployees: '#10B981',    // Green - active/healthy
-  dependents: '#e87823',         // Keenan Tango - dependents
-  retirees: '#575A5D',           // Gallagher Charcoal - retired
+  enrollment: '#14B8A6',         // Teal - primary
+  activeEmployees: '#10B981',    // Emerald - active
+  dependents: '#F59E0B',         // Amber - dependents
+  retirees: '#94A3B8',           // Slate - retired
   
   // UI colors
-  gridColor: '#e6e7e8',          // Gallagher Light Charcoal
-  textColor: '#00205c',          // Keenan Midnight
-  backgroundColor: '#FAFBFC',
+  gridColor: '#E5E7EB',          // Gray 200
+  textColor: '#374151',          // Gray 700
+  backgroundColor: '#FFFFFF',
   
-  // Status colors - Brand aligned
-  positive: '#10B981',           // Green
-  negative: '#DC2626',           // Red
-  warning: '#e87823',            // Keenan Tango
-  info: '#00aeef',               // Gallagher Blue
+  // Status colors - CEO Dashboard aligned
+  positive: '#10B981',           // Emerald
+  negative: '#EF4444',           // Red
+  warning: '#F59E0B',            // Amber
+  info: '#06B6D4',               // Cyan
 };
 
 export const chartTheme = {
