@@ -8,6 +8,10 @@ import HCCDataTable from './components/HCCDataTable';
 import RechartsBudgetChart from './components/RechartsBudgetChart';
 import MUIEnrollmentChart from './components/MUIEnrollmentChart';
 import FinancialDataTable from './components/FinancialDataTable';
+import DashboardSummaryTiles from './components/DashboardSummaryTiles';
+import ClaimsBreakdownChart from './components/ClaimsBreakdownChart';
+import MedicalClaimsBreakdownChart from './components/MedicalClaimsBreakdownChart';
+import DomesticVsNonDomesticChart from './components/DomesticVsNonDomesticChart';
 import { ParsedCSVData } from './components/CSVLoader';
 import { RotateCcw, TableIcon, ChartBar, ArrowLeft, ArrowRight } from 'lucide-react';
 
@@ -67,7 +71,7 @@ const Home: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6"
+          className="min-h-screen gradient-teal-smooth p-6"
         >
           {/* Header */}
           <div className="max-w-7xl mx-auto mb-6">
@@ -75,7 +79,7 @@ const Home: React.FC = () => {
               <motion.h1
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                className="text-3xl font-bold text-gray-800"
+                className="text-3xl font-bold text-white font-heading drop-shadow-lg"
               >
                 Reporting Dashboard
               </motion.h1>
@@ -85,7 +89,7 @@ const Home: React.FC = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleReset}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-lg hover:from-cyan-700 hover:to-teal-700 transition-all shadow-lg flex items-center gap-2"
               >
                 <RotateCcw className="w-4 h-4" />
                 Upload New Data
@@ -93,13 +97,13 @@ const Home: React.FC = () => {
             </div>
             
             {/* Page Navigation Tabs */}
-            <div className="flex gap-2 bg-white rounded-lg shadow-sm p-1 inline-flex">
+            <div className="flex gap-2 panel-elevated rounded-lg shadow-lg p-1 inline-flex">
               <button
                 onClick={() => setCurrentPage('table')}
                 className={`px-6 py-2 rounded-lg transition-all flex items-center gap-2 ${
                   currentPage === 'table'
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'text-gray-600 hover:bg-gray-100'
+                    ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
+                    : 'text-gray-600 hover:bg-gray-100/50'
                 }`}
               >
                 <TableIcon className="w-4 h-4" />
@@ -109,14 +113,22 @@ const Home: React.FC = () => {
                 onClick={() => setCurrentPage('charts')}
                 className={`px-6 py-2 rounded-lg transition-all flex items-center gap-2 ${
                   currentPage === 'charts'
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'text-gray-600 hover:bg-gray-100'
+                    ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
+                    : 'text-gray-600 hover:bg-gray-100/50'
                 }`}
               >
                 <ChartBar className="w-4 h-4" />
                 Charts & Analytics
               </button>
             </div>
+          </div>
+
+          {/* Dashboard Summary Tiles - Always visible */}
+          <div className="max-w-7xl mx-auto">
+            <DashboardSummaryTiles 
+              budgetData={budgetData?.rows || []} 
+              claimsData={claimsData?.rows || []}
+            />
           </div>
 
           {/* Page Content */}
@@ -153,31 +165,67 @@ const Home: React.FC = () => {
                   <RechartsBudgetChart data={budgetData?.rows || []} />
                 </motion.div>
 
-                {/* Tile 2: Cost Band Scatter Chart */}
+                {/* Tile 2: Claims Breakdown Chart */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="bg-white rounded-xl shadow-lg p-6"
                 >
-                  <CostBandScatterChart data={claimsData?.rows || []} />
+                  <ClaimsBreakdownChart 
+                    budgetData={budgetData?.rows || []} 
+                    claimsData={claimsData?.rows || []}
+                  />
                 </motion.div>
 
-                {/* Tile 3: Enrollment Line Chart with MUI */}
+                {/* Tile 3: Medical Claims Breakdown Pie Chart */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
                 >
-                  <MUIEnrollmentChart data={budgetData?.rows || []} />
+                  <MedicalClaimsBreakdownChart 
+                    budgetData={budgetData?.rows || []} 
+                    claimsData={claimsData?.rows || []}
+                  />
                 </motion.div>
 
-                {/* Tile 4: HCC Data Table */}
+                {/* Tile 4: Cost Band Scatter Chart */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="bg-white rounded-xl shadow-lg p-6 overflow-hidden"
+                  className="panel-elevated rounded-xl shadow-lg p-6"
+                >
+                  <CostBandScatterChart data={claimsData?.rows || []} />
+                </motion.div>
+
+                {/* Tile 5: Enrollment Line Chart with MUI */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <MUIEnrollmentChart data={budgetData?.rows || []} />
+                </motion.div>
+
+                {/* Tile 6: Domestic vs Non-Domestic Chart */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  <DomesticVsNonDomesticChart 
+                    budgetData={budgetData?.rows || []} 
+                    claimsData={claimsData?.rows || []}
+                  />
+                </motion.div>
+
+                {/* Tile 7: HCC Data Table */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 }}
+                  className="panel-elevated rounded-xl shadow-lg p-6 overflow-hidden"
                 >
                   <HCCDataTable data={claimsData?.rows || []} />
                 </motion.div>
@@ -193,27 +241,27 @@ const Home: React.FC = () => {
               transition={{ delay: 0.5 }}
               className="max-w-7xl mx-auto mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4"
             >
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">Total Budget Rows</p>
-                <p className="text-2xl font-bold text-blue-600">
+              <div className="panel-elevated rounded-lg shadow-lg p-4">
+                <p className="text-sm text-gray-600 font-body">Total Budget Rows</p>
+                <p className="text-2xl font-bold text-cyan-600 font-data">
                   {budgetData?.rowCount || 0}
                 </p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">Total Claims</p>
-                <p className="text-2xl font-bold text-purple-600">
+              <div className="panel-elevated rounded-lg shadow-lg p-4">
+                <p className="text-sm text-gray-600 font-body">Total Claims</p>
+                <p className="text-2xl font-bold text-teal-600 font-data">
                   {claimsData?.rowCount || 0}
                 </p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">Data Columns</p>
-                <p className="text-2xl font-bold text-green-600">
+              <div className="panel-elevated rounded-lg shadow-lg p-4">
+                <p className="text-sm text-gray-600 font-body">Data Columns</p>
+                <p className="text-2xl font-bold text-cyan-700 font-data">
                   {(budgetData?.headers.length || 0) + (claimsData?.headers.length || 0)}
                 </p>
               </div>
-              <div className="bg-white rounded-lg shadow p-4">
-                <p className="text-sm text-gray-600">Files Loaded</p>
-                <p className="text-2xl font-bold text-orange-600">2</p>
+              <div className="panel-elevated rounded-lg shadow-lg p-4">
+                <p className="text-sm text-gray-600 font-body">Files Loaded</p>
+                <p className="text-2xl font-bold text-teal-700 font-data">2</p>
               </div>
             </motion.div>
           )}

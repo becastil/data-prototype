@@ -3,13 +3,43 @@
 :root {
   --background: #FAF8F3;
   --foreground: #2C2C2C;
+  
+  /* Gradient Colors */
+  --gradient-start: #E0F7FA;  /* Light teal/turquoise */
+  --gradient-mid: #B2EBF2;    /* Soft cyan */
+  --gradient-end: #80DEEA;    /* Deeper blue-teal */
+  --gradient-accent: #4DD0E1; /* Deep accent for emphasis */
+  
+  /* Typography System */
+  --font-heading: 'TASA Orbiter Display', system-ui, -apple-system, sans-serif;
+  --font-subheading: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --font-body: 'Open Sans', system-ui, -apple-system, sans-serif;
+  --font-data: 'Roboto Mono', 'Courier New', monospace;
+  
+  /* Font Weights */
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+  
+  /* Font Sizes */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 1.875rem;  /* 30px */
+  --text-4xl: 2.25rem;   /* 36px */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-jura);
-  --font-mono: var(--font-jura);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-data);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +52,184 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-jura), sans-serif;
+  font-family: var(--font-body);
+  font-weight: var(--weight-regular);
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+
+/* Typography Classes */
+
+/* Headers - TASA Orbiter Display */
+h1, .h1 {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-3xl);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+h2, .h2 {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-2xl);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+/* Subheaders - Montserrat */
+h3, .h3 {
+  font-family: var(--font-subheading);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-xl);
+  line-height: 1.4;
+}
+
+h4, .h4 {
+  font-family: var(--font-subheading);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-lg);
+  line-height: 1.4;
+}
+
+h5, .h5 {
+  font-family: var(--font-subheading);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-base);
+  line-height: 1.5;
+}
+
+/* Body Text - Open Sans */
+p, .body-text {
+  font-family: var(--font-body);
+  font-weight: var(--weight-regular);
+  line-height: 1.6;
+}
+
+/* Data & Tables - Roboto Mono */
+.data-text, 
+.table-cell,
+.metric-value,
+table td,
+.font-mono {
+  font-family: var(--font-data);
+  font-weight: var(--weight-regular);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Utility Classes */
+.font-heading {
+  font-family: var(--font-heading) !important;
+}
+
+.font-subheading {
+  font-family: var(--font-subheading) !important;
+}
+
+.font-body {
+  font-family: var(--font-body) !important;
+}
+
+.font-data {
+  font-family: var(--font-data) !important;
+}
+
+/* Button Text */
+button, .button {
+  font-family: var(--font-subheading);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.02em;
+}
+
+/* Navigation Text */
+nav, .nav-item {
+  font-family: var(--font-subheading);
+  font-weight: var(--weight-medium);
+}
+
+/* Labels and Small Text */
+label, .label, .caption {
+  font-family: var(--font-body);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-sm);
+  letter-spacing: 0.01em;
+}
+
+/* Input Fields */
+input, textarea, select {
+  font-family: var(--font-body);
+  font-weight: var(--weight-regular);
+}
+
+/* Gradient Backgrounds */
+.gradient-teal {
+  background: linear-gradient(180deg, 
+    var(--gradient-start) 0%, 
+    var(--gradient-mid) 50%, 
+    var(--gradient-end) 100%
+  );
+  min-height: 100vh;
+}
+
+.gradient-teal-diagonal {
+  background: linear-gradient(135deg, 
+    var(--gradient-start) 0%, 
+    var(--gradient-mid) 40%, 
+    var(--gradient-end) 100%
+  );
+  min-height: 100vh;
+}
+
+.gradient-teal-radial {
+  background: radial-gradient(ellipse at top center, 
+    var(--gradient-start) 0%, 
+    var(--gradient-mid) 50%, 
+    var(--gradient-end) 100%
+  );
+  min-height: 100vh;
+}
+
+/* Enhanced gradient with multiple stops for smoother transition */
+.gradient-teal-smooth {
+  background: linear-gradient(180deg,
+    #E0F7FA 0%,      /* Light teal */
+    #B2EBF2 25%,     /* Soft cyan */
+    #80DEEA 50%,     /* Medium blue-teal */
+    #4DD0E1 75%,     /* Deeper blue-teal */
+    #26C6DA 100%     /* Deep teal */
+  );
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Subtle animated gradient */
+@keyframes gradientShift {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 0% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+.gradient-animated {
+  background: linear-gradient(180deg,
+    #E0F7FA,
+    #B2EBF2,
+    #80DEEA,
+    #4DD0E1,
+    #80DEEA,
+    #B2EBF2,
+    #E0F7FA
+  );
+  background-size: 100% 200%;
+  animation: gradientShift 15s ease infinite;
+  min-height: 100vh;
+}
+
+/* Panel elevation for better contrast against gradient */
+.panel-elevated {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+              0 2px 4px -1px rgba(0, 0, 0, 0.06),
+              0 0 0 1px rgba(255, 255, 255, 0.5) inset;
 }

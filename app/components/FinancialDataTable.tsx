@@ -32,23 +32,54 @@ interface LineItem {
 }
 
 const LINE_ITEMS: LineItem[] = [
-  { key: 'medical_plans', label: 'Medical Plans', category: 'expense', isExpandable: true, children: ['medical_claims', 'medical_admin'] },
-  { key: 'medical_claims', label: '  Medical Claims', category: 'expense' },
+  // Medical Plans Section with detailed breakdown
+  { key: 'medical_plans', label: 'Medical Plans', category: 'expense', isExpandable: true, 
+    children: ['medical_claims', 'medical_admin'] },
+  { key: 'medical_claims', label: '  Medical Claims', category: 'expense', isExpandable: true,
+    children: ['inpatient', 'outpatient', 'professional', 'emergency', 'domestic_medical', 'non_domestic_medical'] },
+  { key: 'inpatient', label: '    Inpatient', category: 'expense' },
+  { key: 'outpatient', label: '    Outpatient', category: 'expense' },
+  { key: 'professional', label: '    Professional', category: 'expense' },
+  { key: 'emergency', label: '    Emergency', category: 'expense' },
+  { key: 'domestic_medical', label: '    Domestic Claims', category: 'expense' },
+  { key: 'non_domestic_medical', label: '    Non-Domestic Claims', category: 'expense' },
   { key: 'medical_admin', label: '  Medical Admin', category: 'expense' },
-  { key: 'pharmacy_claims', label: 'Pharmacy Claims', category: 'expense', isExpandable: true, children: ['rx_claims', 'specialty_rx'] },
-  { key: 'rx_claims', label: '  Rx Claims', category: 'expense' },
+  
+  // Pharmacy Section with breakdown
+  { key: 'pharmacy_claims', label: 'Pharmacy Claims', category: 'expense', isExpandable: true, 
+    children: ['rx_claims', 'specialty_rx', 'mail_order', 'domestic_pharmacy', 'non_domestic_pharmacy'] },
+  { key: 'rx_claims', label: '  Retail Rx', category: 'expense' },
   { key: 'specialty_rx', label: '  Specialty Rx', category: 'expense' },
-  { key: 'fixed_costs', label: 'Fixed Costs', category: 'expense', isExpandable: true, children: ['admin_fees', 'stop_loss_premium'] },
+  { key: 'mail_order', label: '  Mail Order Rx', category: 'expense' },
+  { key: 'domestic_pharmacy', label: '  Domestic Pharmacy', category: 'expense' },
+  { key: 'non_domestic_pharmacy', label: '  Non-Domestic Pharmacy', category: 'expense' },
+  
+  // Fixed Costs Section
+  { key: 'fixed_costs', label: 'Fixed Costs', category: 'expense', isExpandable: true, 
+    children: ['admin_fees', 'stop_loss_premium', 'wellness_programs'] },
   { key: 'admin_fees', label: '  Admin Fees', category: 'expense' },
   { key: 'stop_loss_premium', label: '  Stop Loss Premium', category: 'expense' },
+  { key: 'wellness_programs', label: '  Wellness Programs', category: 'expense' },
+  
+  // Revenue Items
   { key: 'stop_loss_reimb', label: 'Stop Loss Reimbursements', category: 'revenue' },
   { key: 'pharmacy_rebates', label: 'Pharmacy Rebates', category: 'revenue' },
+  { key: 'other_credits', label: 'Other Credits', category: 'revenue' },
+  
+  // Geographic Breakdown Section
+  { key: 'geographic_breakdown', label: 'Geographic Breakdown', category: 'expense', isExpandable: true,
+    children: ['total_domestic', 'total_non_domestic'] },
+  { key: 'total_domestic', label: '  Total Domestic', category: 'expense' },
+  { key: 'total_non_domestic', label: '  Total Non-Domestic', category: 'expense' },
+  
+  // Totals and Analysis
   { key: 'total_expenses', label: 'Total Expenses', category: 'total' },
   { key: 'total_revenues', label: 'Total Revenues', category: 'total' },
   { key: 'net_cost', label: 'Net Cost', category: 'total' },
   { key: 'budget', label: 'Budget', category: 'budget' },
   { key: 'variance', label: 'Variance (Budget - Net)', category: 'total' },
   { key: 'variance_percent', label: 'Variance %', category: 'total' },
+  { key: 'loss_ratio', label: 'Loss Ratio %', category: 'total' },
 ];
 
 type DateRangeType = 'rolling12' | 'ytd' | 'custom' | 'all';
@@ -129,37 +160,106 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
           return parseFloat(String(value).replace(/[$,]/g, '')) || 0;
         };
 
-        // Medical Plans
-        const medicalClaims = parseValue(row['Medical Claims'] || row['medical_claims'] || 0);
+        // Medical Plans with detailed breakdown
+        const inpatient = parseValue(row['Inpatient'] || row['inpatient'] || 0);
+        const outpatient = parseValue(row['Outpatient'] || row['outpatient'] || 0);
+        const professional = parseValue(row['Professional'] || row['professional'] || 0);
+        const emergency = parseValue(row['Emergency'] || row['emergency'] || 0);
+        
+        // Geographic breakdown for medical claims
+        const domesticMedical = parseValue(row['Domestic Medical'] || row['domestic_medical'] || 0);
+        const nonDomesticMedical = parseValue(row['Non-Domestic Medical'] || row['non_domestic_medical'] || 0);
+        
+        // If we have detailed breakdown, use it
+        let medicalClaims = 0;
+        if (inpatient || outpatient || professional || emergency) {
+          matrix['inpatient'][month] = inpatient;
+          matrix['outpatient'][month] = outpatient;
+          matrix['professional'][month] = professional;
+          matrix['emergency'][month] = emergency;
+          medicalClaims = inpatient + outpatient + professional + emergency;
+        } else {
+          // Fall back to generic medical claims if no breakdown available
+          medicalClaims = parseValue(row['Medical Claims'] || row['medical_claims'] || 0);
+          // Estimate breakdown (you can adjust these percentages based on typical distributions)
+          matrix['inpatient'][month] = medicalClaims * 0.40;  // 40% typically inpatient
+          matrix['outpatient'][month] = medicalClaims * 0.35; // 35% outpatient
+          matrix['professional'][month] = medicalClaims * 0.20; // 20% professional
+          matrix['emergency'][month] = medicalClaims * 0.05;  // 5% emergency
+        }
+        
+        // If geographic data is available, use it; otherwise estimate
+        if (domesticMedical || nonDomesticMedical) {
+          matrix['domestic_medical'][month] = domesticMedical;
+          matrix['non_domestic_medical'][month] = nonDomesticMedical;
+        } else {
+          // Estimate domestic vs non-domestic split (typically 85% domestic, 15% non-domestic)
+          matrix['domestic_medical'][month] = medicalClaims * 0.85;
+          matrix['non_domestic_medical'][month] = medicalClaims * 0.15;
+        }
+        
         const medicalAdmin = parseValue(row['Medical Admin'] || row['medical_admin'] || 0);
         matrix['medical_claims'][month] = medicalClaims;
         matrix['medical_admin'][month] = medicalAdmin;
         matrix['medical_plans'][month] = medicalClaims + medicalAdmin;
 
-        // Pharmacy
-        const rxClaims = parseValue(row['Rx'] || row['Pharmacy'] || row['rx_claims'] || 0);
+        // Pharmacy with detailed breakdown
+        const retailRx = parseValue(row['Retail Rx'] || row['retail_rx'] || row['Rx'] || 0);
         const specialtyRx = parseValue(row['Specialty Rx'] || row['specialty_rx'] || 0);
-        matrix['rx_claims'][month] = rxClaims;
+        const mailOrder = parseValue(row['Mail Order'] || row['mail_order'] || 0);
+        
+        // Geographic breakdown for pharmacy
+        const domesticPharmacy = parseValue(row['Domestic Pharmacy'] || row['domestic_pharmacy'] || 0);
+        const nonDomesticPharmacy = parseValue(row['Non-Domestic Pharmacy'] || row['non_domestic_pharmacy'] || 0);
+        
+        // If we don't have mail order data, estimate it
+        if (!mailOrder && retailRx) {
+          matrix['rx_claims'][month] = retailRx * 0.7;  // 70% retail
+          matrix['mail_order'][month] = retailRx * 0.3; // 30% mail order
+        } else {
+          matrix['rx_claims'][month] = retailRx;
+          matrix['mail_order'][month] = mailOrder;
+        }
+        
         matrix['specialty_rx'][month] = specialtyRx;
-        matrix['pharmacy_claims'][month] = rxClaims + specialtyRx;
+        const totalPharmacy = matrix['rx_claims'][month] + specialtyRx + matrix['mail_order'][month];
+        matrix['pharmacy_claims'][month] = totalPharmacy;
+        
+        // If geographic data is available, use it; otherwise estimate
+        if (domesticPharmacy || nonDomesticPharmacy) {
+          matrix['domestic_pharmacy'][month] = domesticPharmacy;
+          matrix['non_domestic_pharmacy'][month] = nonDomesticPharmacy;
+        } else {
+          // Estimate domestic vs non-domestic split for pharmacy (typically 90% domestic, 10% non-domestic)
+          matrix['domestic_pharmacy'][month] = totalPharmacy * 0.90;
+          matrix['non_domestic_pharmacy'][month] = totalPharmacy * 0.10;
+        }
 
-        // Fixed Costs
+        // Fixed Costs with wellness programs
         const adminFees = parseValue(row['Admin Fees'] || row['admin_fees'] || 0);
         const stopLossPremium = parseValue(row['Stop Loss Premium'] || row['stop_loss_premium'] || 0);
+        const wellnessPrograms = parseValue(row['Wellness Programs'] || row['wellness_programs'] || 0);
         matrix['admin_fees'][month] = adminFees;
         matrix['stop_loss_premium'][month] = stopLossPremium;
-        matrix['fixed_costs'][month] = adminFees + stopLossPremium;
+        matrix['wellness_programs'][month] = wellnessPrograms;
+        matrix['fixed_costs'][month] = adminFees + stopLossPremium + wellnessPrograms;
 
         // Revenues
         matrix['stop_loss_reimb'][month] = parseValue(row['Stop Loss Reimbursements'] || row['stop_loss_reimb'] || 0);
         matrix['pharmacy_rebates'][month] = parseValue(row['Rx Rebates'] || row['pharmacy_rebates'] || 0);
+        matrix['other_credits'][month] = parseValue(row['Other Credits'] || row['other_credits'] || 0);
 
         // Budget
         matrix['budget'][month] = parseValue(row['Budget'] || row['budget'] || 0);
+        
+        // Geographic totals
+        matrix['total_domestic'][month] = matrix['domestic_medical'][month] + matrix['domestic_pharmacy'][month];
+        matrix['total_non_domestic'][month] = matrix['non_domestic_medical'][month] + matrix['non_domestic_pharmacy'][month];
+        matrix['geographic_breakdown'][month] = matrix['total_domestic'][month] + matrix['total_non_domestic'][month];
 
         // Calculate totals
         const totalExpenses = matrix['medical_plans'][month] + matrix['pharmacy_claims'][month] + matrix['fixed_costs'][month];
-        const totalRevenues = matrix['stop_loss_reimb'][month] + matrix['pharmacy_rebates'][month];
+        const totalRevenues = matrix['stop_loss_reimb'][month] + matrix['pharmacy_rebates'][month] + matrix['other_credits'][month];
         const netCost = totalExpenses - totalRevenues;
         
         matrix['total_expenses'][month] = totalExpenses;
@@ -169,6 +269,11 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
         matrix['variance_percent'][month] = matrix['budget'][month] > 0 
           ? ((matrix['budget'][month] - netCost) / matrix['budget'][month]) * 100 
           : 0;
+        
+        // Calculate Loss Ratio (Claims / Premium)
+        // Loss Ratio = (Medical Claims + Pharmacy Claims) / (Net Cost) * 100
+        const totalClaims = matrix['medical_claims'][month] + matrix['pharmacy_claims'][month];
+        matrix['loss_ratio'][month] = netCost > 0 ? (totalClaims / netCost) * 100 : 0;
       });
     }
 
@@ -266,27 +371,57 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
     // Filter by expansion state
     const visibleItems: LineItem[] = [];
     items.forEach(item => {
-      // Skip child items if parent is not expanded
-      if (item.key.startsWith('  ')) {
-        const parentKey = LINE_ITEMS.find(parent => 
-          parent.children?.includes(item.key.trim())
-        )?.key;
-        if (parentKey && !expandedRows.has(parentKey)) {
-          return;
+      // Always show top-level items
+      if (!item.label.startsWith(' ')) {
+        visibleItems.push(item);
+        return;
+      }
+      
+      // Check if item is a child (has leading spaces)
+      const leadingSpaces = item.label.match(/^(\s+)/)?.[0].length || 0;
+      
+      if (leadingSpaces > 0) {
+        // Find the parent based on the hierarchy
+        let shouldShow = true;
+        
+        // For second-level items (2 spaces)
+        if (leadingSpaces === 2) {
+          const parent = LINE_ITEMS.find(p => p.children?.includes(item.key));
+          if (parent && !expandedRows.has(parent.key)) {
+            shouldShow = false;
+          }
+        }
+        
+        // For third-level items (4 spaces)
+        if (leadingSpaces === 4) {
+          // Check if both grandparent and parent are expanded
+          const parent = LINE_ITEMS.find(p => p.children?.includes(item.key));
+          if (parent && !expandedRows.has(parent.key)) {
+            shouldShow = false;
+          } else {
+            // Also check grandparent
+            const grandparent = LINE_ITEMS.find(gp => gp.children?.includes(parent?.key || ''));
+            if (grandparent && !expandedRows.has(grandparent.key)) {
+              shouldShow = false;
+            }
+          }
+        }
+        
+        if (shouldShow) {
+          visibleItems.push(item);
         }
       }
-      visibleItems.push(item);
     });
     
     return visibleItems;
   }, [searchTerm, expandedRows]);
 
   return (
-    <div className="w-full h-full flex flex-col bg-white rounded-xl shadow-lg">
+    <div className="w-full h-full flex flex-col panel-elevated rounded-xl shadow-xl">
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Financial Data Overview</h2>
+          <h2 className="text-xl font-semibold text-gray-800 font-heading">Financial Data Overview</h2>
           <div className="flex gap-2">
             <button
               onClick={() => setShowSettings(!showSettings)}
@@ -296,7 +431,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
             </button>
             <button
               onClick={exportToCSV}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-lg hover:from-cyan-700 hover:to-teal-700 transition-all shadow-md flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
               Export
@@ -313,40 +448,40 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
           <div className="flex gap-2">
             <button
               onClick={() => setDateRangeType('rolling12')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 dateRangeType === 'rolling12'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
+                  : 'bg-white/70 text-gray-700 hover:bg-white/90'
               }`}
             >
               Rolling 12 Months
             </button>
             <button
               onClick={() => setDateRangeType('ytd')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 dateRangeType === 'ytd'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
+                  : 'bg-white/70 text-gray-700 hover:bg-white/90'
               }`}
             >
               Plan YTD
             </button>
             <button
               onClick={() => setDateRangeType('all')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 dateRangeType === 'all'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
+                  : 'bg-white/70 text-gray-700 hover:bg-white/90'
               }`}
             >
               All Data
             </button>
             <button
               onClick={() => setDateRangeType('custom')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 dateRangeType === 'custom'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
+                  : 'bg-white/70 text-gray-700 hover:bg-white/90'
               }`}
             >
               Custom Range
@@ -423,20 +558,20 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
         <table className="w-full">
           <thead className="sticky top-0 z-20 bg-gray-50">
             <tr>
-              <th className="sticky left-0 z-30 bg-gray-50 px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider border-r border-gray-200 min-w-[200px]">
+              <th className="sticky left-0 z-30 bg-gray-50 px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider border-r border-gray-200 min-w-[200px] font-subheading">
                 Line Item
               </th>
               {matrixData.months.map((month, index) => 
                 !hiddenColumns.has(index) && (
-                  <th key={month} className="px-4 py-3 text-right text-xs font-semibold text-gray-900 uppercase tracking-wider whitespace-nowrap">
+                  <th key={month} className="px-4 py-3 text-right text-xs font-semibold text-gray-900 uppercase tracking-wider whitespace-nowrap font-subheading">
                     {month}
                   </th>
                 )
               )}
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-900 uppercase tracking-wider border-l border-gray-200 bg-gray-100">
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-900 uppercase tracking-wider border-l border-gray-200 bg-gray-100 font-subheading">
                 Total
               </th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-900 uppercase tracking-wider bg-gray-100">
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-900 uppercase tracking-wider bg-gray-100 font-subheading">
                 Average
               </th>
             </tr>
@@ -486,7 +621,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
                       <td
                         key={month}
                         onClick={() => setSelectedCell({ row: item.key, month })}
-                        className={`px-4 py-3 text-sm text-right text-gray-900 cursor-pointer transition-colors ${
+                        className={`px-4 py-3 text-sm text-right text-gray-900 cursor-pointer transition-colors font-data ${
                           getCellColor(value, item.category, isVariance)
                         } ${
                           selectedCell?.row === item.key && selectedCell?.month === month
@@ -494,7 +629,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
                             : ''
                         }`}
                       >
-                        {item.key === 'variance_percent' 
+                        {(item.key === 'variance_percent' || item.key === 'loss_ratio')
                           ? formatPercentage(value)
                           : item.category === 'revenue' || item.category === 'expense' || item.category === 'total' || item.category === 'budget'
                           ? formatCurrency(value)
@@ -508,18 +643,18 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
                       </td>
                     );
                   })}
-                  <td className={`px-4 py-3 text-sm text-right font-semibold border-l border-gray-200 bg-gray-50 ${
+                  <td className={`px-4 py-3 text-sm text-right font-semibold border-l border-gray-200 bg-gray-50 font-data ${
                     item.key === 'variance' && total !== 0 ? (total > 0 ? 'text-green-700' : 'text-red-700') : ''
                   }`}>
-                    {item.key === 'variance_percent'
-                      ? formatPercentage(average)
+                    {(item.key === 'variance_percent' || item.key === 'loss_ratio')
+                      ? formatPercentage(average)  // For percentages, show average not total
                       : formatCurrency(total)
                     }
                   </td>
-                  <td className={`px-4 py-3 text-sm text-right bg-gray-50 ${
+                  <td className={`px-4 py-3 text-sm text-right bg-gray-50 font-data ${
                     item.key === 'variance' && average !== 0 ? (average > 0 ? 'text-green-700' : 'text-red-700') : ''
                   }`}>
-                    {item.key === 'variance_percent'
+                    {(item.key === 'variance_percent' || item.key === 'loss_ratio')
                       ? formatPercentage(average)
                       : formatCurrency(average)
                     }
@@ -549,8 +684,8 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <p className="text-xs text-gray-600">Total Budget (YTD)</p>
-            <p className="text-lg font-semibold text-purple-700">
+            <p className="text-xs text-gray-600 font-body">Total Budget (YTD)</p>
+            <p className="text-lg font-semibold text-purple-700 font-data">
               {formatCurrency(
                 matrixData.months.reduce((sum, month) => 
                   sum + (matrixData.matrix['budget']?.[month] || 0), 0
@@ -559,8 +694,8 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-600">Total Net Cost (YTD)</p>
-            <p className="text-lg font-semibold text-blue-700">
+            <p className="text-xs text-gray-600 font-body">Total Net Cost (YTD)</p>
+            <p className="text-lg font-semibold text-blue-700 font-data">
               {formatCurrency(
                 matrixData.months.reduce((sum, month) => 
                   sum + (matrixData.matrix['net_cost']?.[month] || 0), 0
@@ -569,8 +704,8 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-600">Total Variance (YTD)</p>
-            <p className={`text-lg font-semibold ${
+            <p className="text-xs text-gray-600 font-body">Total Variance (YTD)</p>
+            <p className={`text-lg font-semibold font-data ${
               matrixData.months.reduce((sum, month) => sum + (matrixData.matrix['variance']?.[month] || 0), 0) >= 0
                 ? 'text-green-700'
                 : 'text-red-700'
@@ -583,8 +718,8 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-600">Avg Monthly Variance %</p>
-            <p className={`text-lg font-semibold ${
+            <p className="text-xs text-gray-600 font-body">Avg Monthly Variance %</p>
+            <p className={`text-lg font-semibold font-data ${
               matrixData.months.reduce((sum, month) => sum + (matrixData.matrix['variance_percent']?.[month] || 0), 0) / matrixData.months.length >= 0
                 ? 'text-green-700'
                 : 'text-red-700'
