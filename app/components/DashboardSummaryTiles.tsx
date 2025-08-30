@@ -139,17 +139,17 @@ const DashboardSummaryTiles: React.FC<DashboardSummaryTilesProps> = ({
     return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
   };
 
-  // Get status color for metrics
+  // Get status color for metrics using semantic colors
   const getVarianceColor = (variance: number) => {
-    if (variance > 0) return 'text-green-600 bg-green-50';
-    if (variance < 0) return 'text-red-600 bg-red-50';
-    return 'text-gray-600 bg-gray-50';
+    if (variance > 0) return 'text-success bg-success';
+    if (variance < 0) return 'text-danger bg-danger';
+    return 'text-gray-600 bg-gray-100';
   };
 
   const getLossRatioColor = (ratio: number) => {
-    if (ratio < 85) return 'text-green-600 bg-green-50';
-    if (ratio < 95) return 'text-yellow-600 bg-yellow-50';
-    return 'text-red-600 bg-red-50';
+    if (ratio < 85) return 'text-success bg-success';
+    if (ratio < 95) return 'text-warning bg-warning';
+    return 'text-danger bg-danger';
   };
 
   const getLossRatioIcon = (ratio: number) => {
@@ -167,7 +167,7 @@ const DashboardSummaryTiles: React.FC<DashboardSummaryTilesProps> = ({
       change: formatPercent(metrics.variancePercent),
       changeType: metrics.variance >= 0 ? 'positive' : 'negative',
       icon: <DollarSign className="w-6 h-6" />,
-      color: 'from-cyan-500 to-teal-500',
+      color: 'gradient-primary',
       bgColor: getVarianceColor(metrics.variance),
       detail: `Variance: ${formatCurrency(Math.abs(metrics.variance))}`
     },
@@ -179,8 +179,8 @@ const DashboardSummaryTiles: React.FC<DashboardSummaryTilesProps> = ({
       change: formatPercent(metrics.enrollmentChange),
       changeType: metrics.enrollmentChange >= 0 ? 'positive' : 'negative',
       icon: <Users className="w-6 h-6" />,
-      color: 'from-blue-500 to-cyan-500',
-      bgColor: metrics.enrollmentChange >= 0 ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50',
+      color: 'gradient-primary',
+      bgColor: metrics.enrollmentChange >= 0 ? 'text-success bg-success' : 'text-danger bg-danger',
       detail: 'vs Previous Month'
     },
     {
@@ -191,7 +191,7 @@ const DashboardSummaryTiles: React.FC<DashboardSummaryTilesProps> = ({
       change: metrics.lossRatio < 85 ? 'Good' : metrics.lossRatio < 95 ? 'Warning' : 'High',
       changeType: 'status',
       icon: <Activity className="w-6 h-6" />,
-      color: 'from-purple-500 to-pink-500',
+      color: 'gradient-primary',
       bgColor: getLossRatioColor(metrics.lossRatio),
       statusIcon: getLossRatioIcon(metrics.lossRatio),
       detail: 'Target: < 85%'
@@ -204,8 +204,8 @@ const DashboardSummaryTiles: React.FC<DashboardSummaryTilesProps> = ({
       change: metrics.claimsVsBudget < 100 ? 'Under Budget' : 'Over Budget',
       changeType: metrics.claimsVsBudget < 100 ? 'positive' : 'negative',
       icon: <FileText className="w-6 h-6" />,
-      color: 'from-amber-500 to-orange-500',
-      bgColor: metrics.claimsVsBudget < 100 ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50',
+      color: 'gradient-primary',
+      bgColor: metrics.claimsVsBudget < 100 ? 'text-success bg-success' : 'text-danger bg-danger',
       detail: 'Medical + Pharmacy'
     }
   ];
@@ -218,28 +218,28 @@ const DashboardSummaryTiles: React.FC<DashboardSummaryTilesProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
-          className="panel-elevated rounded-xl shadow-lg overflow-hidden"
+          className="panel-elevated rounded-xl shadow-lg overflow-hidden transition-all hover:shadow-xl"
         >
           {/* Gradient Header */}
-          <div className={`h-2 bg-gradient-to-r ${tile.color}`} />
+          <div className={`h-2 ${tile.color}`} />
           
           <div className="p-5">
             {/* Title Row */}
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-gray-600 font-body">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 font-body">
                 {tile.title}
               </h3>
-              <div className={`p-2 rounded-lg ${tile.bgColor}`}>
+              <div className={`p-2 rounded-lg ${tile.bgColor} transition-colors`}>
                 {tile.icon}
               </div>
             </div>
 
             {/* Value */}
             <div className="mb-2">
-              <p className="text-2xl font-bold text-gray-900 font-data">
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 font-data">
                 {tile.value}
               </p>
-              <p className="text-xs text-gray-500 font-body mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-body mt-1">
                 {tile.subtitle}
               </p>
             </div>
@@ -248,26 +248,26 @@ const DashboardSummaryTiles: React.FC<DashboardSummaryTilesProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                 {tile.changeType === 'positive' ? (
-                  <TrendingUp className="w-4 h-4 text-green-600" />
+                  <TrendingUp className="w-4 h-4 text-success" />
                 ) : tile.changeType === 'negative' ? (
-                  <TrendingDown className="w-4 h-4 text-red-600" />
+                  <TrendingDown className="w-4 h-4 text-danger" />
                 ) : tile.changeType === 'status' ? (
                   tile.statusIcon
                 ) : (
                   <Minus className="w-4 h-4 text-gray-400" />
                 )}
                 <span className={`text-sm font-medium ${
-                  tile.changeType === 'positive' ? 'text-green-600' : 
-                  tile.changeType === 'negative' ? 'text-red-600' : 
+                  tile.changeType === 'positive' ? 'text-success' : 
+                  tile.changeType === 'negative' ? 'text-danger' : 
                   tile.changeType === 'status' ? 
-                    (tile.change === 'Good' ? 'text-green-600' : 
-                     tile.change === 'Warning' ? 'text-yellow-600' : 'text-red-600') : 
-                  'text-gray-600'
+                    (tile.change === 'Good' ? 'text-success' : 
+                     tile.change === 'Warning' ? 'text-warning' : 'text-danger') : 
+                  'text-gray-600 dark:text-gray-400'
                 }`}>
                   {tile.change}
                 </span>
               </div>
-              <span className="text-xs text-gray-500 font-body">
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-body">
                 {tile.detail}
               </span>
             </div>

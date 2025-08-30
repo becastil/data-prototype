@@ -12,6 +12,7 @@ import DashboardSummaryTiles from './components/DashboardSummaryTiles';
 import ClaimsBreakdownChart from './components/ClaimsBreakdownChart';
 import MedicalClaimsBreakdownChart from './components/MedicalClaimsBreakdownChart';
 import DomesticVsNonDomesticChart from './components/DomesticVsNonDomesticChart';
+import ThemeToggle from './components/ThemeToggle';
 import { ParsedCSVData } from './components/CSVLoader';
 import { RotateCcw, TableIcon, ChartBar, ArrowLeft, ArrowRight } from 'lucide-react';
 
@@ -76,24 +77,34 @@ const Home: React.FC = () => {
           {/* Header */}
           <div className="max-w-7xl mx-auto mb-6">
             <div className="flex justify-between items-center mb-4">
-              <motion.h1
-                initial={{ y: -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                className="text-3xl font-bold text-white font-heading drop-shadow-lg"
-              >
-                Reporting Dashboard
-              </motion.h1>
-              <motion.button
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleReset}
-                className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-lg hover:from-cyan-700 hover:to-teal-700 transition-all shadow-lg flex items-center gap-2"
-              >
-                <RotateCcw className="w-4 h-4" />
-                Upload New Data
-              </motion.button>
+              <div className="flex items-center gap-3">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="w-2 h-8 gradient-accent rounded-full"
+                />
+                <motion.h1
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  className="text-3xl font-bold text-white font-heading drop-shadow-lg"
+                >
+                  Keenan Reporting Dashboard
+                </motion.h1>
+              </div>
+              <div className="flex items-center gap-3">
+                <ThemeToggle />
+                <motion.button
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleReset}
+                  className="px-4 py-2 gradient-keenan text-white rounded-lg hover:opacity-90 transition-all shadow-lg flex items-center gap-2"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  Upload New Data
+                </motion.button>
+              </div>
             </div>
             
             {/* Page Navigation Tabs */}
@@ -102,8 +113,8 @@ const Home: React.FC = () => {
                 onClick={() => setCurrentPage('table')}
                 className={`px-6 py-2 rounded-lg transition-all flex items-center gap-2 ${
                   currentPage === 'table'
-                    ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
-                    : 'text-gray-600 hover:bg-gray-100/50'
+                    ? 'gradient-keenan text-white shadow-md'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
                 }`}
               >
                 <TableIcon className="w-4 h-4" />
@@ -113,8 +124,8 @@ const Home: React.FC = () => {
                 onClick={() => setCurrentPage('charts')}
                 className={`px-6 py-2 rounded-lg transition-all flex items-center gap-2 ${
                   currentPage === 'charts'
-                    ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
-                    : 'text-gray-600 hover:bg-gray-100/50'
+                    ? 'gradient-keenan text-white shadow-md'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
                 }`}
               >
                 <ChartBar className="w-4 h-4" />

@@ -425,13 +425,13 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
           <div className="flex gap-2">
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
             >
               <Settings className="w-4 h-4" />
             </button>
             <button
               onClick={exportToCSV}
-              className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-lg hover:from-cyan-700 hover:to-teal-700 transition-all shadow-md flex items-center gap-2"
+              className="px-4 py-2 gradient-accent text-white rounded-lg hover:opacity-90 transition-all shadow-md flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
               Export
@@ -450,8 +450,8 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
               onClick={() => setDateRangeType('rolling12')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 dateRangeType === 'rolling12'
-                  ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
-                  : 'bg-white/70 text-gray-700 hover:bg-white/90'
+                  ? 'gradient-keenan text-white shadow-md'
+                  : 'bg-white/70 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-800/50'
               }`}
             >
               Rolling 12 Months
@@ -460,8 +460,8 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
               onClick={() => setDateRangeType('ytd')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 dateRangeType === 'ytd'
-                  ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
-                  : 'bg-white/70 text-gray-700 hover:bg-white/90'
+                  ? 'gradient-keenan text-white shadow-md'
+                  : 'bg-white/70 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-800/50'
               }`}
             >
               Plan YTD
@@ -470,8 +470,8 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
               onClick={() => setDateRangeType('all')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 dateRangeType === 'all'
-                  ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
-                  : 'bg-white/70 text-gray-700 hover:bg-white/90'
+                  ? 'gradient-keenan text-white shadow-md'
+                  : 'bg-white/70 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-800/50'
               }`}
             >
               All Data
@@ -480,8 +480,8 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
               onClick={() => setDateRangeType('custom')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 dateRangeType === 'custom'
-                  ? 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-md'
-                  : 'bg-white/70 text-gray-700 hover:bg-white/90'
+                  ? 'gradient-keenan text-white shadow-md'
+                  : 'bg-white/70 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-800/50'
               }`}
             >
               Custom Range

@@ -1,14 +1,68 @@
 @import "tailwindcss";
 
 :root {
-  --background: #FAF8F3;
-  --foreground: #2C2C2C;
+  --background: #FAFBFC;
+  --foreground: #00205c; /* Keenan Midnight Blue */
   
-  /* Gradient Colors */
-  --gradient-start: #E0F7FA;  /* Light teal/turquoise */
-  --gradient-mid: #B2EBF2;    /* Soft cyan */
-  --gradient-end: #80DEEA;    /* Deeper blue-teal */
-  --gradient-accent: #4DD0E1; /* Deep accent for emphasis */
+  /* Brand Colors - Keenan/AP/Gallagher Hierarchy */
+  --keenan-midnight: #00205c;
+  --keenan-twilight: #fdffff;
+  --keenan-tango: #e87823;
+  --ap-blue: #0032E1;
+  --gallagher-orange: #FF8400;
+  --gallagher-blue: #00aeef;
+  --gallagher-charcoal: #575A5D;
+  --gallagher-light-charcoal: #e6e7e8;
+  
+  /* Primary Palette - Keenan Brand */
+  --primary-blue: #00205c;        /* Keenan Midnight */
+  --primary-blue-dark: #001640;   /* Darker variant */
+  --primary-blue-light: #0032E1;  /* AP Blue accent */
+  --primary-blue-lighter: #4A6FA5; /* Lighter blue */
+  --primary-blue-lightest: #E8F0FF; /* Very light blue */
+  
+  /* Semantic Status Colors - Brand Aligned */
+  --status-success: #10B981;      /* Green for positive */
+  --status-success-light: #34D399;
+  --status-success-bg: #D1FAE5;
+  --status-warning: #e87823;      /* Keenan Tango */
+  --status-warning-light: #FF8400; /* Gallagher Orange */
+  --status-warning-bg: #FEF3E2;
+  --status-danger: #DC2626;       /* Red for critical */
+  --status-danger-light: #EF4444;
+  --status-danger-bg: #FEE2E2;
+  --status-info: #00aeef;         /* Gallagher Blue */
+  --status-info-light: #38BDF8;
+  --status-info-bg: #E0F7FF;
+  
+  /* Data Visualization Palette - Brand Aligned */
+  --chart-primary: #00205c;      /* Keenan Midnight */
+  --chart-secondary: #00aeef;    /* Gallagher Blue */
+  --chart-tertiary: #e87823;     /* Keenan Tango */
+  --chart-quaternary: #0032E1;   /* AP Blue */
+  --chart-quinary: #FF8400;      /* Gallagher Orange */
+  --chart-senary: #575A5D;       /* Gallagher Charcoal */
+  --chart-septenary: #4A6FA5;    /* Mid Blue */
+  --chart-octonary: #10B981;     /* Success Green */
+  
+  /* Neutral Scale - Light Mode */
+  --gray-950: #0F172A;
+  --gray-900: #263238;
+  --gray-800: #37474F;
+  --gray-700: #455A64;
+  --gray-600: #546E7A;
+  --gray-500: #78909C;
+  --gray-400: #90A4AE;
+  --gray-300: #CFD8DC;
+  --gray-200: #ECEFF1;
+  --gray-100: #F5F7FA;
+  --gray-50: #FAFBFC;
+  
+  /* Gradient Colors - Light Mode (Brand) */
+  --gradient-start: #E8F0FF;     /* Light blue tint */
+  --gradient-mid: #B8D4FF;       /* Mid blue tint */
+  --gradient-end: #4A6FA5;       /* Deeper brand blue */
+  --gradient-accent: #00205c;    /* Keenan Midnight accent */
   
   /* Typography System */
   --font-heading: 'TASA Orbiter Display', system-ui, -apple-system, sans-serif;
@@ -42,10 +96,113 @@
   --font-mono: var(--font-data);
 }
 
+/* Dark Mode Variables */
+[data-theme="dark"] {
+  --background: #0A0E1A;  /* Very dark blue-black */
+  --foreground: #F1F5F9;
+  
+  /* Brand Colors Dark Mode Adjusted */
+  --primary-blue: #4A6FA5;        /* Lighter for visibility */
+  --primary-blue-dark: #00205c;   /* Original midnight */
+  --primary-blue-light: #00aeef;  /* Gallagher blue */
+  --primary-blue-lighter: #7FA3D0;
+  --primary-blue-lightest: #1A2332;
+  
+  /* Semantic Status Colors - Dark Mode */
+  --status-success: #34D399;
+  --status-success-light: #6EE7B7;
+  --status-success-bg: #064E3B;
+  --status-warning: #FF8400;      /* Gallagher Orange */
+  --status-warning-light: #FFA947;
+  --status-warning-bg: #7C2D12;
+  --status-danger: #F87171;
+  --status-danger-light: #FCA5A5;
+  --status-danger-bg: #7F1D1D;
+  --status-info: #38BDF8;         /* Bright blue for dark */
+  --status-info-light: #7DD3FC;
+  --status-info-bg: #0C4A6E;
+  
+  /* Data Visualization - Dark Mode Optimized */
+  --chart-primary: #00aeef;      /* Gallagher Blue */
+  --chart-secondary: #38BDF8;    /* Bright Blue */
+  --chart-tertiary: #FF8400;     /* Gallagher Orange */
+  --chart-quaternary: #7FA3D0;   /* Light brand blue */
+  --chart-quinary: #FFA947;      /* Light orange */
+  --chart-senary: #90A4AE;       /* Gray */
+  --chart-septenary: #34D399;    /* Green */
+  --chart-octonary: #A78BFA;     /* Purple accent */
+  
+  /* Neutral Scale - Dark Mode */
+  --gray-950: #F8FAFC;
+  --gray-900: #F1F5F9;
+  --gray-800: #E2E8F0;
+  --gray-700: #CBD5E1;
+  --gray-600: #94A3B8;
+  --gray-500: #64748B;
+  --gray-400: #475569;
+  --gray-300: #334155;
+  --gray-200: #1E293B;
+  --gray-100: #0F172A;
+  --gray-50: #020617;
+  
+  /* Dark Mode Gradients */
+  --gradient-start: #0A0E1A;     /* Very dark */
+  --gradient-mid: #001640;       /* Dark brand blue */
+  --gradient-end: #00205c;       /* Keenan Midnight */
+  --gradient-accent: #00aeef;    /* Gallagher Blue accent */
+}
+
+/* System Preference Respect */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #2B2520;
-    --foreground: #F5F0E8;
+  :root:not([data-theme="light"]) {
+    --background: #0F172A;
+    --foreground: #F1F5F9;
+    
+    /* Copy all dark mode variables here */
+    --primary-teal: #38BDF8;
+    --primary-teal-dark: #0EA5E9;
+    --primary-teal-light: #7DD3FC;
+    --primary-teal-lighter: #1E293B;
+    --primary-teal-lightest: #0F172A;
+    
+    --status-success: #66BB6A;
+    --status-success-light: #81C784;
+    --status-success-bg: #1B5E20;
+    --status-warning: #FFB74D;
+    --status-warning-light: #FFCC80;
+    --status-warning-bg: #E65100;
+    --status-danger: #EF5350;
+    --status-danger-light: #E57373;
+    --status-danger-bg: #B71C1C;
+    --status-info: #64B5F6;
+    --status-info-light: #90CAF9;
+    --status-info-bg: #0D47A1;
+    
+    --chart-primary: #38BDF8;
+    --chart-secondary: #81C784;
+    --chart-tertiary: #FFB74D;
+    --chart-quaternary: #9575CD;
+    --chart-quinary: #F06292;
+    --chart-senary: #90A4AE;
+    --chart-septenary: #7986CB;
+    --chart-octonary: #4DB6AC;
+    
+    --gray-950: #F8FAFC;
+    --gray-900: #F1F5F9;
+    --gray-800: #E2E8F0;
+    --gray-700: #CBD5E1;
+    --gray-600: #94A3B8;
+    --gray-500: #64748B;
+    --gray-400: #475569;
+    --gray-300: #334155;
+    --gray-200: #1E293B;
+    --gray-100: #0F172A;
+    --gray-50: #020617;
+    
+    --gradient-start: #0F172A;
+    --gradient-mid: #1E293B;
+    --gradient-end: #334155;
+    --gradient-accent: #0EA5E9;
   }
 }
 
@@ -190,14 +347,14 @@ input, textarea, select {
   min-height: 100vh;
 }
 
-/* Enhanced gradient with multiple stops for smoother transition */
+/* Enhanced gradient with brand colors */
 .gradient-teal-smooth {
   background: linear-gradient(180deg,
-    #E0F7FA 0%,      /* Light teal */
-    #B2EBF2 25%,     /* Soft cyan */
-    #80DEEA 50%,     /* Medium blue-teal */
-    #4DD0E1 75%,     /* Deeper blue-teal */
-    #26C6DA 100%     /* Deep teal */
+    #E8F0FF 0%,      /* Very light brand blue */
+    #B8D4FF 25%,     /* Light blue */
+    #7FA3D0 50%,     /* Mid blue */
+    #4A6FA5 75%,     /* Deeper blue */
+    #00205c 100%     /* Keenan Midnight */
   );
   min-height: 100vh;
   position: relative;
@@ -232,4 +389,90 @@ input, textarea, select {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
               0 2px 4px -1px rgba(0, 0, 0, 0.06),
               0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+}
+
+[data-theme="dark"] .panel-elevated {
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 
+              0 2px 4px -1px rgba(0, 0, 0, 0.2),
+              0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+/* Semantic Color Classes */
+.text-success { color: var(--status-success); }
+.text-warning { color: var(--status-warning); }
+.text-danger { color: var(--status-danger); }
+.text-info { color: var(--status-info); }
+
+.bg-success { background-color: var(--status-success-bg); }
+.bg-warning { background-color: var(--status-warning-bg); }
+.bg-danger { background-color: var(--status-danger-bg); }
+.bg-info { background-color: var(--status-info-bg); }
+
+/* Improved Gradient Backgrounds - Brand */
+.gradient-primary {
+  background: linear-gradient(135deg, 
+    var(--primary-blue-light) 0%, 
+    var(--primary-blue) 100%
+  );
+}
+
+.gradient-keenan {
+  background: linear-gradient(135deg,
+    var(--keenan-midnight) 0%,
+    var(--ap-blue) 100%
+  );
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg,
+    var(--keenan-tango) 0%,
+    var(--gallagher-orange) 100%
+  );
+}
+
+.gradient-subtle {
+  background: linear-gradient(180deg,
+    var(--gray-50) 0%,
+    var(--gray-100) 100%
+  );
+}
+
+/* Dark Mode Gradient - Brand Aligned */
+[data-theme="dark"] .gradient-teal-smooth {
+  background: linear-gradient(180deg,
+    #0A0E1A 0%,      /* Very dark */
+    #001640 25%,     /* Dark blue */
+    #00205c 50%,     /* Keenan Midnight */
+    #001640 75%,     /* Dark blue */
+    #0A0E1A 100%     /* Very dark */
+  );
+}
+
+/* Transition for theme switching */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Accessibility: High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :root {
+    --status-success: #00C853;
+    --status-danger: #D50000;
+    --status-warning: #FF6F00;
+    --status-info: #0091EA;
+  }
+}
+
+/* Color Blind Safe Mode Classes */
+.colorblind-safe {
+  --chart-primary: #0173B2;
+  --chart-secondary: #DE8F05;
+  --chart-tertiary: #029E73;
+  --chart-quaternary: #CC78BC;
+  --chart-quinary: #ECE133;
+  --chart-senary: #56B4E9;
+  --chart-septenary: #F0E442;
+  --chart-octonary: #D55E00;
 }
