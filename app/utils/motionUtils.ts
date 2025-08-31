@@ -1,4 +1,4 @@
-import { animate, spring, stagger } from 'motion';
+import { animate, spring, stagger } from '@motionone/dom';
 
 // Hardware-accelerated animation utilities using Motion One
 // 2.3KB bundle size, 120fps GPU-accelerated animations
@@ -9,7 +9,7 @@ export const motionPresets = {
     keyframes: { opacity: [0, 1], transform: ['translateY(20px)', 'translateY(0px)'] },
     options: { 
       duration: 0.4, 
-      easing: spring({ damping: 25, stiffness: 300 }) 
+      easing: spring({ damping: 25, stiffness: 300, mass: 1 }) 
     }
   },
   
@@ -21,7 +21,7 @@ export const motionPresets = {
     },
     options: { 
       duration: 0.3, 
-      easing: spring({ damping: 20, stiffness: 400 }) 
+      easing: spring({ damping: 20, stiffness: 400, mass: 1 }) 
     }
   },
   
@@ -33,7 +33,7 @@ export const motionPresets = {
     },
     options: { 
       duration: 0.35, 
-      easing: spring({ damping: 22, stiffness: 350 }) 
+      easing: spring({ damping: 22, stiffness: 350, mass: 1 }) 
     }
   },
   
@@ -121,7 +121,7 @@ export const createScrollAnimation = (
       if (entry.isIntersecting) {
         animate(element, keyframes, {
           duration: 0.6,
-          easing: spring({ damping: 25, stiffness: 300 }),
+          easing: spring({ damping: 25, stiffness: 300, mass: 1 }),
           ...options
         });
         observer.unobserve(element);
