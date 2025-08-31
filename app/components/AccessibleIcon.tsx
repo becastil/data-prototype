@@ -201,9 +201,6 @@ const AccessibleIcon: React.FC<AccessibleIconProps> = ({
           }}
         >
           {React.cloneElement(icon as React.ReactElement, {
-            size: currentSize.icon,
-            width: currentSize.icon,
-            height: currentSize.icon,
             className: 'w-full h-full',
           })}
         </motion.div>

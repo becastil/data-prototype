@@ -1,0 +1,251 @@
+provider_id,provider_name,provider_type,specialty,address,city,state,zip,phone,in_network,quality_rating,avg_cost_index
+PRV00001,St. General Hospital,Clinic,Cardiology,614 River Ln,San Diego,CA,92101,(272) 726-4899,True,4.0,1.13
+PRV00002,Regional Medical Center,Urgent Care,Emergency,6769 First Ave,Minneapolis,MN,55401,(299) 874-8062,True,3.8,1.39
+PRV00003,St. General Associates,Pharmacy,Pediatrics,1890 First Blvd,Los Angeles,CA,90001,(394) 749-8350,False,3.4,1.07
+PRV00004,City General Hospital,Pharmacy,General,341 Oak Blvd,Chicago,IL,60601,(370) 616-8956,True,4.7,1.42
+PRV00005,City General Associates,Physician,Emergency,4773 Park Ct,Philadelphia,PA,19101,(358) 394-5861,True,3.1,1.29
+PRV00006,Valley General Hospital,Lab,Emergency,8338 Sunset Rd,Los Angeles,CA,90001,(258) 720-2312,True,3.1,0.75
+PRV00007,City General Center,Lab,Internal Medicine,751 Washington Ave,San Diego,CA,92101,(629) 873-9565,True,3.5,1.24
+PRV00008,Mount Community Associates,Clinic,Oncology,7591 Third Ave,Austin,TX,78701,(209) 669-2638,False,3.4,0.91
+PRV00009,St. Memorial Clinic,Physician,Orthopedics,7279 River Dr,Jacksonville,FL,32099,(826) 869-9666,False,4.6,0.94
+PRV00010,St. Memorial Clinic,Hospital,Cardiology,9164 Maple Dr,Miami,FL,33101,(488) 819-4450,True,3.4,1.21
+PRV00011,Regional Medical Clinic,Urgent Care,Primary Care,1612 Lake Way,Dallas,TX,75201,(483) 245-1058,True,3.3,1.48
+PRV00012,City Medical Hospital,Hospital,Cardiology,2542 Elm St,Philadelphia,PA,19101,(578) 796-3426,True,3.1,0.99
+PRV00013,Valley Memorial Center,Pharmacy,Cardiology,5894 Forest Way,Los Angeles,CA,90001,(835) 967-3532,True,3.5,0.83
+PRV00014,City General Center,Pharmacy,Pediatrics,6845 Forest Blvd,Philadelphia,PA,19101,(473) 363-2771,True,3.1,1.08
+PRV00015,City Community Clinic,Urgent Care,Neurology,3752 Main Blvd,San Antonio,TX,78201,(608) 536-5564,True,4.9,0.92
+PRV00016,Regional Medical Clinic,Hospital,Cardiology,4379 Maple Dr,Portland,OR,97201,(239) 311-8119,True,4.6,1.05
+PRV00017,St. Medical Center,Physician,Primary Care,7244 Main Blvd,Indianapolis,IN,46201,(572) 641-2146,True,4.8,1.2
+PRV00018,St. Community Clinic,Pharmacy,OB/GYN,5444 Park Dr,Miami,FL,33101,(767) 330-4143,True,4.9,1.24
+PRV00019,Regional Community Associates,Lab,Primary Care,5078 Second Blvd,Philadelphia,PA,19101,(640) 793-6279,True,3.9,0.87
+PRV00020,Mount General Clinic,Lab,Internal Medicine,5591 Oak Blvd,San Francisco,CA,94101,(888) 517-4680,True,3.3,0.74
+PRV00021,Regional General Associates,Specialist,Internal Medicine,3285 Hill Way,San Francisco,CA,94101,(706) 609-4997,False,4.4,1.41
+PRV00022,City Memorial Center,Urgent Care,General,7711 Main Blvd,Houston,TX,77001,(324) 667-3184,True,4.3,1.49
+PRV00023,Valley Medical Associates,Urgent Care,General,7405 Sunset Rd,Boston,MA,02101,(961) 686-8373,True,3.5,1.21
+PRV00024,City Memorial Clinic,Specialist,Cardiology,4781 First Dr,Indianapolis,IN,46201,(543) 527-9849,False,3.3,1.01
+PRV00025,Mount General Associates,Specialist,Pediatrics,8990 Pine Way,Phoenix,AZ,85001,(263) 411-7883,True,4.5,1.46
+PRV00026,Regional Medical Associates,Hospital,Pediatrics,4992 Forest Way,New York,NY,10001,(629) 751-9947,True,4.8,1.09
+PRV00027,City Medical Hospital,Specialist,Pediatrics,6724 Hill Rd,Dallas,TX,75201,(678) 330-9751,False,3.8,1.15
+PRV00028,St. Medical Center,Urgent Care,Emergency,3077 Main Dr,New York,NY,10001,(588) 535-4467,True,3.7,1.4
+PRV00029,City Community Hospital,Specialist,Primary Care,8937 Main Ln,Dallas,TX,75201,(429) 865-2124,True,4.3,1.3
+PRV00030,Mount General Center,Clinic,Orthopedics,7858 Lake Ave,San Diego,CA,92101,(777) 423-8619,True,4.5,0.83
+PRV00031,St. Memorial Clinic,Hospital,Internal Medicine,520 Sunset Dr,Boston,MA,02101,(789) 893-7149,True,4.4,0.76
+PRV00032,Mount General Clinic,Urgent Care,Internal Medicine,2083 Forest St,Atlanta,GA,30301,(555) 745-8018,True,3.1,1.22
+PRV00033,City Medical Hospital,Specialist,Pediatrics,7632 Hill Rd,New York,NY,10001,(645) 380-9548,True,3.5,1.35
+PRV00034,City Medical Associates,Urgent Care,Internal Medicine,4497 Third Blvd,Seattle,WA,98101,(288) 485-8385,True,3.9,1.19
+PRV00035,Valley General Associates,Urgent Care,Pediatrics,3079 Pine Blvd,Fort Worth,TX,76101,(563) 464-6576,True,4.2,1.4
+PRV00036,St. Memorial Hospital,Clinic,OB/GYN,8104 Elm Blvd,Seattle,WA,98101,(907) 687-9041,True,3.0,0.94
+PRV00037,Mount Community Clinic,Specialist,General,8798 Third Way,Fort Worth,TX,76101,(963) 763-6419,True,3.9,0.95
+PRV00038,St. Memorial Clinic,Hospital,General,3133 First Blvd,San Diego,CA,92101,(956) 695-5530,True,5.0,1.12
+PRV00039,St. Memorial Clinic,Clinic,Pediatrics,3039 Second St,San Jose,CA,95101,(925) 746-3073,True,4.9,1.14
+PRV00040,Mount Medical Hospital,Urgent Care,Primary Care,9505 Second Ct,Atlanta,GA,30301,(690) 651-6582,False,3.1,1.45
+PRV00041,St. General Associates,Specialist,Cardiology,9553 Lake St,San Francisco,CA,94101,(355) 352-5978,False,3.5,1.15
+PRV00042,Regional Memorial Associates,Specialist,Emergency,4971 River Way,Columbus,OH,43201,(512) 782-1986,True,4.5,1.46
+PRV00043,Mount Community Hospital,Clinic,Neurology,2947 Elm Ave,San Antonio,TX,78201,(360) 202-7693,True,4.2,0.93
+PRV00044,Valley Community Associates,Hospital,Neurology,4434 Forest Blvd,San Diego,CA,92101,(635) 317-9922,True,3.3,0.91
+PRV00045,St. General Center,Urgent Care,Oncology,9849 Hill Dr,Phoenix,AZ,85001,(649) 327-8679,True,4.4,1.45
+PRV00046,Regional Medical Associates,Hospital,Internal Medicine,753 Sunset Way,Indianapolis,IN,46201,(952) 530-5102,False,3.5,1.24
+PRV00047,Regional General Clinic,Lab,Primary Care,2970 Pine Ct,Denver,CO,80201,(484) 385-8141,True,4.0,0.77
+PRV00048,City Community Clinic,Pharmacy,Cardiology,2734 Third Way,Jacksonville,FL,32099,(910) 707-5722,True,3.8,1.31
+PRV00049,City General Clinic,Physician,Pediatrics,1999 Forest Way,Los Angeles,CA,90001,(726) 201-9889,True,3.1,1.11
+PRV00050,City Medical Hospital,Clinic,Oncology,9098 Maple Dr,Boston,MA,02101,(648) 915-8941,False,4.9,1.19
+PRV00051,Mount Community Hospital,Lab,OB/GYN,1627 First Ave,San Diego,CA,92101,(672) 320-3522,True,4.4,1.11
+PRV00052,City Medical Associates,Clinic,Emergency,9131 Maple Way,Dallas,TX,75201,(395) 813-9327,True,3.3,0.76
+PRV00053,Valley Community Hospital,Physician,Oncology,9716 Washington Ct,Columbus,OH,43201,(352) 657-9824,True,3.7,1.31
+PRV00054,City Community Center,Pharmacy,Neurology,9468 Park Blvd,Fort Worth,TX,76101,(994) 620-1715,True,3.9,1.43
+PRV00055,City Memorial Associates,Hospital,Orthopedics,8329 Washington Ln,Fort Worth,TX,76101,(302) 650-2633,True,3.9,1.28
+PRV00056,Mount General Associates,Urgent Care,Oncology,5646 Washington Way,Columbus,OH,43201,(865) 282-6383,True,4.7,1.0
+PRV00057,City General Hospital,Clinic,Oncology,3827 Hill Ave,Austin,TX,78701,(644) 300-2646,True,4.4,1.42
+PRV00058,Valley General Clinic,Physician,Pediatrics,7156 Maple Blvd,Los Angeles,CA,90001,(743) 621-3950,False,3.2,1.4
+PRV00059,Mount Medical Center,Clinic,Emergency,4261 Pine Dr,Boston,MA,02101,(882) 209-8622,True,4.4,0.83
+PRV00060,Valley Community Associates,Pharmacy,Oncology,7584 River Dr,Charlotte,NC,28201,(403) 593-8916,False,3.8,0.99
+PRV00061,Valley General Associates,Physician,Primary Care,9372 River St,San Jose,CA,95101,(820) 963-9138,True,4.8,1.32
+PRV00062,Regional Community Center,Pharmacy,Neurology,4206 Lake Rd,San Diego,CA,92101,(843) 299-1645,True,3.9,1.16
+PRV00063,Mount General Clinic,Physician,OB/GYN,2977 First Rd,Minneapolis,MN,55401,(752) 574-9697,True,3.5,0.83
+PRV00064,Valley Community Hospital,Specialist,Cardiology,2406 Forest Blvd,San Francisco,CA,94101,(892) 941-7511,True,4.6,0.99
+PRV00065,St. Community Hospital,Specialist,Pediatrics,4395 Washington Way,Fort Worth,TX,76101,(853) 580-2775,True,3.9,1.2
+PRV00066,Valley Memorial Hospital,Pharmacy,Emergency,5051 Lake Way,Seattle,WA,98101,(319) 343-1742,True,3.6,1.09
+PRV00067,Mount Memorial Associates,Specialist,Pediatrics,8950 Park Rd,Houston,TX,77001,(624) 870-2622,True,4.2,1.45
+PRV00068,St. Community Center,Specialist,Emergency,3968 River Ln,Dallas,TX,75201,(301) 902-7018,True,5.0,0.99
+PRV00069,Valley Memorial Hospital,Urgent Care,Emergency,1601 Lake Blvd,Fort Worth,TX,76101,(857) 854-1349,False,3.7,1.49
+PRV00070,Mount General Center,Lab,Neurology,3917 Third Rd,Denver,CO,80201,(810) 202-5542,True,3.3,0.8
+PRV00071,Mount General Hospital,Clinic,Primary Care,5969 Forest Blvd,Dallas,TX,75201,(802) 531-1258,False,3.1,1.29
+PRV00072,St. General Associates,Specialist,Pediatrics,8508 Washington Ave,Indianapolis,IN,46201,(662) 715-4629,True,3.1,1.33
+PRV00073,Regional Community Associates,Pharmacy,Primary Care,1096 Pine Way,Miami,FL,33101,(636) 902-2768,True,4.8,0.76
+PRV00074,Valley Memorial Hospital,Clinic,Oncology,9690 Elm Ln,Chicago,IL,60601,(590) 811-9692,True,4.0,1.04
+PRV00075,St. Memorial Associates,Specialist,Neurology,6879 Third Ct,Atlanta,GA,30301,(608) 625-2557,True,3.6,0.9
+PRV00076,City General Hospital,Urgent Care,Cardiology,1627 Park Ave,Phoenix,AZ,85001,(962) 956-7105,True,4.1,1.17
+PRV00077,Regional Community Hospital,Specialist,Pediatrics,7029 River St,Seattle,WA,98101,(494) 814-6119,True,4.2,0.87
+PRV00078,City Memorial Hospital,Physician,General,6122 Oak Dr,Miami,FL,33101,(787) 431-8030,True,4.9,1.35
+PRV00079,Regional General Clinic,Hospital,Orthopedics,4577 Hill Dr,Boston,MA,02101,(547) 559-1100,False,3.3,1.23
+PRV00080,Mount General Hospital,Pharmacy,General,3624 Park Way,Chicago,IL,60601,(664) 549-3578,True,4.4,1.32
+PRV00081,Regional General Hospital,Clinic,Orthopedics,915 Lake Ave,Denver,CO,80201,(478) 653-7947,True,3.9,0.92
+PRV00082,St. Community Associates,Hospital,Oncology,9817 Pine Dr,Indianapolis,IN,46201,(246) 425-7475,True,3.1,0.86
+PRV00083,Mount Community Clinic,Physician,Cardiology,226 Pine Way,San Antonio,TX,78201,(379) 332-7229,True,3.5,1.15
+PRV00084,Valley General Associates,Urgent Care,Primary Care,7247 Main Ct,Miami,FL,33101,(279) 520-8033,True,4.4,1.03
+PRV00085,City General Clinic,Clinic,Internal Medicine,7638 River Ln,Houston,TX,77001,(290) 647-2734,True,4.2,1.12
+PRV00086,Valley Community Center,Physician,Orthopedics,1351 Elm Ave,Fort Worth,TX,76101,(743) 722-4176,True,3.7,1.28
+PRV00087,Mount Memorial Hospital,Clinic,Oncology,3332 Maple Rd,Portland,OR,97201,(978) 977-2234,False,4.5,1.1
+PRV00088,Regional Medical Clinic,Urgent Care,Pediatrics,2573 Pine Ave,Denver,CO,80201,(680) 652-5961,True,4.2,0.98
+PRV00089,Valley Medical Associates,Hospital,Primary Care,6141 River Dr,Chicago,IL,60601,(278) 860-2479,True,4.0,1.07
+PRV00090,St. Medical Center,Physician,Internal Medicine,7892 Elm Rd,Seattle,WA,98101,(263) 661-2695,True,4.7,1.49
+PRV00091,Regional Memorial Hospital,Clinic,Emergency,7299 Elm Rd,Chicago,IL,60601,(572) 581-5634,True,4.5,1.24
+PRV00092,Valley General Clinic,Hospital,General,6433 Second Dr,Los Angeles,CA,90001,(941) 872-3463,True,4.2,0.81
+PRV00093,Valley Medical Center,Lab,Cardiology,5172 Elm Way,Jacksonville,FL,32099,(858) 536-3093,True,4.7,1.29
+PRV00094,Regional General Associates,Lab,Pediatrics,398 Third Dr,Miami,FL,33101,(384) 419-6598,True,4.0,0.88
+PRV00095,Mount General Clinic,Urgent Care,Cardiology,8417 Forest St,Phoenix,AZ,85001,(877) 544-3147,True,3.3,0.84
+PRV00096,Regional Memorial Associates,Hospital,OB/GYN,6068 Lake Blvd,Atlanta,GA,30301,(654) 825-5668,True,4.6,0.89
+PRV00097,Valley Medical Center,Physician,Internal Medicine,7318 Pine Dr,San Diego,CA,92101,(996) 591-9239,True,4.9,1.35
+PRV00098,Mount Community Hospital,Pharmacy,Emergency,6181 Elm Ave,Boston,MA,02101,(928) 728-3042,True,4.5,0.92
+PRV00099,Mount Medical Hospital,Clinic,Emergency,5827 Sunset St,Indianapolis,IN,46201,(624) 254-7495,True,3.5,1.5
+PRV00100,Mount General Clinic,Hospital,Pediatrics,2492 Maple St,Jacksonville,FL,32099,(493) 683-3273,True,3.9,1.19
+PRV00101,St. Community Center,Urgent Care,Orthopedics,9091 Hill Way,Chicago,IL,60601,(313) 994-5720,True,3.2,0.89
+PRV00102,Regional Medical Hospital,Hospital,Emergency,9876 Elm St,Portland,OR,97201,(847) 727-4963,True,3.6,0.7
+PRV00103,Mount Medical Center,Pharmacy,Cardiology,8676 Third Ave,Jacksonville,FL,32099,(738) 757-9312,True,4.0,0.72
+PRV00104,St. Medical Clinic,Physician,Primary Care,5950 Forest Ave,San Francisco,CA,94101,(553) 446-2698,True,4.5,0.97
+PRV00105,Valley Community Center,Urgent Care,Emergency,7940 Lake Rd,Los Angeles,CA,90001,(338) 264-8498,False,3.4,1.33
+PRV00106,Valley Community Associates,Urgent Care,General,7856 Second St,Los Angeles,CA,90001,(971) 862-4131,True,4.7,0.74
+PRV00107,Valley Community Hospital,Urgent Care,Pediatrics,7259 Sunset Way,Portland,OR,97201,(961) 650-7334,True,3.4,1.25
+PRV00108,Regional Community Hospital,Pharmacy,OB/GYN,1393 Park Rd,Jacksonville,FL,32099,(758) 500-6262,False,3.7,0.94
+PRV00109,Regional Medical Center,Pharmacy,Emergency,5859 Pine St,Charlotte,NC,28201,(944) 561-8126,True,5.0,1.46
+PRV00110,City Community Center,Hospital,Orthopedics,7279 Main Rd,Chicago,IL,60601,(268) 441-7001,True,4.9,0.73
+PRV00111,City Community Clinic,Specialist,Cardiology,9503 Maple Ln,Phoenix,AZ,85001,(607) 521-5566,True,3.2,1.29
+PRV00112,Regional Medical Hospital,Physician,Oncology,7411 First Dr,San Francisco,CA,94101,(910) 702-4279,False,4.7,1.06
+PRV00113,City General Clinic,Pharmacy,Pediatrics,1163 Elm Dr,Atlanta,GA,30301,(507) 361-3852,True,4.0,0.8
+PRV00114,Mount Memorial Associates,Hospital,Pediatrics,9177 Washington Ln,San Antonio,TX,78201,(678) 764-3126,True,3.2,0.95
+PRV00115,City Medical Associates,Urgent Care,Internal Medicine,1308 Maple Ln,Atlanta,GA,30301,(857) 275-8372,True,4.0,0.8
+PRV00116,Regional Memorial Center,Specialist,General,1007 River Ave,Seattle,WA,98101,(730) 356-5982,False,3.6,1.27
+PRV00117,Regional Community Hospital,Physician,Neurology,9124 Second Rd,Jacksonville,FL,32099,(840) 510-9740,False,4.3,1.17
+PRV00118,Mount Memorial Clinic,Urgent Care,Internal Medicine,774 River St,Denver,CO,80201,(283) 246-5336,True,4.5,1.03
+PRV00119,St. Medical Clinic,Pharmacy,Oncology,8012 First Way,Portland,OR,97201,(504) 664-2195,True,3.3,1.03
+PRV00120,Mount Community Center,Physician,Pediatrics,5758 Park Rd,Charlotte,NC,28201,(978) 579-9437,True,3.6,1.07
+PRV00121,City Memorial Center,Hospital,Primary Care,4854 Park Way,Dallas,TX,75201,(454) 363-6364,True,4.4,0.85
+PRV00122,City Medical Associates,Physician,Emergency,479 Oak Way,Philadelphia,PA,19101,(717) 668-4944,True,3.7,0.74
+PRV00123,Regional Medical Clinic,Lab,Primary Care,1861 Park Rd,San Francisco,CA,94101,(470) 944-6992,True,3.7,1.02
+PRV00124,Regional Memorial Clinic,Lab,Oncology,1304 Park Ct,Denver,CO,80201,(982) 763-5582,True,4.2,1.19
+PRV00125,St. Medical Clinic,Urgent Care,Pediatrics,9239 Third Rd,Phoenix,AZ,85001,(403) 816-9341,True,3.1,0.73
+PRV00126,Valley Medical Associates,Clinic,Internal Medicine,8546 Maple Ln,Atlanta,GA,30301,(827) 526-3662,True,4.2,1.37
+PRV00127,Valley Medical Clinic,Specialist,Primary Care,6135 Third Ave,Denver,CO,80201,(626) 797-6040,True,4.5,1.25
+PRV00128,Regional Medical Clinic,Pharmacy,Internal Medicine,9563 First St,New York,NY,10001,(797) 691-3793,True,4.4,1.32
+PRV00129,Mount Memorial Hospital,Lab,Cardiology,3225 Main Ct,Fort Worth,TX,76101,(521) 628-3481,True,3.4,1.1
+PRV00130,City General Center,Lab,Neurology,9289 Third Ct,Boston,MA,02101,(738) 585-6140,True,3.9,1.13
+PRV00131,Valley Community Associates,Clinic,Neurology,4671 Elm Dr,Seattle,WA,98101,(430) 504-5735,True,4.4,1.09
+PRV00132,Valley Community Clinic,Hospital,Internal Medicine,8999 Park Way,San Francisco,CA,94101,(553) 991-3399,True,3.6,1.27
+PRV00133,City Community Associates,Clinic,Neurology,8924 Second Dr,Jacksonville,FL,32099,(340) 311-4920,True,4.3,1.12
+PRV00134,Mount General Hospital,Specialist,Pediatrics,7839 Oak Rd,Portland,OR,97201,(205) 763-3587,True,4.9,1.4
+PRV00135,Mount Community Clinic,Physician,Primary Care,1565 Lake Blvd,San Francisco,CA,94101,(747) 956-1611,True,3.4,1.41
+PRV00136,St. Medical Associates,Clinic,Oncology,713 Main Dr,Philadelphia,PA,19101,(781) 817-2758,True,3.7,1.06
+PRV00137,Regional Medical Center,Urgent Care,General,7768 Second Blvd,Portland,OR,97201,(315) 538-3662,True,4.3,1.27
+PRV00138,Valley Community Center,Clinic,Internal Medicine,6743 River Way,New York,NY,10001,(727) 535-2421,True,3.2,1.49
+PRV00139,Valley Memorial Hospital,Physician,OB/GYN,3958 Pine Dr,San Francisco,CA,94101,(537) 509-1187,True,3.7,0.89
+PRV00140,St. Medical Clinic,Clinic,OB/GYN,8333 Sunset Dr,Miami,FL,33101,(906) 320-5833,True,3.4,1.47
+PRV00141,Mount Medical Clinic,Specialist,General,7814 Forest Blvd,San Francisco,CA,94101,(980) 453-2341,True,4.1,0.99
+PRV00142,St. General Center,Lab,General,2555 Maple Ln,Denver,CO,80201,(732) 652-2904,True,4.4,1.09
+PRV00143,City General Associates,Clinic,General,6906 Pine St,Indianapolis,IN,46201,(772) 673-6049,True,3.8,1.35
+PRV00144,Mount General Hospital,Specialist,Pediatrics,1144 Elm St,Minneapolis,MN,55401,(270) 683-1519,True,3.4,0.81
+PRV00145,City Community Associates,Specialist,OB/GYN,6254 Oak Rd,Portland,OR,97201,(869) 556-2943,False,4.1,1.12
+PRV00146,Mount General Hospital,Physician,Emergency,9020 Park Way,Minneapolis,MN,55401,(435) 453-8546,True,3.6,1.45
+PRV00147,St. General Associates,Lab,Primary Care,4043 First Ave,Minneapolis,MN,55401,(303) 808-1550,True,4.3,1.4
+PRV00148,St. Medical Associates,Clinic,General,3659 Forest St,San Diego,CA,92101,(343) 715-5739,True,4.8,1.16
+PRV00149,Regional Community Center,Physician,Orthopedics,8640 First Way,Denver,CO,80201,(507) 481-1998,True,4.2,1.29
+PRV00150,City Medical Hospital,Physician,OB/GYN,8692 Third Way,Philadelphia,PA,19101,(618) 352-5913,True,4.5,1.08
+PRV00151,Valley Memorial Associates,Hospital,General,6861 Park Rd,San Diego,CA,92101,(597) 448-5177,True,4.3,1.44
+PRV00152,St. Memorial Hospital,Physician,OB/GYN,9978 Main Ave,Jacksonville,FL,32099,(392) 979-4555,True,4.7,0.97
+PRV00153,Mount Memorial Hospital,Pharmacy,Emergency,4074 Hill Blvd,New York,NY,10001,(606) 445-6269,True,3.8,1.13
+PRV00154,Valley Community Clinic,Lab,Emergency,7735 Oak Ct,Jacksonville,FL,32099,(979) 527-4328,True,3.8,1.15
+PRV00155,Mount General Clinic,Lab,Internal Medicine,9588 Hill Way,San Diego,CA,92101,(502) 356-4214,True,3.8,1.37
+PRV00156,Regional Community Clinic,Urgent Care,Emergency,8137 Pine Rd,San Francisco,CA,94101,(950) 560-3773,False,4.1,0.85
+PRV00157,St. General Hospital,Urgent Care,Primary Care,204 Park Rd,Seattle,WA,98101,(845) 436-2113,True,3.0,1.1
+PRV00158,St. Medical Associates,Hospital,Primary Care,8819 Elm Way,Jacksonville,FL,32099,(212) 217-9673,True,4.1,0.93
+PRV00159,City Memorial Hospital,Hospital,General,2539 First Blvd,Indianapolis,IN,46201,(834) 739-5135,True,3.5,1.02
+PRV00160,City Medical Center,Pharmacy,Neurology,5014 Lake Ave,Jacksonville,FL,32099,(869) 865-1519,False,3.8,1.14
+PRV00161,St. Memorial Hospital,Specialist,OB/GYN,5527 Washington Ave,Los Angeles,CA,90001,(740) 243-4764,True,4.7,1.41
+PRV00162,Valley General Hospital,Pharmacy,Oncology,8997 Washington St,San Francisco,CA,94101,(383) 522-1256,True,4.2,1.3
+PRV00163,City General Clinic,Clinic,Internal Medicine,4039 Washington Way,Atlanta,GA,30301,(893) 753-6435,True,4.5,1.33
+PRV00164,St. Community Hospital,Hospital,OB/GYN,3903 River Ave,Atlanta,GA,30301,(548) 819-7499,True,3.7,1.21
+PRV00165,City Memorial Clinic,Lab,OB/GYN,7175 Maple Way,Charlotte,NC,28201,(287) 990-5839,True,4.4,0.77
+PRV00166,City Memorial Associates,Physician,Pediatrics,1845 Oak St,Phoenix,AZ,85001,(515) 655-6896,True,3.2,0.77
+PRV00167,City Medical Hospital,Hospital,Cardiology,5898 Elm Ave,Columbus,OH,43201,(811) 812-6315,True,3.0,1.03
+PRV00168,Regional Memorial Center,Pharmacy,OB/GYN,2877 Maple Dr,Chicago,IL,60601,(508) 474-9079,False,3.3,0.92
+PRV00169,City General Clinic,Physician,Neurology,8223 Washington Blvd,San Jose,CA,95101,(668) 309-3219,True,4.9,0.97
+PRV00170,City Community Associates,Physician,OB/GYN,9838 Maple Dr,Boston,MA,02101,(528) 817-4290,True,3.4,1.02
+PRV00171,Valley Medical Center,Physician,OB/GYN,4692 River Way,Austin,TX,78701,(573) 316-4273,True,4.1,1.25
+PRV00172,St. Medical Center,Specialist,Oncology,1233 River Way,Seattle,WA,98101,(889) 711-3280,True,3.5,1.23
+PRV00173,City Medical Hospital,Specialist,Internal Medicine,7951 Washington Way,Atlanta,GA,30301,(747) 718-7853,True,4.6,0.99
+PRV00174,Regional General Hospital,Urgent Care,Neurology,5916 Maple St,Seattle,WA,98101,(776) 860-7547,True,3.7,1.34
+PRV00175,St. General Clinic,Clinic,General,8599 Elm Blvd,Houston,TX,77001,(656) 583-7408,True,4.4,1.25
+PRV00176,Valley General Associates,Hospital,Oncology,6915 Sunset Ave,Phoenix,AZ,85001,(318) 947-3321,True,3.7,1.33
+PRV00177,City Community Associates,Hospital,Emergency,7512 Third Ave,Indianapolis,IN,46201,(507) 245-2885,False,3.7,0.79
+PRV00178,Mount Memorial Center,Physician,General,7085 Pine Blvd,Philadelphia,PA,19101,(614) 844-4022,False,4.3,1.02
+PRV00179,Regional Memorial Associates,Lab,OB/GYN,6470 Main Blvd,Minneapolis,MN,55401,(410) 485-2025,True,4.6,1.13
+PRV00180,Valley Memorial Associates,Hospital,Oncology,8119 Elm Ln,Jacksonville,FL,32099,(811) 597-7431,True,3.7,1.38
+PRV00181,Mount Community Hospital,Pharmacy,Orthopedics,5231 Oak Blvd,Boston,MA,02101,(512) 319-3999,True,3.3,1.01
+PRV00182,Mount Medical Associates,Clinic,Emergency,8904 Hill Rd,Boston,MA,02101,(768) 370-9022,True,3.4,1.37
+PRV00183,St. Community Hospital,Specialist,Orthopedics,3296 River Way,Boston,MA,02101,(775) 717-9109,True,4.0,1.27
+PRV00184,City Memorial Hospital,Lab,Primary Care,3713 Second St,Charlotte,NC,28201,(481) 430-9808,True,4.6,1.15
+PRV00185,Regional General Hospital,Physician,General,6110 Elm St,San Francisco,CA,94101,(978) 936-8231,True,5.0,0.78
+PRV00186,Mount Community Hospital,Specialist,Oncology,5811 River Ave,Portland,OR,97201,(649) 320-4882,True,4.5,1.25
+PRV00187,Regional Medical Center,Lab,Orthopedics,3485 River Blvd,Atlanta,GA,30301,(260) 783-6747,True,4.2,0.83
+PRV00188,Valley Community Clinic,Urgent Care,General,1660 Maple Way,Atlanta,GA,30301,(260) 483-3078,True,3.3,0.82
+PRV00189,Mount Medical Associates,Clinic,Internal Medicine,4502 Lake Way,Austin,TX,78701,(584) 662-2237,True,4.8,0.77
+PRV00190,Valley Community Associates,Specialist,Pediatrics,9634 Main Ave,Indianapolis,IN,46201,(948) 669-6869,True,4.6,1.02
+PRV00191,Mount Medical Clinic,Physician,Oncology,5633 Elm Rd,Columbus,OH,43201,(779) 696-6631,True,4.5,0.74
+PRV00192,City General Hospital,Urgent Care,Orthopedics,7330 Pine St,Portland,OR,97201,(638) 407-3161,True,3.6,1.4
+PRV00193,St. Community Clinic,Hospital,Pediatrics,2811 Main Way,Dallas,TX,75201,(840) 512-4836,True,3.2,0.78
+PRV00194,City General Center,Lab,Neurology,8610 Lake Ct,San Antonio,TX,78201,(209) 208-6629,True,5.0,1.04
+PRV00195,City General Center,Specialist,Cardiology,1778 Oak Ln,Phoenix,AZ,85001,(576) 506-3246,True,4.6,1.4
+PRV00196,Mount General Hospital,Lab,Orthopedics,7310 Third Blvd,Portland,OR,97201,(843) 966-3480,True,4.2,1.05
+PRV00197,St. General Center,Urgent Care,Cardiology,9759 Hill Way,San Antonio,TX,78201,(559) 639-6152,True,3.5,1.22
+PRV00198,Regional Community Hospital,Urgent Care,Oncology,3466 Elm Blvd,San Diego,CA,92101,(965) 601-5842,True,4.6,1.34
+PRV00199,City Medical Hospital,Clinic,Emergency,9830 Oak St,San Diego,CA,92101,(569) 524-3162,True,4.7,1.04
+PRV00200,Mount Medical Hospital,Hospital,Internal Medicine,1206 Main Dr,Seattle,WA,98101,(420) 240-1990,True,3.8,0.93
+PRV00201,Regional Medical Associates,Pharmacy,OB/GYN,1450 Lake Rd,Atlanta,GA,30301,(484) 285-6077,False,4.8,1.48
+PRV00202,Regional Community Associates,Lab,Cardiology,5181 Hill Way,Phoenix,AZ,85001,(947) 444-1948,True,4.8,0.79
+PRV00203,Regional General Clinic,Pharmacy,Orthopedics,2056 Main Rd,Boston,MA,02101,(918) 211-3684,True,3.7,1.11
+PRV00204,Valley Memorial Clinic,Clinic,Oncology,2034 Forest St,Minneapolis,MN,55401,(543) 639-5456,True,3.5,1.48
+PRV00205,St. Medical Associates,Lab,Pediatrics,1008 Pine Rd,Portland,OR,97201,(576) 361-5179,True,4.8,1.24
+PRV00206,Mount General Hospital,Urgent Care,Primary Care,4106 Main Ct,Houston,TX,77001,(572) 592-3458,False,4.9,0.73
+PRV00207,City Memorial Clinic,Clinic,OB/GYN,5341 Second Ave,Atlanta,GA,30301,(785) 581-2956,True,4.8,0.84
+PRV00208,St. Medical Hospital,Specialist,Oncology,5190 Third Ave,Indianapolis,IN,46201,(766) 667-1130,True,3.6,1.33
+PRV00209,Regional Memorial Associates,Physician,Internal Medicine,8183 Forest Blvd,Minneapolis,MN,55401,(950) 759-5016,False,4.9,0.72
+PRV00210,Valley General Clinic,Hospital,OB/GYN,5138 Oak Blvd,Seattle,WA,98101,(742) 443-7878,True,3.1,1.5
+PRV00211,Valley General Hospital,Clinic,General,6867 Hill Ln,Atlanta,GA,30301,(669) 965-2391,True,4.0,1.21
+PRV00212,St. General Associates,Pharmacy,Orthopedics,3979 Second Dr,Fort Worth,TX,76101,(522) 602-6345,True,3.5,0.76
+PRV00213,Mount General Center,Hospital,Orthopedics,7465 Pine Ln,San Antonio,TX,78201,(616) 323-9780,True,4.5,1.06
+PRV00214,Valley General Hospital,Clinic,Oncology,9984 Main Blvd,Charlotte,NC,28201,(535) 351-2494,True,4.9,1.02
+PRV00215,Valley Community Center,Hospital,OB/GYN,7508 Elm Blvd,Los Angeles,CA,90001,(296) 673-2669,True,3.3,0.71
+PRV00216,Mount Memorial Associates,Physician,Cardiology,9640 Washington Dr,San Diego,CA,92101,(276) 222-2056,False,4.3,1.35
+PRV00217,Valley General Hospital,Specialist,Primary Care,2852 Sunset Way,Chicago,IL,60601,(941) 604-9128,False,4.4,0.84
+PRV00218,Mount Community Clinic,Specialist,Orthopedics,667 Washington Blvd,San Antonio,TX,78201,(862) 502-9173,True,4.1,0.75
+PRV00219,City Memorial Associates,Clinic,General,4182 Lake St,Dallas,TX,75201,(591) 930-6883,True,4.6,0.98
+PRV00220,Regional Community Associates,Physician,Orthopedics,527 Third Blvd,Denver,CO,80201,(230) 997-5602,False,5.0,1.12
+PRV00221,Mount Memorial Hospital,Clinic,Neurology,4466 Elm St,Denver,CO,80201,(982) 424-7363,True,4.7,1.38
+PRV00222,Mount Community Clinic,Lab,Primary Care,5861 Washington Rd,Philadelphia,PA,19101,(776) 392-9064,True,3.4,0.73
+PRV00223,Mount Memorial Hospital,Lab,Emergency,111 Third Blvd,Los Angeles,CA,90001,(333) 548-3907,True,4.7,0.96
+PRV00224,Mount Memorial Hospital,Urgent Care,General,6078 Oak Ln,New York,NY,10001,(921) 878-7481,True,3.7,0.96
+PRV00225,City Medical Clinic,Clinic,General,5946 First Rd,Philadelphia,PA,19101,(587) 514-5825,False,4.5,1.46
+PRV00226,City General Center,Lab,Pediatrics,3719 Lake Ave,Denver,CO,80201,(708) 344-6425,True,3.5,1.49
+PRV00227,St. Community Associates,Hospital,Oncology,3535 First Ave,Philadelphia,PA,19101,(558) 462-2770,True,3.1,1.05
+PRV00228,Mount Medical Associates,Specialist,Pediatrics,9046 Park Ave,Columbus,OH,43201,(690) 791-4695,False,3.1,1.38
+PRV00229,St. Community Clinic,Hospital,Cardiology,5700 Maple Way,San Jose,CA,95101,(364) 949-2228,True,4.8,0.77
+PRV00230,Regional Medical Hospital,Specialist,Orthopedics,7213 Maple St,Boston,MA,02101,(303) 539-4367,True,3.8,1.14
+PRV00231,Regional Community Clinic,Physician,Neurology,1671 Main Way,Minneapolis,MN,55401,(785) 762-9043,False,3.7,1.04
+PRV00232,Regional Medical Center,Hospital,Primary Care,3490 Maple Dr,San Jose,CA,95101,(283) 684-2892,True,3.8,1.09
+PRV00233,Valley General Associates,Clinic,Pediatrics,6349 Third Rd,Miami,FL,33101,(656) 245-5313,True,3.5,1.37
+PRV00234,St. Memorial Hospital,Hospital,Pediatrics,8971 Park Blvd,Denver,CO,80201,(766) 262-7342,True,3.8,1.13
+PRV00235,Regional Memorial Associates,Physician,Cardiology,6568 Sunset St,San Francisco,CA,94101,(714) 784-9467,True,4.4,1.2
+PRV00236,City Memorial Center,Clinic,Neurology,2167 Main Way,Houston,TX,77001,(280) 899-8133,True,4.6,0.82
+PRV00237,Valley Community Hospital,Hospital,OB/GYN,9215 Park Ln,Boston,MA,02101,(482) 732-8506,True,3.0,1.26
+PRV00238,Regional Medical Hospital,Specialist,Orthopedics,2528 Washington Ave,Denver,CO,80201,(308) 776-2654,True,4.7,1.4
+PRV00239,Valley Medical Associates,Lab,Internal Medicine,7850 Main Rd,Columbus,OH,43201,(482) 612-3356,True,4.4,1.02
+PRV00240,Valley Memorial Hospital,Pharmacy,Emergency,4500 Sunset Ln,Fort Worth,TX,76101,(220) 545-5965,True,4.7,1.39
+PRV00241,St. Memorial Center,Physician,Emergency,5357 Second Way,Miami,FL,33101,(819) 861-2462,False,3.4,1.36
+PRV00242,City Community Hospital,Lab,Orthopedics,1175 Second Way,Minneapolis,MN,55401,(338) 999-9589,True,3.1,0.85
+PRV00243,St. Memorial Hospital,Specialist,Primary Care,6004 Hill Blvd,San Antonio,TX,78201,(480) 577-8605,True,4.3,0.8
+PRV00244,Mount Community Associates,Lab,Emergency,3009 River Ct,New York,NY,10001,(800) 764-6730,True,4.7,0.91
+PRV00245,St. Community Hospital,Specialist,Primary Care,2769 River Blvd,Atlanta,GA,30301,(426) 862-4688,True,3.5,1.03
+PRV00246,St. Medical Center,Pharmacy,Orthopedics,9949 Forest St,New York,NY,10001,(429) 458-6004,True,4.4,0.92
+PRV00247,Valley Medical Clinic,Clinic,Emergency,5050 Lake Way,Fort Worth,TX,76101,(798) 304-1120,True,4.3,1.37
+PRV00248,Regional Community Clinic,Pharmacy,Cardiology,7992 Oak Ln,Jacksonville,FL,32099,(483) 855-6327,True,3.5,1.27
+PRV00249,Valley Memorial Center,Lab,Neurology,1030 Forest Way,Portland,OR,97201,(876) 527-3292,True,4.3,1.5
+PRV00250,City Medical Associates,Pharmacy,Primary Care,9652 Hill Blvd,Dallas,TX,75201,(551) 943-4643,True,4.3,1.08

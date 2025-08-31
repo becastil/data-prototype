@@ -1,0 +1,21 @@
+icd10_code,medical_description,laymans_term,diagnosis_category,hcc_code,risk_weight
+E11.9,Type 2 diabetes mellitus without complications,Diabetes,Chronic,HCC180,2.23
+I10,Essential (primary) hypertension,High blood pressure,Chronic,HCC57,2.61
+E78.5,"Hyperlipidemia, unspecified",High cholesterol,Chronic,,0.64
+K21.9,Gastro-esophageal reflux disease without esophagitis,GERD,Chronic,,1.18
+F41.9,"Anxiety disorder, unspecified",Anxiety,Chronic,HCC195,1.37
+M79.3,Myalgia,Muscle pain,Chronic,HCC179,0.74
+J44.0,COPD with acute lower respiratory infection,COPD,Chronic,,1.2
+N39.0,Urinary tract infection,UTI,Chronic,,0.8
+E66.9,"Obesity, unspecified",Obesity,Chronic,,1.33
+G43.909,"Migraine, unspecified",Migraine,Chronic,HCC27,2.41
+M54.5,Low back pain,Back pain,Acute,,1.59
+J06.9,Acute upper respiratory infection,Common cold,Acute,,1.61
+B34.2,Coronavirus infection,COVID-19,Acute,HCC155,1.13
+Z23,Encounter for immunization,Vaccination,Acute,,1.3
+Z00.00,General adult medical examination,Check-up,Acute,,3.31
+I25.10,Atherosclerotic heart disease,Heart disease,Acute,,2.44
+E03.9,"Hypothyroidism, unspecified",Hypothyroidism,Acute,,2.33
+J45.909,Unspecified asthma,Asthma,Acute,HCC21,1.01
+F32.9,Major depressive disorder,Depression,Acute,HCC161,2.69
+M17.9,Osteoarthritis of knee,Knee arthritis,Acute,HCC93,0.99

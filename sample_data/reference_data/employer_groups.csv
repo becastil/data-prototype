@@ -1,0 +1,26 @@
+employer_group_id,company_name,industry,size,effective_date,status
+1,Acme Corporation,Government,Small (1-99),2020-01-31,Active
+2,TechCorp Solutions,Government,Small (1-99),2020-02-29,Active
+3,Global Industries,Manufacturing,Small (1-99),2020-03-31,Active
+4,Premier Manufacturing,Finance,Medium (100-999),2020-04-30,Active
+5,Innovative Systems,Manufacturing,Medium (100-999),2020-05-31,Active
+6,Digital Dynamics,Government,Small (1-99),2020-06-30,Active
+7,Alpha Enterprises,Government,Small (1-99),2020-07-31,Active
+8,Omega Holdings,Healthcare,Medium (100-999),2020-08-31,Active
+9,Strategic Partners,Retail,Small (1-99),2020-09-30,Active
+10,Unified Services,Retail,Large (1000+),2020-10-31,Active
+11,Peak Performance,Manufacturing,Small (1-99),2020-11-30,Active
+12,Summit Group,Education,Small (1-99),2020-12-31,Active
+13,Apex Technologies,Finance,Medium (100-999),2021-01-31,Active
+14,Zenith Corporation,Education,Medium (100-999),2021-02-28,Active
+15,Prime Solutions,Finance,Small (1-99),2021-03-31,Active
+16,Core Industries,Technology,Small (1-99),2021-04-30,Active
+17,Vertex Systems,Healthcare,Large (1000+),2021-05-31,Active
+18,Quantum Enterprises,Technology,Medium (100-999),2021-06-30,Active
+19,Fusion Corp,Government,Small (1-99),2021-07-31,Active
+20,Nexus Holdings,Government,Medium (100-999),2021-08-31,Active
+21,Synergy Partners,Education,Small (1-99),2021-09-30,Active
+22,Vanguard Group,Healthcare,Small (1-99),2021-10-31,Active
+23,Pioneer Industries,Technology,Small (1-99),2021-11-30,Active
+24,Elite Services,Government,Medium (100-999),2021-12-31,Terminated
+25,Matrix Corp,Government,Small (1-99),2022-01-31,Terminated

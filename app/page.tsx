@@ -15,13 +15,20 @@ import DomesticVsNonDomesticChart from './components/DomesticVsNonDomesticChart'
 import ThemeToggle from './components/ThemeToggle';
 import GooeyFilter from './components/GooeyFilter';
 import GooeyLoader from './components/GooeyLoader';
+import RiveLoader from './components/RiveLoader';
 import MetaballSuccess from './components/MetaballSuccess';
+import RiveSuccess from './components/RiveSuccess';
+import MotionButton from './components/MotionButton';
+import MotionCard from './components/MotionCard';
 import AccessibleIcon from './components/AccessibleIcon';
 import Sidebar from './components/Sidebar';
 import { ParsedCSVData } from './components/CSVLoader';
+import { useAutoAnimateCards } from './hooks/useAutoAnimate';
 import { RotateCcw, TableIcon, ChartBar, Bell, Search } from 'lucide-react';
 
 const Home: React.FC = () => {
+  const chartsGridRef = useAutoAnimateCards<HTMLDivElement>();
+  const navigationRef = useAutoAnimateCards<HTMLDivElement>();
   const [showDashboard, setShowDashboard] = useState(false);
   const [budgetData, setBudgetData] = useState<ParsedCSVData | null>(null);
   const [claimsData, setClaimsData] = useState<ParsedCSVData | null>(null);
@@ -83,7 +90,7 @@ const Home: React.FC = () => {
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
               >
                 <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-2xl">
-                  <GooeyLoader size="lg" />
+                  <RiveLoader size="lg" />
                   <p className="text-center mt-4 text-gray-600 dark:text-gray-400 font-subheading">
                     Processing your data...
                   </p>
@@ -100,7 +107,7 @@ const Home: React.FC = () => {
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
               >
                 <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-2xl">
-                  <MetaballSuccess isVisible={true} size="lg" />
+                  <RiveSuccess isVisible={true} size="lg" />
                   <p className="text-center mt-4 text-gray-600 dark:text-gray-400 font-subheading">
                     Data loaded successfully!
                   </p>
@@ -147,14 +154,11 @@ const Home: React.FC = () => {
               </div>
               <div className="flex items-center gap-3">
                 <ThemeToggle />
-                <motion.button
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                <MotionButton
                   onClick={handleReset}
-                  className="px-5 py-2.5 bg-black text-white hover:bg-gray-800 transition-all shadow-lg flex items-center gap-2 btn"
-                  aria-label="Upload new data files"
+                  className="shadow-lg flex items-center gap-2"
+                  variant="primary"
+                  size="md"
                 >
                   <AccessibleIcon
                     icon={<RotateCcw />}
@@ -166,17 +170,17 @@ const Home: React.FC = () => {
                     className="!bg-transparent !border-0 !p-0 !shadow-none hover:!bg-transparent"
                   />
                   Upload New Data
-                </motion.button>
+                </MotionButton>
               </div>
             </div>
             
             {/* Page Navigation Tabs */}
-            <div className="flex gap-2 panel-elevated shadow-lg p-1.5 inline-flex">
+            <div ref={navigationRef} className="flex gap-2 panel-elevated shadow-lg p-1.5 inline-flex">
               <button
                 onClick={() => setCurrentPage('table')}
-                className={`px-6 py-2 transition-all flex items-center gap-2 btn-squared ${
+                className={`px-6 py-2 nav-item-perf flex items-center gap-2 btn-squared ${
                   currentPage === 'table'
-                    ? 'bg-black text-white shadow-md'
+                    ? 'bg-black text-white shadow-md active'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
                 }`}
               >
@@ -185,9 +189,9 @@ const Home: React.FC = () => {
               </button>
               <button
                 onClick={() => setCurrentPage('charts')}
-                className={`px-6 py-2 transition-all flex items-center gap-2 btn-squared ${
+                className={`px-6 py-2 nav-item-perf flex items-center gap-2 btn-squared ${
                   currentPage === 'charts'
-                    ? 'bg-black text-white shadow-md'
+                    ? 'bg-black text-white shadow-md active'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
                 }`}
               >
@@ -226,28 +230,21 @@ const Home: React.FC = () => {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.3 }}
+                    ref={chartsGridRef}
                     className="grid grid-cols-1 lg:grid-cols-2 gap-6"
                   >
                 {/* Tile 1: Budget vs Expenses Chart with Recharts */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                >
+                <MotionCard delay={0.1}>
                   <RechartsBudgetChart data={budgetData?.rows || []} />
-                </motion.div>
+                </MotionCard>
 
                 {/* Tile 2: Claims Breakdown Chart */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
+                <MotionCard delay={0.2}>
                   <ClaimsBreakdownChart 
                     budgetData={budgetData?.rows || []} 
                     claimsData={claimsData?.rows || []}
                   />
-                </motion.div>
+                </MotionCard>
 
                 {/* Tile 3: Medical Claims Breakdown Pie Chart */}
                 <motion.div

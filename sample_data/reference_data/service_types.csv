@@ -1,0 +1,17 @@
+service_type_id,service_type,category,requires_auth,typical_cost_min,typical_cost_max
+1,Professional,Medical,True,100,2000
+2,Outpatient,Medical,True,500,5000
+3,Inpatient,Medical,False,5000,50000
+4,Emergency,Medical,True,2000,15000
+5,Pharmacy,Medical,True,50,500
+6,Lab,Medical,True,150,1000
+7,Radiology,Medical,True,400,3000
+8,Surgery,Medical,True,10000,100000
+9,Therapy,Medical,False,200,1500
+10,Preventive,Medical,True,100,500
+11,Specialty,Medical,True,1000,10000
+12,Mental Health,Ancillary,True,300,2000
+13,Dental,Ancillary,True,200,1500
+14,Vision,Ancillary,True,150,800
+15,DME,Ancillary,True,500,5000
+16,Home Health,Ancillary,True,800,5000
