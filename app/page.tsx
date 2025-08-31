@@ -8,11 +8,11 @@ import HCCDataTable from './components/HCCDataTable';
 import RechartsBudgetChart from './components/RechartsBudgetChart';
 import MUIEnrollmentChart from './components/MUIEnrollmentChart';
 import FinancialDataTable from './components/FinancialDataTable';
-import DashboardSummaryTiles from './components/DashboardSummaryTiles';
+import { Dashboard } from './components/ui/dashboard';
 import ClaimsBreakdownChart from './components/ClaimsBreakdownChart';
 import MedicalClaimsBreakdownChart from './components/MedicalClaimsBreakdownChart';
 import DomesticVsNonDomesticChart from './components/DomesticVsNonDomesticChart';
-import ThemeToggle from './components/ThemeToggle';
+import { ThemeToggle } from './components/ui/theme-toggle';
 import GooeyFilter from './components/GooeyFilter';
 import GooeyLoader from './components/GooeyLoader';
 import RiveLoader from './components/RiveLoader';
@@ -20,6 +20,8 @@ import MetaballSuccess from './components/MetaballSuccess';
 import RiveSuccess from './components/RiveSuccess';
 import MotionButton from './components/MotionButton';
 import MotionCard from './components/MotionCard';
+import { Button } from './components/ui/button';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs';
 import AccessibleIcon from './components/AccessibleIcon';
 import Sidebar from './components/Sidebar';
 import { ParsedCSVData } from './components/CSVLoader';
@@ -154,59 +156,44 @@ const Home: React.FC = () => {
               </div>
               <div className="flex items-center gap-3">
                 <ThemeToggle />
-                <MotionButton
+                <Button
                   onClick={handleReset}
-                  className="shadow-lg flex items-center gap-2"
-                  variant="primary"
-                  size="md"
+                  className="shadow-lg"
+                  variant="default"
+                  size="default"
                 >
-                  <AccessibleIcon
-                    icon={<RotateCcw />}
-                    label="Reset and upload new files"
-                    size="sm"
-                    variant="default"
-                    showTooltip={false}
-                    animate={true}
-                    className="!bg-transparent !border-0 !p-0 !shadow-none hover:!bg-transparent"
-                  />
+                  <RotateCcw className="w-4 h-4" />
                   Upload New Data
-                </MotionButton>
+                </Button>
               </div>
             </div>
             
             {/* Page Navigation Tabs */}
-            <div ref={navigationRef} className="flex gap-2 panel-elevated shadow-lg p-1.5 inline-flex">
-              <button
-                onClick={() => setCurrentPage('table')}
-                className={`px-6 py-2 nav-item-perf flex items-center gap-2 btn-squared ${
-                  currentPage === 'table'
-                    ? 'bg-black text-white shadow-md active'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
-                }`}
-              >
-                <TableIcon className="w-4 h-4" />
-                Financial Table
-              </button>
-              <button
-                onClick={() => setCurrentPage('charts')}
-                className={`px-6 py-2 nav-item-perf flex items-center gap-2 btn-squared ${
-                  currentPage === 'charts'
-                    ? 'bg-black text-white shadow-md active'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
-                }`}
-              >
-                <ChartBar className="w-4 h-4" />
-                Charts & Analytics
-              </button>
-            </div>
+            <Tabs value={currentPage} onValueChange={setCurrentPage} className="w-fit">
+              <TabsList ref={navigationRef}>
+                <TabsTrigger value="table" className="flex items-center gap-2">
+                  <TableIcon className="w-4 h-4" />
+                  Financial Table
+                </TabsTrigger>
+                <TabsTrigger value="charts" className="flex items-center gap-2">
+                  <ChartBar className="w-4 h-4" />
+                  Charts & Analytics
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
 
             {/* Main Content Area */}
             <div className="p-8">
               {/* Dashboard Summary Tiles */}
-              <DashboardSummaryTiles 
+              <Dashboard.Root 
                 budgetData={budgetData?.rows || []} 
                 claimsData={claimsData?.rows || []}
-              />
+              >
+                <Dashboard.Budget />
+                <Dashboard.Claims />
+                <Dashboard.Enrollment />
+                <Dashboard.LossRatio />
+              </Dashboard.Root>
 
               {/* Page Content */}
               <AnimatePresence mode="wait">
