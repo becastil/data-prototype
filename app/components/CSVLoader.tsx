@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import Papa from 'papaparse';
 import { Upload, FileSpreadsheet, AlertCircle, CheckCircle, XCircle, Loader2 } from 'lucide-react';
@@ -158,8 +158,15 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dragCounter = useRef<number>(0);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const resetState = useCallback(() => {
+    // Clear progress interval if it exists
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
+    
     setLoadingState('idle');
     setDragState('idle');
     setErrorMessage('');
@@ -187,13 +194,16 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
     setSuccessMessage('');
     
     // Simulate upload progress
-    const progressInterval = setInterval(() => {
+    progressIntervalRef.current = setInterval(() => {
       setUploadProgress(prev => Math.min(prev + 10, 90));
     }, 100);
 
     Papa.parse(file, {
       complete: (result) => {
-        clearInterval(progressInterval);
+        if (progressIntervalRef.current) {
+          clearInterval(progressIntervalRef.current);
+          progressIntervalRef.current = null;
+        }
         setUploadProgress(100);
 
         if (result.errors.length > 0) {
@@ -237,7 +247,10 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
         onDataLoaded(parsedData);
       },
       error: (error) => {
-        clearInterval(progressInterval);
+        if (progressIntervalRef.current) {
+          clearInterval(progressIntervalRef.current);
+          progressIntervalRef.current = null;
+        }
         const errorMsg = `CSV parsing error: ${error.message}`;
         setErrorMessage(errorMsg);
         setLoadingState('error');
@@ -307,6 +320,16 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
 
   const handleClick = useCallback(() => {
     fileInputRef.current?.click();
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+    };
   }, []);
 
   const getDropZoneVariant = () => {

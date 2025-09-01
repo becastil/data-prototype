@@ -104,6 +104,12 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
 
     setChartStatus('Initializing chart...');
 
+    // Dispose existing chart instance before creating new one
+    if (chartInstance.current) {
+      chartInstance.current.dispose();
+      chartInstance.current = null;
+    }
+
     // Use WebGL renderer for performance when enabled
     const renderer = enableWebGL ? 'webgl' : 'canvas';
     

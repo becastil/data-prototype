@@ -27,30 +27,45 @@ const parseNumericValue = (value: any): number => {
   if (typeof value === 'number') return value;
   if (!value) return 0;
   
-  const stringValue = String(value);
-  const cleanedValue = stringValue.replace(/[$,]/g, '');
-  const parsed = parseFloat(cleanedValue);
+  const stringValue = String(value).trim();
   
-  return isNaN(parsed) ? 0 : parsed;
+  // Handle accounting format with parentheses for negative numbers
+  const isNegative = /^\(.*\)$/.test(stringValue);
+  let cleanedValue = stringValue.replace(/[\$,()]/g, '');
+  
+  const parsed = parseFloat(cleanedValue);
+  const result = isNaN(parsed) ? 0 : parsed;
+  
+  return isNegative ? -result : result;
 };
 
 // Helper function to find and sum admin and stop loss fees
 const sumAdminAndStopLossFees = (row: RawDataRow): number => {
   let total = 0;
   
+  // Define explicit sets of column patterns to avoid false positives
+  const adminFeePatterns = ['admin fee', 'administrative fee', 'admin cost'];
+  const stopLossPatterns = ['stop loss premium', 'stop loss fee', 'stoploss premium'];
+  const fixedCostPatterns = ['fixed cost', 'fixed fee', 'fixed admin'];
+  
+  // Exclude patterns that should not be included
+  const excludePatterns = ['reimb', 'rebate', 'refund', 'credit'];
+  
   Object.keys(row).forEach(key => {
-    const keyLower = key.toLowerCase();
-    // Look for admin fees and stop loss fees
-    if (
-      keyLower.includes('admin') || 
-      keyLower.includes('stop') || 
-      keyLower.includes('loss') ||
-      keyLower.includes('fixed')
-    ) {
-      // Skip if it's a reimbursement (we handle that separately)
-      if (!keyLower.includes('reimb')) {
-        total += parseNumericValue(row[key]);
-      }
+    const keyLower = key.toLowerCase().trim();
+    
+    // Skip if it contains exclude patterns
+    if (excludePatterns.some(pattern => keyLower.includes(pattern))) {
+      return;
+    }
+    
+    // Check for exact matches with known patterns
+    const isAdminFee = adminFeePatterns.some(pattern => keyLower.includes(pattern));
+    const isStopLoss = stopLossPatterns.some(pattern => keyLower.includes(pattern));
+    const isFixedCost = fixedCostPatterns.some(pattern => keyLower.includes(pattern));
+    
+    if (isAdminFee || isStopLoss || isFixedCost) {
+      total += parseNumericValue(row[key]);
     }
   });
   
@@ -65,13 +80,31 @@ export const processFinancialData = (
   if (!data || data.length === 0) return [];
   
   const processedData = data.map(row => {
-    // Try to find the appropriate columns by various possible names
+    // Find columns using explicit mapping with priority order
     const findColumn = (patterns: string[]): number => {
+      const normalizedKeys = Object.keys(row).map(key => ({
+        original: key,
+        normalized: key.toLowerCase().trim().replace(/[_\s]+/g, ' ')
+      }));
+      
+      // Try exact matches first, then partial matches
       for (const pattern of patterns) {
-        for (const key of Object.keys(row)) {
-          if (key.toLowerCase().includes(pattern)) {
-            return parseNumericValue(row[key]);
-          }
+        const normalizedPattern = pattern.toLowerCase().trim();
+        
+        // Exact match first
+        const exactMatch = normalizedKeys.find(item => 
+          item.normalized === normalizedPattern
+        );
+        if (exactMatch) {
+          return parseNumericValue(row[exactMatch.original]);
+        }
+        
+        // Partial match as fallback
+        const partialMatch = normalizedKeys.find(item => 
+          item.normalized.includes(normalizedPattern)
+        );
+        if (partialMatch) {
+          return parseNumericValue(row[partialMatch.original]);
         }
       }
       return 0;
@@ -80,10 +113,10 @@ export const processFinancialData = (
     return {
       month: String(row.month || row.Month || row.period || row.Period || ''),
       totalFixedCost: sumAdminAndStopLossFees(row),
-      stopLossReimb: findColumn(['stop', 'loss', 'reimb']),
-      rxRebates: findColumn(['rx', 'rebate']),
-      medicalClaims: findColumn(['medical', 'claim']),
-      rx: findColumn(['rx', 'pharmacy']) - findColumn(['rebate']), // Rx minus rebates if rx includes rebates
+      stopLossReimb: findColumn(['stop loss reimb', 'stop loss reimbursement', 'stoploss reimb']),
+      rxRebates: findColumn(['rx rebate', 'pharmacy rebate', 'prescription rebate']),
+      medicalClaims: findColumn(['medical claims', 'medical claim', 'claims medical']),
+      rx: Math.max(0, findColumn(['rx total', 'pharmacy total', 'prescription total', 'rx', 'pharmacy']) - findColumn(['rx rebate', 'pharmacy rebate'])), // Ensure positive result
       budget: findColumn(['budget', 'target', 'plan']),
     };
   });
@@ -99,7 +132,8 @@ export const processEnrollmentData = (
 ): ProcessedEnrollmentData[] => {
   if (!data || data.length === 0) return [];
   
-  const processedData = data.map((row, index) => {
+  // First pass: extract employee counts
+  const employeeCounts = data.map(row => {
     // Look for Employee Count or similar columns
     let employeeCount = 0;
     
@@ -136,10 +170,15 @@ export const processEnrollmentData = (
       }
     }
     
-    // Calculate change from previous period
-    const previousCount = index > 0 
-      ? parseNumericValue(data[index - 1]['Employee Count'] || data[index - 1]['employeeCount'] || 0)
-      : employeeCount;
+    return employeeCount;
+  });
+  
+  // Second pass: create processed data with correct change calculations
+  const processedData = data.map((row, index) => {
+    const employeeCount = employeeCounts[index];
+    
+    // Calculate change from previous processed item
+    const previousCount = index > 0 ? employeeCounts[index - 1] : employeeCount;
     
     const change = employeeCount - previousCount;
     const percentageChange = previousCount > 0 

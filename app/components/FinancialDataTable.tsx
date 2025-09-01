@@ -338,13 +338,13 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
     const rows = LINE_ITEMS.map(item => {
       const values = matrixData.months.map(month => matrixData.matrix[item.key][month] || 0);
       const total = values.reduce((sum, val) => sum + val, 0);
-      const average = total / values.length;
+      const average = values.length > 0 ? total / values.length : 0;
       
       return [
         item.label,
         ...values.map(v => item.key === 'variance_percent' ? formatPercentage(v) : v),
         item.key === 'variance_percent' ? formatPercentage(total) : total,
-        item.key === 'variance_percent' ? formatPercentage(average) : average.toFixed(0)
+        item.key === 'variance_percent' ? formatPercentage(average) : (average || 0).toFixed(0)
       ].join(',');
     });
     
@@ -720,14 +720,18 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
           <div>
             <p className="text-xs text-gray-600 font-body">Avg Monthly Variance %</p>
             <p className={`text-lg font-semibold font-data ${
-              matrixData.months.reduce((sum, month) => sum + (matrixData.matrix['variance_percent']?.[month] || 0), 0) / matrixData.months.length >= 0
+              (matrixData.months.length > 0 
+                ? matrixData.months.reduce((sum, month) => sum + (matrixData.matrix['variance_percent']?.[month] || 0), 0) / matrixData.months.length 
+                : 0) >= 0
                 ? 'text-black'
                 : 'text-gray-700'
             }`}>
               {formatPercentage(
-                matrixData.months.reduce((sum, month) => 
-                  sum + (matrixData.matrix['variance_percent']?.[month] || 0), 0
-                ) / matrixData.months.length
+                matrixData.months.length > 0 
+                  ? matrixData.months.reduce((sum, month) => 
+                      sum + (matrixData.matrix['variance_percent']?.[month] || 0), 0
+                    ) / matrixData.months.length
+                  : 0
               )}
             </p>
           </div>

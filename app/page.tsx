@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DualCSVLoader from './components/DualCSVLoader';
 import {
@@ -31,7 +31,7 @@ import AccessibleIcon from './components/AccessibleIcon';
 import Sidebar from './components/Sidebar';
 import { ParsedCSVData } from './components/CSVLoader';
 import { useAutoAnimateCards } from './hooks/useAutoAnimate';
-import { RotateCcw, TableIcon, ChartBar, Bell, Search } from 'lucide-react';
+import { RotateCcw, Table, BarChart3, Bell, Search } from 'lucide-react';
 
 const Home: React.FC = () => {
   const chartsGridRef = useAutoAnimateCards<HTMLDivElement>();
@@ -43,19 +43,53 @@ const Home: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<string>('dashboard');
   const [showSuccess, setShowSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Refs for timeout cleanup
+  const timeoutRefs = useRef<{
+    loadingTimeout: NodeJS.Timeout | null;
+    successTimeout: NodeJS.Timeout | null;
+  }>({
+    loadingTimeout: null,
+    successTimeout: null
+  });
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRefs.current.loadingTimeout) {
+        clearTimeout(timeoutRefs.current.loadingTimeout);
+      }
+      if (timeoutRefs.current.successTimeout) {
+        clearTimeout(timeoutRefs.current.successTimeout);
+      }
+    };
+  }, []);
 
   const handleBothFilesLoaded = (budget: ParsedCSVData, claims: ParsedCSVData) => {
     setIsLoading(true);
-    setTimeout(() => {
+    
+    // Clear any existing timeouts
+    if (timeoutRefs.current.loadingTimeout) {
+      clearTimeout(timeoutRefs.current.loadingTimeout);
+    }
+    if (timeoutRefs.current.successTimeout) {
+      clearTimeout(timeoutRefs.current.successTimeout);
+    }
+    
+    timeoutRefs.current.loadingTimeout = setTimeout(() => {
       setBudgetData(budget);
       setClaimsData(claims);
       setIsLoading(false);
       setShowSuccess(true);
-      setTimeout(() => {
+      
+      timeoutRefs.current.successTimeout = setTimeout(() => {
         setShowDashboard(true);
         setShowSuccess(false);
+        timeoutRefs.current.successTimeout = null;
       }, 1500);
+      
       setError('');
+      timeoutRefs.current.loadingTimeout = null;
     }, 1000);
   };
 
@@ -178,11 +212,11 @@ const Home: React.FC = () => {
               <Tabs value={currentPage} onValueChange={setCurrentPage} className="w-fit">
                 <TabsList ref={navigationRef}>
                   <TabsTrigger value="table" className="flex items-center gap-2">
-                    <TableIcon className="w-4 h-4" />
+                    <Table className="w-4 h-4" />
                     Financial Table
                   </TabsTrigger>
                   <TabsTrigger value="charts" className="flex items-center gap-2">
-                    <ChartBar className="w-4 h-4" />
+                    <BarChart3 className="w-4 h-4" />
                     Charts & Analytics
                   </TabsTrigger>
                 </TabsList>
