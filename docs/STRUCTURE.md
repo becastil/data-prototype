@@ -10,9 +10,9 @@ data-prototype/
 │  ├─ components/              # Feature/UI components (presentation)
 │  │  ├─ ui/                   # Reusable UI primitives (button, card, tabs)
 │  │  ├─ charts/               # Chart-related components (ECharts, MUI)
-│  │  ├─ loaders/              # CSV and data-loader components
-│  │  ├─ accessibility/        # A11y helpers (live regions, focus traps)
-│  │  └─ data/                 # Data tables and data views
+│  │  ├─ loaders/              # CSV and data-loader components (wrappers to existing files) (wrappers to existing files)
+│  │  ├─ accessibility/        # A11y helpers (re-exports for clarity)
+│  │  └─ data/                 # Data tables and export views (wrappers)
 │  ├─ utils/                   # Client-side utilities (formatters, processors)
 │  ├─ styles/                  # Vanilla Extract + CSS artifacts
 │  ├─ constants/               # Theme-aware constants (chart colors)
@@ -55,3 +55,25 @@ Using these aliases lets us reorganize folders later without mass import churn.
 - Documentation is consolidated under `docs/` and removed from the project root to reduce noise. Research/ideation artifacts are preserved in `docs/research` and `docs/ideas`.
 - We deliberately keep `app/` at the repository root to avoid a disruptive move to `src/`. This makes the restructure non-breaking and compatible with existing Next.js configuration.
 
+
+### Wrapper-based Restructure (Non-breaking)
+
+To avoid breaking imports while clarifying structure, we introduced thin wrapper files under `app/components/{loaders,data,accessibility}` that re-export existing components. This enables developers to adopt conventional paths like `@components/data/FinancialDataTable` incrementally, without relocating original implementations in a single PR.
+
+Examples:
+- `@components/loaders/CSVLoader` → re-exports `app/components/CSVLoader`
+- `@components/data/EnterpriseDataExport` → re-exports `app/components/EnterpriseDataExport`
+- `@components/accessibility/AccessibilityEnhancements` → re-exports named helpers
+
+When convenient, the underlying implementations can be moved into these folders with no external churn, since imports already point to the wrapper locations.
+
+### Wrapper-based Restructure (Non-breaking)
+
+To avoid breaking imports while clarifying structure, we introduced thin wrapper files under `app/components/{loaders,data,accessibility}` that re-export existing components. This enables developers to adopt conventional paths like `@components/data/FinancialDataTable` incrementally, without relocating original implementations in a single PR.
+
+Examples:
+- `@components/loaders/CSVLoader` → re-exports `app/components/CSVLoader`
+- `@components/data/EnterpriseDataExport` → re-exports `app/components/EnterpriseDataExport`
+- `@components/accessibility/AccessibilityEnhancements` → re-exports named helpers
+
+When convenient, the underlying implementations can be moved into these folders with no external churn, since imports already point to the wrapper locations.

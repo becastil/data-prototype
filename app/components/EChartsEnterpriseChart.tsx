@@ -3,9 +3,9 @@
 import React, { useEffect, useRef, useMemo, useCallback } from 'react';
 import * as echarts from 'echarts';
 import { motion } from 'framer-motion';
-import { chartColors, getChartColors } from '../constants/chartColors';
-import { processFinancialData, formatCurrency } from '../utils/chartDataProcessors';
-import { ChartDescription, LiveRegion, useReducedMotion } from './AccessibilityEnhancements';
+import { chartColors, getChartColors } from '@/app/constants/chartColors';
+import { processFinancialData, formatCurrency } from '@utils/chartDataProcessors';
+import { ChartDescription, LiveRegion, useReducedMotion } from '@components/accessibility/AccessibilityEnhancements';
 
 interface EChartsEnterpriseChartProps {
   data: any[];
@@ -110,8 +110,8 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
       chartInstance.current = null;
     }
 
-    // Use WebGL renderer for performance when enabled
-    // Use canvas renderer for compatibility (ECharts webgl renderer requires extra packages)
+    // ECharts supports 'canvas' and 'svg' renderers; WebGL requires extra packages.
+    // Use canvas renderer for broad compatibility and performance.
     const renderer: echarts.RendererType = 'canvas';
     
     chartInstance.current = echarts.init(chartRef.current, undefined, {
@@ -538,7 +538,7 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-black dark:text-white font-data">
-              {enableWebGL ? 'WebGL' : 'Canvas'}
+              Canvas
             </div>
             <div className="text-sm text-gray-600 dark:text-gray-400 font-body">
               Rendering Mode

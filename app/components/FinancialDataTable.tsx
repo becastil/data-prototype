@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { parseNumericValue, formatCurrency, formatPercentage } from '../utils/chartDataProcessors';
+import { parseNumericValue, formatCurrency, formatPercentage } from '@utils/chartDataProcessors';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Download, 
@@ -14,9 +14,7 @@ import {
   Eye,
   EyeOff,
   Settings,
-  Calendar,
-  ChevronLeft,
-  ChevronRight as ChevronRightIcon
+  Calendar
 } from 'lucide-react';
 
 interface FinancialDataTableProps {
@@ -281,20 +279,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
     return { matrix, months };
   }, [budgetData, claimsData, dateRangeType, customStartDate, customEndDate]);
 
-  // Format currency
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value || 0);
-  };
-
-  // Format percentage
-  const formatPercentage = (value: number) => {
-    return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
-  };
+  // Use shared formatters from utils (imported above)
 
   // Get cell color based on value and type
   const getCellColor = (value: number, category: string, isVariance: boolean = false) => {
@@ -335,21 +320,31 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
 
   // Export to CSV
   const exportToCSV = () => {
-    const headers = ['Line Item', ...matrixData.months, 'Total', 'Average'].join(',');
+    const needsQuoting = (val: string) => /[",\n]/.test(val);
+    const sanitizeForCSV = (val: unknown) => {
+      if (val === null || val === undefined) return '';
+      let s = String(val);
+      // Mitigate CSV formula injection
+      if (/^[=+\-@]/.test(s)) s = ` '${s}`; // prepend apostrophe
+      if (needsQuoting(s)) s = '"' + s.replace(/"/g, '""') + '"';
+      return s;
+    };
+    const headers = ['Line Item', ...matrixData.months, 'Total', 'Average'];
     const rows = LINE_ITEMS.map(item => {
       const values = matrixData.months.map(month => matrixData.matrix[item.key][month] || 0);
       const total = values.reduce((sum, val) => sum + val, 0);
       const average = values.length > 0 ? total / values.length : 0;
-      
+      const valueStrings = values.map(v => item.key === 'variance_percent' ? formatPercentage(v) : Math.round(v));
+      const totalStr = item.key === 'variance_percent' ? formatPercentage(total) : Math.round(total);
+      const avgStr = item.key === 'variance_percent' ? formatPercentage(average) : Math.round(average || 0);
       return [
-        item.label,
-        ...values.map(v => item.key === 'variance_percent' ? formatPercentage(v) : v),
-        item.key === 'variance_percent' ? formatPercentage(total) : total,
-        item.key === 'variance_percent' ? formatPercentage(average) : (average || 0).toFixed(0)
+        sanitizeForCSV(item.label),
+        ...valueStrings.map(sanitizeForCSV),
+        sanitizeForCSV(totalStr),
+        sanitizeForCSV(avgStr)
       ].join(',');
     });
-    
-    const csv = [headers, ...rows].join('\n');
+    const csv = [headers.map(sanitizeForCSV).join(','), ...rows].join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');

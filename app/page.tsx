@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import DualCSVLoader from './components/DualCSVLoader';
+import DualCSVLoader from '@components/loaders/DualCSVLoader';
 import {
   EChartsEnterpriseChart,
   ClaimsBreakdownChart,
@@ -12,28 +12,26 @@ import {
   DomesticVsNonDomesticChart,
   HCCDataTable,
   LazyChartWrapper
-} from './components/LazyCharts';
-import FinancialDataTable from './components/FinancialDataTable';
+} from '@components/LazyCharts';
+import FinancialDataTable from '@components/data/FinancialDataTable';
 import { Dashboard } from './components/ui/dashboard';
-import PerformanceMonitor from './components/PerformanceMonitor';
-import EnterpriseDataExport from './components/EnterpriseDataExport';
-import { ThemeToggle } from './components/ui/theme-toggle';
-import GooeyFilter from './components/GooeyFilter';
-import GooeyLoader from './components/GooeyLoader';
-import RiveLoader from './components/RiveLoader';
-import MetaballSuccess from './components/MetaballSuccess';
-import RiveSuccess from './components/RiveSuccess';
-import MotionButton from './components/MotionButton';
-import MotionCard from './components/MotionCard';
-import { Button } from './components/ui/button';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs';
-import AccessibleIcon from './components/AccessibleIcon';
-import Sidebar from './components/Sidebar';
-import { ParsedCSVData } from './components/CSVLoader';
-import { useAutoAnimateCards } from './hooks/useAutoAnimate';
+import PerformanceMonitor from '@components/PerformanceMonitor';
+import EnterpriseDataExport from '@components/data/EnterpriseDataExport';
+import { ThemeToggle } from '@components/ui/theme-toggle';
+import GooeyFilter from '@components/loaders/GooeyFilter';
+import RiveLoader from '@components/loaders/RiveLoader';
+import MetaballSuccess from '@components/loaders/MetaballSuccess';
+import RiveSuccess from '@components/loaders/RiveSuccess';
+import MotionButton from '@components/MotionButton';
+import MotionCard from '@components/MotionCard';
+import { Button } from '@components/ui/button';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs';
+// Removed unused imports to reduce bundle size
+import { ParsedCSVData } from '@components/loaders/CSVLoader';
+import { useAutoAnimateCards } from '@/app/hooks/useAutoAnimate';
 import { RotateCcw, Table, BarChart3, Bell, Search } from 'lucide-react';
-import CommandPalette from './components/CommandPalette';
-import KeyboardShortcuts from './components/KeyboardShortcuts';
+import CommandPalette from '@components/CommandPalette';
+import KeyboardShortcuts from '@components/KeyboardShortcuts';
 
 const Home: React.FC = () => {
   const chartsGridRef = useAutoAnimateCards<HTMLDivElement>();
@@ -50,8 +48,8 @@ const Home: React.FC = () => {
   
   // Refs for timeout cleanup
   const timeoutRefs = useRef<{
-    loadingTimeout: NodeJS.Timeout | null;
-    successTimeout: NodeJS.Timeout | null;
+    loadingTimeout: ReturnType<typeof setTimeout> | null;
+    successTimeout: ReturnType<typeof setTimeout> | null;
   }>({
     loadingTimeout: null,
     successTimeout: null

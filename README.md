@@ -194,10 +194,10 @@ data-prototype/
 │  └─ layout.tsx               # Root layout
 ├─ docs/                       # Documentation, architecture, research, ideas
 │  ├─ STRUCTURE.md             # Structure rationale and conventions
-│  ├─ IMPLEMENTATION_PHASES.md # Implementation journal (proposed move)
-│  ├─ PHASE3_IMPLEMENTATION_SUMMARY.md # Phase 3 summary (proposed move)
-│  ├─ ideas/                   # Archived ideation (moved)
-│  └─ research/                # Research artifacts (moved)
+│  ├─ IMPLEMENTATION_PHASES.md # Implementation journal
+│  ├─ PHASE3_IMPLEMENTATION_SUMMARY.md # Phase 3 summary
+│  ├─ ideas/                   # Archived ideation
+│  └─ research/                # Research artifacts
 ├─ public/                     # Static assets
 ├─ next.config.ts              # Next.js configuration
 ├─ tsconfig.json               # TypeScript + path aliases
@@ -227,13 +227,16 @@ Recommended next steps (optional and safe):
 
 ### Archived/Relocated Files
 
-Recommended relocations (to be applied):
+Completed relocations:
 - `IMPLEMENTATION_PHASES.md` → `docs/IMPLEMENTATION_PHASES.md`
 - `PHASE3_IMPLEMENTATION_SUMMARY.md` → `docs/PHASE3_IMPLEMENTATION_SUMMARY.md`
 - `compass_artifact_wf-*.md` → `docs/research/`
 - `ideas/` assets → `docs/ideas/`
 
-No functional files will be deleted; non-code artifacts should be archived under `docs/`.
+Component import paths updated (non-breaking):
+- Loaders now importable via `@components/loaders/*` (CSVLoader, DualCSVLoader, Rive/Gooey loaders)
+- Data views via `@components/data/*` (FinancialDataTable, HCCDataTable, EnterpriseDataExport)
+- A11y helpers via `@components/accessibility/*`
 
 ### Available Scripts
 

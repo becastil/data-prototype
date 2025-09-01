@@ -54,7 +54,7 @@ const DomesticVsNonDomesticChart = dynamic(
 );
 
 const HCCDataTable = dynamic(
-  () => import('./HCCDataTable'),
+  () => import('@components/data/HCCDataTable'),
   {
     loading: () => <ChartLoadingSkeleton title="Loading Data Table..." />,
     ssr: false

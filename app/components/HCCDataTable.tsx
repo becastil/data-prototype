@@ -80,13 +80,19 @@ const HCCDataTable: React.FC<HCCDataTableProps> = ({ data }) => {
   };
 
   const exportToCSV = () => {
-    const headers = Object.keys(data[0]).join(',');
-    const rows = data.map(row => 
-      Object.values(row).map(val => 
-        typeof val === 'string' && val.includes(',') ? `"${val}"` : val
-      ).join(',')
+    if (!data || data.length === 0) return;
+    const needsQuoting = (val: string) => /[",\n]/.test(val);
+    const sanitizeForCSV = (val: unknown) => {
+      if (val === null || val === undefined) return '';
+      let s = String(val);
+      if (/^[=+\-@]/.test(s)) s = ` '${s}`; // mitigate CSV injection
+      if (needsQuoting(s)) s = '"' + s.replace(/"/g, '""') + '"';
+      return s;
+    };
+    const headers = Object.keys(data[0]).map(sanitizeForCSV).join(',');
+    const rows = data.map(row =>
+      Object.values(row).map(sanitizeForCSV).join(',')
     ).join('\n');
-    
     const csv = `${headers}\n${rows}`;
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);

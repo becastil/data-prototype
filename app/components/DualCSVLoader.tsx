@@ -37,15 +37,16 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
   const handleClaimsLoaded = (data: ParsedCSVData) => {
     // Validate claims data columns
     const requiredColumns = [
-      'Claimant Number',
-      'Service Type', 
-      'Medical',
-      'Rx',
-      'Total'
+      'claimant number',
+      'service type', 
+      'medical',
+      'rx',
+      'total'
     ];
-    
-    const missingColumns = requiredColumns.filter(col => 
-      !data.headers.includes(col)
+
+    const lowerHeaders = data.headers.map(h => h.toLowerCase());
+    const missingColumns = requiredColumns.filter(col =>
+      !lowerHeaders.some(h => h.includes(col))
     );
     
     if (missingColumns.length > 0) {

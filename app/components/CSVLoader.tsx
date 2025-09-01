@@ -158,7 +158,7 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dragCounter = useRef<number>(0);
-  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const resetState = useCallback(() => {
     // Clear progress interval if it exists

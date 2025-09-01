@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, FileText, Table, FileSpreadsheet, Calendar } from 'lucide-react';
-import { AccessibleButton, LoadingAnnouncement } from './AccessibilityEnhancements';
+import { AccessibleButton, LoadingAnnouncement } from '@components/accessibility/AccessibilityEnhancements';
 
 interface ExportData {
   budgetData?: any[];
@@ -28,25 +28,26 @@ const EnterpriseDataExport: React.FC<EnterpriseDataExportProps> = ({
   const [showExportModal, setShowExportModal] = useState(false);
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('csv');
 
-  // Convert data to CSV format
+  // Convert data to CSV format (with formula injection mitigation)
   const convertToCSV = (dataArray: any[], filename: string) => {
     if (!dataArray || dataArray.length === 0) {
       throw new Error('No data available for export');
     }
 
+    const needsQuoting = (val: string) => /[",\n]/.test(val);
+    const sanitizeForCSV = (val: unknown) => {
+      if (val === null || val === undefined) return '';
+      let s = String(val);
+      // Mitigate CSV formula injection in spreadsheet apps
+      if (/^[=+\-@]/.test(s)) s = ` '${s}`;
+      if (needsQuoting(s)) s = '"' + s.replace(/"/g, '""') + '"';
+      return s;
+    };
+
     const headers = Object.keys(dataArray[0]);
     const csvContent = [
-      headers.join(','),
-      ...dataArray.map(row => 
-        headers.map(header => {
-          const value = row[header];
-          // Handle values that contain commas, quotes, or newlines
-          if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
-            return `"${value.replace(/"/g, '""')}"`;
-          }
-          return value ?? '';
-        }).join(',')
-      )
+      headers.map(sanitizeForCSV).join(','),
+      ...dataArray.map(row => headers.map(header => sanitizeForCSV(row[header])).join(','))
     ].join('\n');
 
     return csvContent;

@@ -31,7 +31,8 @@ export const parseNumericValue = (value: any): number => {
   
   // Handle accounting format with parentheses for negative numbers
   const isNegative = /^\(.*\)$/.test(stringValue);
-  let cleanedValue = stringValue.replace(/[\$,()]/g, '');
+  // Remove currency symbols, commas, parentheses and stray whitespace
+  let cleanedValue = stringValue.replace(/[\$,()\s,]/g, '');
   
   const parsed = parseFloat(cleanedValue);
   const result = isNaN(parsed) ? 0 : parsed;
