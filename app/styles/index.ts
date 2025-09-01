@@ -1,6 +1,6 @@
 // Zero-runtime CSS exports - Vanilla Extract architecture
 export { vars, lightTheme, darkTheme } from './theme.css';
-export { sprinkles, createUtilityClass, type Sprinkles } from './sprinkles.css';
+export { sprinkles } from './sprinkles.css';
 export { 
   gpuAccelerated,
   panelElevated,

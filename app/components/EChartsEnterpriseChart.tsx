@@ -111,7 +111,8 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
     }
 
     // Use WebGL renderer for performance when enabled
-    const renderer = enableWebGL ? 'webgl' : 'canvas';
+    // Use canvas renderer for compatibility (ECharts webgl renderer requires extra packages)
+    const renderer: echarts.RendererType = 'canvas';
     
     chartInstance.current = echarts.init(chartRef.current, undefined, {
       renderer,

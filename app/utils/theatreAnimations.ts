@@ -11,11 +11,7 @@
 import { getProject, types } from '@theatre/core';
 
 // Theatre.js project for healthcare dashboard animations
-const project = getProject('HealthcareDashboard', {
-  state: {
-    version: '1.0.0'
-  }
-});
+const project = getProject('HealthcareDashboard');
 
 /**
  * Animation Sequences - Signature micro-interactions

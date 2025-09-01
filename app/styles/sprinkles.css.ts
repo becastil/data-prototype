@@ -128,9 +128,5 @@ export const sprinkles = createSprinkles(
   shadowProperties
 );
 
-export type Sprinkles = Parameters<typeof sprinkles>[0];
-
-// Utility function to combine sprinkles with custom styles
-export const createUtilityClass = (...args: Parameters<typeof sprinkles>) => {
-  return sprinkles(...args);
-};
+// Note: Export only the sprinkles function from a .css.ts file to satisfy
+// the Next.js + vanilla-extract export constraints.
