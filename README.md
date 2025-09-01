@@ -369,3 +369,14 @@ Feel free to submit issues and enhancement requests!
 ## License
 
 This project is open source and available for educational and commercial purposes.
+
+## Restructuring Summary (2025-09)
+
+- Fixed Server/Client boundaries: moved client-only providers from `app/layout.tsx` into `app/providers.tsx`.
+- Marked Radix/shadcn wrappers as client components (`ui/button`, `ui/card`, `ui/tabs`, `ui/dropdown-menu`).
+- Consolidated components into feature folders: `components/charts`, `components/data`, `components/loaders`, `components/navigation`, `components/accessibility`.
+- Removed duplicate `app/components/ThemeToggle.tsx` (use `ui/theme-toggle.tsx`).
+- Typed `getChartColors()` return with `ChartColors` and removed `as any` casts in ECharts.
+- Hardened `Dashboard` context to throw outside provider.
+
+No breaking API changes; imports were updated within the repo. External consumers using path aliases may need to update to the new folder layout.

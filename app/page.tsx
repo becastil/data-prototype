@@ -12,7 +12,7 @@ import {
   DomesticVsNonDomesticChart,
   HCCDataTable,
   LazyChartWrapper
-} from '@components/LazyCharts';
+} from '@components/charts/LazyCharts';
 import FinancialDataTable from '@components/data/FinancialDataTable';
 import { Dashboard } from './components/ui/dashboard';
 import PerformanceMonitor from '@components/PerformanceMonitor';
@@ -30,8 +30,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs';
 import { ParsedCSVData } from '@components/loaders/CSVLoader';
 import { useAutoAnimateCards } from '@/app/hooks/useAutoAnimate';
 import { RotateCcw, Table, BarChart3, Bell, Search } from 'lucide-react';
-import CommandPalette from '@components/CommandPalette';
-import KeyboardShortcuts from '@components/KeyboardShortcuts';
+import CommandPalette from '@components/navigation/CommandPalette';
+import KeyboardShortcuts from '@components/navigation/KeyboardShortcuts';
 
 const Home: React.FC = () => {
   const chartsGridRef = useAutoAnimateCards<HTMLDivElement>();

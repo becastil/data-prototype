@@ -3,11 +3,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, useAnimation, useInView } from 'framer-motion';
 import ReactECharts from 'echarts-for-react';
-import { vars } from '../styles';
+import { vars } from '../../styles';
 import { 
   MillionDollarAnimations,
   createGPUOptimizedStyle 
-} from '../utils/theatreAnimations';
+} from '../../utils/theatreAnimations';
 
 /**
  * MorphingChart - Theatre.js powered data visualization

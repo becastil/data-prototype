@@ -14,8 +14,8 @@ import {
   X,
   Zap
 } from 'lucide-react';
-import { vars } from '../styles';
-import { createGPUOptimizedStyle } from '../utils/theatreAnimations';
+import { vars } from '../../styles';
+import { createGPUOptimizedStyle } from '../../utils/theatreAnimations';
 
 /**
  * KeyboardShortcuts - Professional power-user interface

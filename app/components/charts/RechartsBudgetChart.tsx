@@ -13,8 +13,8 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { motion } from 'framer-motion';
-import { chartColors, getChartColors } from '../constants/chartColors';
-import { processFinancialData, formatCurrency } from '../utils/chartDataProcessors';
+import { chartColors, getChartColors } from '@/app/constants/chartColors';
+import { processFinancialData, formatCurrency } from '@utils/chartDataProcessors';
 
 interface RechartsBudgetChartProps {
   data: any[];

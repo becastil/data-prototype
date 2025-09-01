@@ -4,12 +4,12 @@ import React, { useMemo } from 'react';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Users } from 'lucide-react';
-import { chartColors } from '../constants/chartColors';
+import { chartColors } from '@/app/constants/chartColors';
 import { 
   processEnrollmentData, 
   calculateEnrollmentStats,
   formatPercentage 
-} from '../utils/chartDataProcessors';
+} from '@utils/chartDataProcessors';
 import MUIChartContainer from './MUIChartContainer';
 
 interface MUIEnrollmentChartProps {

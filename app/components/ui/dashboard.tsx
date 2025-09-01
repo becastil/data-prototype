@@ -13,7 +13,7 @@ interface DashboardContextValue {
   metrics?: Record<string, any>;
 }
 
-const DashboardContext = React.createContext<DashboardContextValue>({});
+const DashboardContext = React.createContext<DashboardContextValue | undefined>(undefined);
 
 const useDashboard = () => {
   const context = React.useContext(DashboardContext);

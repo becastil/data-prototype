@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import CSVLoader, { ParsedCSVData } from '../components/CSVLoader';
+import CSVLoader, { ParsedCSVData } from '../components/loaders/CSVLoader';
 import { motion } from 'framer-motion';
 import { Database, BarChart3, FileSpreadsheet } from 'lucide-react';
 

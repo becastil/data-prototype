@@ -9,8 +9,8 @@ import { ChartsYAxis } from '@mui/x-charts/ChartsYAxis';
 import { ChartsGrid } from '@mui/x-charts/ChartsGrid';
 import { ChartsTooltip } from '@mui/x-charts/ChartsTooltip';
 import { ChartsLegend } from '@mui/x-charts/ChartsLegend';
-import { chartColors } from '../constants/chartColors';
-import { processFinancialData, formatCurrency } from '../utils/chartDataProcessors';
+import { chartColors } from '@/app/constants/chartColors';
+import { processFinancialData, formatCurrency } from '@utils/chartDataProcessors';
 import MUIChartContainer from './MUIChartContainer';
 
 interface MUIBudgetChartProps {

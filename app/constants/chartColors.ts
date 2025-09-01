@@ -1,5 +1,8 @@
+// Shape of chart colors for typing safety
+export type ChartColors = typeof chartColors;
+
 // Dynamic chart colors that adapt to theme
-export const getChartColors = () => {
+export const getChartColors = (): ChartColors => {
   if (typeof window === 'undefined') {
     // SSR fallback
     return chartColors;

@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useMemo, useCallback } from 'react';
 import * as echarts from 'echarts';
 import { motion } from 'framer-motion';
-import { chartColors, getChartColors } from '@/app/constants/chartColors';
+import { chartColors, getChartColors, type ChartColors } from '@/app/constants/chartColors';
 import { processFinancialData, formatCurrency } from '@utils/chartDataProcessors';
 import { ChartDescription, LiveRegion, useReducedMotion } from '@components/accessibility/AccessibilityEnhancements';
 
@@ -26,7 +26,27 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
 }) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const chartInstance = useRef<echarts.ECharts | null>(null);
-  const colors = typeof window !== 'undefined' ? getChartColors() : chartColors;
+  // Track theme changes to avoid recreating color object every render
+  const [themeKey, setThemeKey] = React.useState<string>('');
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const root = document.documentElement;
+    const update = () => setThemeKey(root.getAttribute('data-theme') || 'light');
+    update();
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === 'attributes' && m.attributeName === 'data-theme') {
+          update();
+        }
+      }
+    });
+    observer.observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
+  }, []);
+  const colors: ChartColors = useMemo(
+    () => (typeof window !== 'undefined' ? getChartColors() : chartColors),
+    [themeKey]
+  );
   const prefersReducedMotion = useReducedMotion();
   const [chartStatus, setChartStatus] = React.useState<string>('');
 
@@ -126,13 +146,13 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
         subtext: 'Enterprise Dashboard - Rolling 12 Months',
         left: 'left',
         textStyle: {
-          color: (colors as any).textColor || '#1F2937',
+          color: colors.textColor || '#1F2937',
           fontSize: 20,
           fontWeight: 'bold',
           fontFamily: 'var(--font-heading)'
         },
         subtextStyle: {
-          color: (colors as any).textColor || '#6B7280',
+          color: colors.textColor || '#6B7280',
           fontSize: 14,
           fontFamily: 'var(--font-subheading)'
         }
@@ -179,7 +199,7 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
         right: 20,
         orient: 'vertical',
         textStyle: {
-          color: (colors as any).textColor || '#374151',
+          color: colors.textColor || '#374151',
           fontSize: 12,
           fontFamily: 'var(--font-body)'
         },
@@ -201,10 +221,10 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
         type: 'category',
         data: echartsData.categories,
         axisLine: {
-          lineStyle: { color: (colors as any).gridColor || '#E5E7EB' }
+          lineStyle: { color: colors.gridColor || '#E5E7EB' }
         },
         axisTick: {
-          lineStyle: { color: (colors as any).gridColor || '#E5E7EB' }
+          lineStyle: { color: colors.gridColor || '#E5E7EB' }
         },
         axisLabel: {
           color: '#6B7280',
@@ -218,20 +238,20 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
       yAxis: {
         type: 'value',
         axisLine: {
-          lineStyle: { color: (colors as any).gridColor || '#E5E7EB' }
+          lineStyle: { color: colors.gridColor || '#E5E7EB' }
         },
         axisTick: {
-          lineStyle: { color: (colors as any).gridColor || '#E5E7EB' }
+          lineStyle: { color: colors.gridColor || '#E5E7EB' }
         },
         axisLabel: {
-          color: (colors as any).textColor || '#6B7280',
+          color: colors.textColor || '#6B7280',
           fontSize: 11,
           fontFamily: 'var(--font-data)',
           formatter: (value: number) => `$${(value / 1000).toFixed(0)}K`
         },
         splitLine: {
           lineStyle: {
-            color: (colors as any).gridColor || '#F3F4F6',
+            color: colors.gridColor || '#F3F4F6',
             type: 'dashed'
           }
         }
@@ -418,22 +438,13 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [echartsData, colors, enableWebGL, streamingData, maxDataPoints]);
+  }, [echartsData, enableWebGL, streamingData, maxDataPoints, themeKey]);
 
-  // Initialize chart on mount
+  // Initialize chart and re-initialize on data/theme changes (captured by initChart deps)
   useEffect(() => {
     const cleanup = initChart();
     return cleanup;
   }, [initChart]);
-
-  // Handle theme changes
-  useEffect(() => {
-    if (chartInstance.current && echartsData) {
-      // Re-initialize with new colors when theme changes
-      const cleanup = initChart();
-      return cleanup;
-    }
-  }, [colors, initChart, echartsData]);
 
   // Cleanup on unmount
   useEffect(() => {
