@@ -3,15 +3,20 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DualCSVLoader from './components/DualCSVLoader';
-import CostBandScatterChart from './components/CostBandScatterChart';
-import HCCDataTable from './components/HCCDataTable';
-import RechartsBudgetChart from './components/RechartsBudgetChart';
-import MUIEnrollmentChart from './components/MUIEnrollmentChart';
+import {
+  EChartsEnterpriseChart,
+  ClaimsBreakdownChart,
+  MedicalClaimsBreakdownChart,
+  CostBandScatterChart,
+  MUIEnrollmentChart,
+  DomesticVsNonDomesticChart,
+  HCCDataTable,
+  LazyChartWrapper
+} from './components/LazyCharts';
 import FinancialDataTable from './components/FinancialDataTable';
 import { Dashboard } from './components/ui/dashboard';
-import ClaimsBreakdownChart from './components/ClaimsBreakdownChart';
-import MedicalClaimsBreakdownChart from './components/MedicalClaimsBreakdownChart';
-import DomesticVsNonDomesticChart from './components/DomesticVsNonDomesticChart';
+import PerformanceMonitor from './components/PerformanceMonitor';
+import EnterpriseDataExport from './components/EnterpriseDataExport';
 import { ThemeToggle } from './components/ui/theme-toggle';
 import GooeyFilter from './components/GooeyFilter';
 import GooeyLoader from './components/GooeyLoader';
@@ -168,19 +173,37 @@ const Home: React.FC = () => {
               </div>
             </div>
             
-            {/* Page Navigation Tabs */}
-            <Tabs value={currentPage} onValueChange={setCurrentPage} className="w-fit">
-              <TabsList ref={navigationRef}>
-                <TabsTrigger value="table" className="flex items-center gap-2">
-                  <TableIcon className="w-4 h-4" />
-                  Financial Table
-                </TabsTrigger>
-                <TabsTrigger value="charts" className="flex items-center gap-2">
-                  <ChartBar className="w-4 h-4" />
-                  Charts & Analytics
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+            {/* Page Navigation Tabs and Export Controls */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <Tabs value={currentPage} onValueChange={setCurrentPage} className="w-fit">
+                <TabsList ref={navigationRef}>
+                  <TabsTrigger value="table" className="flex items-center gap-2">
+                    <TableIcon className="w-4 h-4" />
+                    Financial Table
+                  </TabsTrigger>
+                  <TabsTrigger value="charts" className="flex items-center gap-2">
+                    <ChartBar className="w-4 h-4" />
+                    Charts & Analytics
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+
+              {/* Enterprise Data Export */}
+              <div className="flex-shrink-0">
+                <EnterpriseDataExport 
+                  data={{
+                    budgetData: budgetData?.rows,
+                    claimsData: claimsData?.rows,
+                    metrics: {
+                      totalBudgetRecords: budgetData?.rows?.length || 0,
+                      totalClaimsRecords: claimsData?.rows?.length || 0,
+                      lastUpdated: new Date().toISOString()
+                    }
+                  }}
+                  title="Healthcare Analytics Dashboard Data"
+                />
+              </div>
+            </div>
 
             {/* Main Content Area */}
             <div className="p-8">
@@ -220,71 +243,68 @@ const Home: React.FC = () => {
                     ref={chartsGridRef}
                     className="grid grid-cols-1 lg:grid-cols-2 gap-6"
                   >
-                {/* Tile 1: Budget vs Expenses Chart with Recharts */}
+                {/* Tile 1: Enterprise Budget vs Expenses Chart with ECharts WebGL */}
                 <MotionCard delay={0.1}>
-                  <RechartsBudgetChart data={budgetData?.rows || []} />
+                  <LazyChartWrapper>
+                    <EChartsEnterpriseChart 
+                      data={budgetData?.rows || []} 
+                      enableWebGL={true}
+                      streamingData={true}
+                      maxDataPoints={10000}
+                    />
+                  </LazyChartWrapper>
                 </MotionCard>
 
                 {/* Tile 2: Claims Breakdown Chart */}
                 <MotionCard delay={0.2}>
-                  <ClaimsBreakdownChart 
-                    budgetData={budgetData?.rows || []} 
-                    claimsData={claimsData?.rows || []}
-                  />
+                  <LazyChartWrapper>
+                    <ClaimsBreakdownChart 
+                      budgetData={budgetData?.rows || []} 
+                      claimsData={claimsData?.rows || []}
+                    />
+                  </LazyChartWrapper>
                 </MotionCard>
 
                 {/* Tile 3: Medical Claims Breakdown Pie Chart */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <MedicalClaimsBreakdownChart 
-                    budgetData={budgetData?.rows || []} 
-                    claimsData={claimsData?.rows || []}
-                  />
-                </motion.div>
+                <MotionCard delay={0.3}>
+                  <LazyChartWrapper>
+                    <MedicalClaimsBreakdownChart 
+                      budgetData={budgetData?.rows || []} 
+                      claimsData={claimsData?.rows || []}
+                    />
+                  </LazyChartWrapper>
+                </MotionCard>
 
                 {/* Tile 4: Cost Band Scatter Chart */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="panel-elevated rounded-xl shadow-lg p-6"
-                >
-                  <CostBandScatterChart data={claimsData?.rows || []} />
-                </motion.div>
+                <MotionCard delay={0.4}>
+                  <LazyChartWrapper>
+                    <CostBandScatterChart data={claimsData?.rows || []} />
+                  </LazyChartWrapper>
+                </MotionCard>
 
                 {/* Tile 5: Enrollment Line Chart with MUI */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <MUIEnrollmentChart data={budgetData?.rows || []} />
-                </motion.div>
+                <MotionCard delay={0.5}>
+                  <LazyChartWrapper>
+                    <MUIEnrollmentChart data={budgetData?.rows || []} />
+                  </LazyChartWrapper>
+                </MotionCard>
 
                 {/* Tile 6: Domestic vs Non-Domestic Chart */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                >
-                  <DomesticVsNonDomesticChart 
-                    budgetData={budgetData?.rows || []} 
-                    claimsData={claimsData?.rows || []}
-                  />
-                </motion.div>
+                <MotionCard delay={0.6}>
+                  <LazyChartWrapper>
+                    <DomesticVsNonDomesticChart 
+                      budgetData={budgetData?.rows || []} 
+                      claimsData={claimsData?.rows || []}
+                    />
+                  </LazyChartWrapper>
+                </MotionCard>
 
                 {/* Tile 7: HCC Data Table */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 }}
-                  className="panel-elevated rounded-xl shadow-lg p-6 overflow-hidden"
-                >
-                  <HCCDataTable data={claimsData?.rows || []} />
-                  </motion.div>
+                <MotionCard delay={0.7}>
+                  <LazyChartWrapper>
+                    <HCCDataTable data={claimsData?.rows || []} />
+                  </LazyChartWrapper>
+                </MotionCard>
                 </motion.div>
                 ) : (
                   <motion.div
@@ -302,6 +322,8 @@ const Home: React.FC = () => {
         </motion.div>
       )}
     </AnimatePresence>
+      {/* Performance Monitoring */}
+      <PerformanceMonitor />
     </>
   );
 };
