@@ -258,7 +258,8 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
       },
       header: false,
       skipEmptyLines: true,
-      encoding: 'UTF-8'
+      encoding: 'UTF-8',
+      worker: true
     });
   }, [onDataLoaded, onError]);
 

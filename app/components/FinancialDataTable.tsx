@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import { parseNumericValue, formatCurrency, formatPercentage } from '../utils/chartDataProcessors';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Download, 
@@ -157,7 +158,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
         const parseValue = (value: any) => {
           if (typeof value === 'number') return value;
           if (!value) return 0;
-          return parseFloat(String(value).replace(/[$,]/g, '')) || 0;
+        return parseNumericValue(value);
         };
 
         // Medical Plans with detailed breakdown
@@ -348,7 +349,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
       ].join(',');
     });
     
-    const csv = [headers, ...rows].join('\\n');
+    const csv = [headers, ...rows].join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');

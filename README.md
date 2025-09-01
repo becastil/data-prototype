@@ -175,53 +175,65 @@ The dashboard features a 4-tile layout displaying:
 
 ### Project Structure
 
+This repository follows a feature-oriented layout while preserving Next.js conventions. Non-code documents have been consolidated under `docs/`. See `docs/STRUCTURE.md` for full details.
+
 ```
 data-prototype/
-├── app/
-│   ├── components/
-│   │   ├── ui/                            # Million-Dollar UI Components
-│   │   │   ├── dashboard.tsx              # Compound Dashboard with React Context
-│   │   │   ├── button.tsx                 # Modern Button with CVA variants
-│   │   │   ├── card.tsx                   # Flexible Card component
-│   │   │   ├── tabs.tsx                   # Accessible Tab system
-│   │   │   └── theme-toggle.tsx           # Advanced theme management
-│   │   ├── CommandPalette.tsx             # ⌘K Modern Treasury-style command interface
-│   │   ├── KeyboardShortcuts.tsx          # Comprehensive global shortcuts system
-│   │   ├── AnimatedDashboardCard.tsx      # Theatre.js powered micro-interactions
-│   │   ├── Immersive3D.tsx                # Subtle 3D elements with mouse tracking
-│   │   ├── MorphingChart.tsx              # Data morphing visualizations
-│   │   ├── TheatreCommandPalette.tsx      # Frame-perfect command palette animations
-│   │   ├── DualCSVLoader.tsx              # CSV upload with drag-and-drop
-│   │   ├── RiveLoader.tsx                 # High-performance loading animations
-│   │   ├── MotionButton.tsx               # Hardware-accelerated button
-│   │   ├── EChartsEnterpriseChart.tsx     # WebGL-accelerated enterprise charts
-│   │   ├── FinancialDataTable.tsx         # Advanced financial data table
-│   │   └── HCCDataTable.tsx               # Interactive claims data table
-│   ├── styles/                            # Zero-Runtime CSS Architecture
-│   │   ├── theme.css.ts                   # LCH color system with Vanilla Extract
-│   │   ├── components.css.ts              # GPU-optimized component styles
-│   │   ├── sprinkles.css.ts               # Atomic CSS utilities
-│   │   └── index.ts                       # Style system exports
-│   ├── utils/
-│   │   ├── chartDataProcessors.ts         # Enhanced data transformation
-│   │   ├── lchColorSystem.ts              # Mathematical color precision
-│   │   ├── theatreAnimations.ts           # Frame-perfect animation system
-│   │   └── motionUtils.ts                 # Motion One animation presets
-│   ├── lib/
-│   │   └── utils.ts                       # shadcn/ui utilities
-│   ├── hooks/
-│   │   └── useAutoAnimate.ts              # Auto-Animate React hook
-│   ├── constants/
-│   │   └── chartColors.ts                 # Centralized design system
-│   ├── page.tsx                           # Main dashboard with advanced components
-│   ├── layout.tsx                         # Root layout with Vanilla Extract themes
-│   └── globals.css                        # GPU-optimized performance classes
-├── IMPLEMENTATION_PHASES.md               # Complete implementation documentation
-├── components.json                        # shadcn/ui configuration
-├── package.json                           # Dependencies with advanced libraries
-├── next.config.ts                         # Next.js with Vanilla Extract plugin
-└── README.md                              # This documentation
+├─ app/
+│  ├─ components/
+│  │  ├─ ui/                   # Reusable UI primitives (button, card, tabs, theme toggle)
+│  │  ├─ charts/               # Chart components (ECharts, MUI)
+│  │  ├─ loaders/              # Dual CSV loader, CSV loader, progress UI
+│  │  ├─ accessibility/        # A11y helpers (live regions, focus trap)
+│  │  └─ data/                 # Financial and domain tables
+│  ├─ utils/                   # Utilities (formatters, chart processors, animations)
+│  ├─ styles/                  # Vanilla Extract + CSS artifacts
+│  ├─ constants/               # Theme-aware constants (chart colors)
+│  ├─ hooks/                   # Reusable hooks (auto-animate, etc.)
+│  ├─ page.tsx                 # Root dashboard page
+│  └─ layout.tsx               # Root layout
+├─ docs/                       # Documentation, architecture, research, ideas
+│  ├─ STRUCTURE.md             # Structure rationale and conventions
+│  ├─ IMPLEMENTATION_PHASES.md # Implementation journal (proposed move)
+│  ├─ PHASE3_IMPLEMENTATION_SUMMARY.md # Phase 3 summary (proposed move)
+│  ├─ ideas/                   # Archived ideation (moved)
+│  └─ research/                # Research artifacts (moved)
+├─ public/                     # Static assets
+├─ next.config.ts              # Next.js configuration
+├─ tsconfig.json               # TypeScript + path aliases
+└─ README.md                   # This file
 ```
+
+Path aliases are defined to ease future refactors:
+- `@components/*` → `app/components/*`
+- `@utils/*` → `app/utils/*`
+- `@styles/*` → `app/styles/*`
+
+No runtime routes have been moved; this reorganization is non-breaking.
+
+For a detailed explanation, see `docs/STRUCTURE.md`.
+
+## Migration Plan (Non-breaking)
+
+This restructure minimizes churn and preserves functionality.
+
+- Documentation moved under `docs/` (no runtime impact)
+- Path aliases added in `tsconfig.json` (backward-compatible)
+- Duplicate parsing utilities consolidated via imports
+
+Recommended next steps (optional and safe):
+- Gradually group components under `app/components/{charts,loaders,accessibility,data}` and update imports to `@components/*` aliases. This can be done incrementally per PR without breaking routes.
+- Consider introducing route groups (e.g., `app/(analytics)`) once features expand. Route groups do not change URLs.
+
+### Archived/Relocated Files
+
+Recommended relocations (to be applied):
+- `IMPLEMENTATION_PHASES.md` → `docs/IMPLEMENTATION_PHASES.md`
+- `PHASE3_IMPLEMENTATION_SUMMARY.md` → `docs/PHASE3_IMPLEMENTATION_SUMMARY.md`
+- `compass_artifact_wf-*.md` → `docs/research/`
+- `ideas/` assets → `docs/ideas/`
+
+No functional files will be deleted; non-code artifacts should be archived under `docs/`.
 
 ### Available Scripts
 

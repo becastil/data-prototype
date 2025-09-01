@@ -125,13 +125,13 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
         subtext: 'Enterprise Dashboard - Rolling 12 Months',
         left: 'left',
         textStyle: {
-          color: colors.text || '#1F2937',
+          color: (colors as any).textColor || '#1F2937',
           fontSize: 20,
           fontWeight: 'bold',
           fontFamily: 'var(--font-heading)'
         },
         subtextStyle: {
-          color: colors.textSecondary || '#6B7280',
+          color: (colors as any).textColor || '#6B7280',
           fontSize: 14,
           fontFamily: 'var(--font-subheading)'
         }
@@ -178,7 +178,7 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
         right: 20,
         orient: 'vertical',
         textStyle: {
-          color: colors.text || '#374151',
+          color: (colors as any).textColor || '#374151',
           fontSize: 12,
           fontFamily: 'var(--font-body)'
         },
@@ -200,10 +200,10 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
         type: 'category',
         data: echartsData.categories,
         axisLine: {
-          lineStyle: { color: '#E5E7EB' }
+          lineStyle: { color: (colors as any).gridColor || '#E5E7EB' }
         },
         axisTick: {
-          lineStyle: { color: '#E5E7EB' }
+          lineStyle: { color: (colors as any).gridColor || '#E5E7EB' }
         },
         axisLabel: {
           color: '#6B7280',
@@ -217,20 +217,20 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
       yAxis: {
         type: 'value',
         axisLine: {
-          lineStyle: { color: '#E5E7EB' }
+          lineStyle: { color: (colors as any).gridColor || '#E5E7EB' }
         },
         axisTick: {
-          lineStyle: { color: '#E5E7EB' }
+          lineStyle: { color: (colors as any).gridColor || '#E5E7EB' }
         },
         axisLabel: {
-          color: '#6B7280',
+          color: (colors as any).textColor || '#6B7280',
           fontSize: 11,
           fontFamily: 'var(--font-data)',
           formatter: (value: number) => `$${(value / 1000).toFixed(0)}K`
         },
         splitLine: {
           lineStyle: {
-            color: '#F3F4F6',
+            color: (colors as any).gridColor || '#F3F4F6',
             type: 'dashed'
           }
         }
