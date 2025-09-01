@@ -32,6 +32,8 @@ import Sidebar from './components/Sidebar';
 import { ParsedCSVData } from './components/CSVLoader';
 import { useAutoAnimateCards } from './hooks/useAutoAnimate';
 import { RotateCcw, Table, BarChart3, Bell, Search } from 'lucide-react';
+import CommandPalette from './components/CommandPalette';
+import KeyboardShortcuts from './components/KeyboardShortcuts';
 
 const Home: React.FC = () => {
   const chartsGridRef = useAutoAnimateCards<HTMLDivElement>();
@@ -43,6 +45,8 @@ const Home: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<string>('dashboard');
   const [showSuccess, setShowSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   
   // Refs for timeout cleanup
   const timeoutRefs = useRef<{
@@ -103,6 +107,21 @@ const Home: React.FC = () => {
     setBudgetData(null);
     setClaimsData(null);
     setError('');
+  };
+
+  // Advanced component handlers
+  const handleThemeToggle = () => {
+    setIsDarkMode(!isDarkMode);
+    document.documentElement.setAttribute('data-theme', isDarkMode ? 'light' : 'dark');
+  };
+
+  const handleExport = (format: string) => {
+    console.log(`Exporting data as ${format}`);
+    // Implementation would depend on the selected format
+  };
+
+  const handleNavigate = (page: string) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -358,6 +377,23 @@ const Home: React.FC = () => {
     </AnimatePresence>
       {/* Performance Monitoring */}
       <PerformanceMonitor />
+      
+      {/* Command Palette - ⌘K Modern Treasury Pattern */}
+      <CommandPalette
+        isOpen={commandPaletteOpen}
+        onOpenChange={setCommandPaletteOpen}
+        onNavigate={handleNavigate}
+        onExport={handleExport}
+        onThemeToggle={handleThemeToggle}
+      />
+      
+      {/* Keyboard Shortcuts System */}
+      <KeyboardShortcuts
+        onNavigate={handleNavigate}
+        onExport={handleExport}
+        onThemeToggle={handleThemeToggle}
+        onCommandPaletteOpen={() => setCommandPaletteOpen(true)}
+      />
     </>
   );
 };

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { lightTheme, darkTheme } from './styles';
 
 // Note: TASA Orbiter Display needs to be loaded via link tag as it's not available in Next.js Google Fonts yet
 // We'll add it via a custom Head component
@@ -17,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={lightTheme}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
