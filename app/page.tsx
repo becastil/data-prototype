@@ -46,6 +46,23 @@ const Home: React.FC = () => {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   
+  // Persist and hydrate loaded data across refreshes
+  useEffect(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('dashboardData') : null;
+      if (saved) {
+        const parsed = JSON.parse(saved) as { budgetData?: ParsedCSVData; claimsData?: ParsedCSVData };
+        if (parsed?.budgetData && parsed?.claimsData) {
+          setBudgetData(parsed.budgetData);
+          setClaimsData(parsed.claimsData);
+          setShowDashboard(true);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to hydrate saved dashboard data', e);
+    }
+  }, []);
+  
   // Refs for timeout cleanup
   const timeoutRefs = useRef<{
     loadingTimeout: ReturnType<typeof setTimeout> | null;
@@ -81,6 +98,11 @@ const Home: React.FC = () => {
     timeoutRefs.current.loadingTimeout = setTimeout(() => {
       setBudgetData(budget);
       setClaimsData(claims);
+      try {
+        localStorage.setItem('dashboardData', JSON.stringify({ budgetData: budget, claimsData: claims, savedAt: new Date().toISOString() }));
+      } catch (e) {
+        console.warn('Could not persist dashboard data', e);
+      }
       setIsLoading(false);
       setShowSuccess(true);
       
@@ -105,6 +127,9 @@ const Home: React.FC = () => {
     setBudgetData(null);
     setClaimsData(null);
     setError('');
+    try {
+      localStorage.removeItem('dashboardData');
+    } catch {}
   };
 
   // Advanced component handlers
