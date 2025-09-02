@@ -78,6 +78,16 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
     };
   }, [chartData]);
 
+  // Helpers for vibrant gradients
+  const hexToRgba = (hex: string, alpha: number) => {
+    const h = hex.replace('#', '');
+    const bigint = parseInt(h, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
   // Generate accessible chart description
   const chartDescription = useMemo(() => {
     if (!chartData.length) return null;
@@ -263,7 +273,10 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
           stack: 'expenses',
           data: echartsData.series[0].data,
           itemStyle: {
-            color: colors.medicalClaims,
+            color: new (echarts as any).graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: hexToRgba(colors.medicalClaims, 0.85) },
+              { offset: 1, color: colors.medicalClaims }
+            ]),
             borderRadius: [0, 0, 2, 2]
           },
           emphasis: { focus: 'series' },
@@ -275,7 +288,10 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
           stack: 'expenses',
           data: echartsData.series[1].data,
           itemStyle: {
-            color: colors.totalFixedCost,
+            color: new (echarts as any).graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: hexToRgba(colors.totalFixedCost, 0.85) },
+              { offset: 1, color: colors.totalFixedCost }
+            ]),
             borderRadius: [2, 2, 0, 0]
           },
           emphasis: { focus: 'series' },

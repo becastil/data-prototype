@@ -115,8 +115,9 @@ const MUIBudgetChart: React.FC<MUIBudgetChartProps> = ({
               color: chartColors.budget,
               id: 'budget',
               type: 'line' as const,
-              curve: 'linear' as const,
+              curve: 'monotone' as const,
               showMark: true,
+              area: true,
             },
           ]}
           xAxis={[

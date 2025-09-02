@@ -114,6 +114,28 @@ const RechartsBudgetChart: React.FC<RechartsBudgetChartProps> = ({
               data={chartData}
               margin={{ top: 10, right: 10, left: 10, bottom: 60 }}
             >
+              <defs>
+                <linearGradient id="grad-fixed" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={colors.totalFixedCost} stopOpacity={0.85} />
+                  <stop offset="100%" stopColor={colors.totalFixedCost} stopOpacity={1} />
+                </linearGradient>
+                <linearGradient id="grad-stoploss" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={colors.stopLossReimb} stopOpacity={0.85} />
+                  <stop offset="100%" stopColor={colors.stopLossReimb} stopOpacity={1} />
+                </linearGradient>
+                <linearGradient id="grad-rebates" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={colors.rxRebates} stopOpacity={0.85} />
+                  <stop offset="100%" stopColor={colors.rxRebates} stopOpacity={1} />
+                </linearGradient>
+                <linearGradient id="grad-medical" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={colors.medicalClaims} stopOpacity={0.85} />
+                  <stop offset="100%" stopColor={colors.medicalClaims} stopOpacity={1} />
+                </linearGradient>
+                <linearGradient id="grad-rx" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={colors.rx} stopOpacity={0.85} />
+                  <stop offset="100%" stopColor={colors.rx} stopOpacity={1} />
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
               
               <XAxis
@@ -137,31 +159,36 @@ const RechartsBudgetChart: React.FC<RechartsBudgetChartProps> = ({
               <Bar 
                 dataKey="totalFixedCost" 
                 stackId="expenses" 
-                fill={colors.totalFixedCost}
+                fill="url(#grad-fixed)"
+                radius={[3,3,0,0]}
                 name="Total Fixed Cost"
               />
               <Bar 
                 dataKey="stopLossReimb" 
                 stackId="expenses" 
-                fill={colors.stopLossReimb}
+                fill="url(#grad-stoploss)"
+                radius={[3,3,0,0]}
                 name="Stop Loss Reimb"
               />
               <Bar 
                 dataKey="rxRebates" 
                 stackId="expenses" 
-                fill={colors.rxRebates}
+                fill="url(#grad-rebates)"
+                radius={[3,3,0,0]}
                 name="Rx Rebates"
               />
               <Bar 
                 dataKey="medicalClaims" 
                 stackId="expenses" 
-                fill={colors.medicalClaims}
+                fill="url(#grad-medical)"
+                radius={[3,3,0,0]}
                 name="Medical Claims"
               />
               <Bar 
                 dataKey="rx" 
                 stackId="expenses" 
-                fill={colors.rx}
+                fill="url(#grad-rx)"
+                radius={[3,3,0,0]}
                 name="Rx"
               />
               

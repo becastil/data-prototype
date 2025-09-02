@@ -300,13 +300,23 @@ const DomesticVsNonDomesticChart: React.FC<DomesticVsNonDomesticChartProps> = ({
         <ResponsiveContainer width="100%" height="100%">
           {chartType === 'bar' ? (
             <BarChart data={processedData.barData}>
+              <defs>
+                <linearGradient id="grad-domestic" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={COLORS.domestic} stopOpacity={0.85} />
+                  <stop offset="100%" stopColor={COLORS.domestic} stopOpacity={1} />
+                </linearGradient>
+                <linearGradient id="grad-nondomestic" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={COLORS.nonDomestic} stopOpacity={0.85} />
+                  <stop offset="100%" stopColor={COLORS.nonDomestic} stopOpacity={1} />
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
               <XAxis dataKey="category" tick={{ fontSize: 12 }} />
               <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`} tick={{ fontSize: 11 }} />
               <Tooltip content={<CustomBarTooltip />} />
               <Legend />
-              <Bar dataKey="domestic" name="Domestic" fill={COLORS.domestic} />
-              <Bar dataKey="nonDomestic" name="Non-Domestic" fill={COLORS.nonDomestic} />
+              <Bar dataKey="domestic" name="Domestic" fill="url(#grad-domestic)" radius={[3,3,0,0]} />
+              <Bar dataKey="nonDomestic" name="Non-Domestic" fill="url(#grad-nondomestic)" radius={[3,3,0,0]} />
             </BarChart>
           ) : chartType === 'pie' ? (
             <PieChart>
@@ -329,6 +339,16 @@ const DomesticVsNonDomesticChart: React.FC<DomesticVsNonDomesticChartProps> = ({
             </PieChart>
           ) : (
             <BarChart data={processedData.trendData}>
+              <defs>
+                <linearGradient id="grad-domestic-trend" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={COLORS.domestic} stopOpacity={0.85} />
+                  <stop offset="100%" stopColor={COLORS.domestic} stopOpacity={1} />
+                </linearGradient>
+                <linearGradient id="grad-nondomestic-trend" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={COLORS.nonDomestic} stopOpacity={0.85} />
+                  <stop offset="100%" stopColor={COLORS.nonDomestic} stopOpacity={1} />
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
               <XAxis 
                 dataKey="month" 
@@ -341,8 +361,8 @@ const DomesticVsNonDomesticChart: React.FC<DomesticVsNonDomesticChartProps> = ({
               <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`} tick={{ fontSize: 11 }} />
               <Tooltip content={<CustomBarTooltip />} />
               <Legend />
-              <Bar dataKey="domestic" name="Domestic" stackId="a" fill={COLORS.domestic} />
-              <Bar dataKey="nonDomestic" name="Non-Domestic" stackId="a" fill={COLORS.nonDomestic} />
+              <Bar dataKey="domestic" name="Domestic" stackId="a" fill="url(#grad-domestic-trend)" radius={[3,3,0,0]} />
+              <Bar dataKey="nonDomestic" name="Non-Domestic" stackId="a" fill="url(#grad-nondomestic-trend)" radius={[3,3,0,0]} />
             </BarChart>
           )}
         </ResponsiveContainer>

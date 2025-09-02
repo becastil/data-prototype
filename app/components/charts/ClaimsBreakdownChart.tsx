@@ -142,6 +142,34 @@ const ClaimsBreakdownChart: React.FC<ClaimsBreakdownChartProps> = ({
       animate={{ opacity: 1, y: 0 }}
       className="panel-elevated rounded-xl shadow-lg p-6"
     >
+      <svg width="0" height="0">
+        <defs>
+          <linearGradient id="grad-inpatient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={colors.inpatient} stopOpacity={0.85} />
+            <stop offset="100%" stopColor={colors.inpatient} stopOpacity={1} />
+          </linearGradient>
+          <linearGradient id="grad-outpatient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={colors.outpatient} stopOpacity={0.85} />
+            <stop offset="100%" stopColor={colors.outpatient} stopOpacity={1} />
+          </linearGradient>
+          <linearGradient id="grad-professional" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={colors.professional} stopOpacity={0.85} />
+            <stop offset="100%" stopColor={colors.professional} stopOpacity={1} />
+          </linearGradient>
+          <linearGradient id="grad-emergency" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={colors.emergency} stopOpacity={0.85} />
+            <stop offset="100%" stopColor={colors.emergency} stopOpacity={1} />
+          </linearGradient>
+          <linearGradient id="grad-pharmacy" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={colors.pharmacy} stopOpacity={0.85} />
+            <stop offset="100%" stopColor={colors.pharmacy} stopOpacity={1} />
+          </linearGradient>
+          <linearGradient id="grad-specialtyRx" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={colors.specialtyRx} stopOpacity={0.85} />
+            <stop offset="100%" stopColor={colors.specialtyRx} stopOpacity={1} />
+          </linearGradient>
+        </defs>
+      </svg>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-800 font-heading">
           Claims Breakdown by Month
@@ -192,7 +220,8 @@ const ClaimsBreakdownChart: React.FC<ClaimsBreakdownChartProps> = ({
               dataKey="inpatient"
               stackId="1"
               stroke={colors.inpatient}
-              fill={colors.inpatient}
+              strokeWidth={2}
+              fill="url(#grad-inpatient)"
               fillOpacity={0.8}
               name="Inpatient"
             />
@@ -201,7 +230,8 @@ const ClaimsBreakdownChart: React.FC<ClaimsBreakdownChartProps> = ({
               dataKey="outpatient"
               stackId="1"
               stroke={colors.outpatient}
-              fill={colors.outpatient}
+              strokeWidth={2}
+              fill="url(#grad-outpatient)"
               fillOpacity={0.8}
               name="Outpatient"
             />
@@ -210,7 +240,8 @@ const ClaimsBreakdownChart: React.FC<ClaimsBreakdownChartProps> = ({
               dataKey="professional"
               stackId="1"
               stroke={colors.professional}
-              fill={colors.professional}
+              strokeWidth={2}
+              fill="url(#grad-professional)"
               fillOpacity={0.8}
               name="Professional"
             />
@@ -219,7 +250,8 @@ const ClaimsBreakdownChart: React.FC<ClaimsBreakdownChartProps> = ({
               dataKey="emergency"
               stackId="1"
               stroke={colors.emergency}
-              fill={colors.emergency}
+              strokeWidth={2}
+              fill="url(#grad-emergency)"
               fillOpacity={0.8}
               name="Emergency"
             />
@@ -228,7 +260,8 @@ const ClaimsBreakdownChart: React.FC<ClaimsBreakdownChartProps> = ({
               dataKey="pharmacy"
               stackId="1"
               stroke={colors.pharmacy}
-              fill={colors.pharmacy}
+              strokeWidth={2}
+              fill="url(#grad-pharmacy)"
               fillOpacity={0.8}
               name="Pharmacy"
             />
@@ -237,7 +270,8 @@ const ClaimsBreakdownChart: React.FC<ClaimsBreakdownChartProps> = ({
               dataKey="specialtyRx"
               stackId="1"
               stroke={colors.specialtyRx}
-              fill={colors.specialtyRx}
+              strokeWidth={2}
+              fill="url(#grad-specialtyRx)"
               fillOpacity={0.8}
               name="Specialty Rx"
             />
