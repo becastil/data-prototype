@@ -97,6 +97,30 @@ npm run dev
 
 4. Open [http://localhost:3005](http://localhost:3005) in your browser to see the dashboard.
 
+### Windows PowerShell Quick Start (Dev vs Prod)
+
+Development (hot reload):
+```powershell
+npm run dev    # starts Next.js on http://localhost:3005
+```
+
+Production (optimized build):
+```powershell
+npm run build  # compile
+npm start      # serve optimized build on http://localhost:3005
+```
+
+Bundle analysis in PowerShell (equivalent of `npm run build:analyze`):
+```powershell
+$Env:ANALYZE = 'true'; npm run build; Remove-Item Env:ANALYZE
+```
+
+If PowerShell can't find `next`, ensure dependencies are installed first:
+```powershell
+npm install
+npm run dev
+```
+
 ### Troubleshooting
 
 If you encounter issues:
@@ -105,6 +129,13 @@ If you encounter issues:
 ```powershell
 npm install    # Install dependencies first
 npm run dev    # Then start the server
+```
+
+**Windows PowerShell** - Port already in use (3005):
+```powershell
+netstat -ano | Select-String 3005
+# Note the PID in the last column
+Stop-Process -Id <PID> -Force
 ```
 
 **WSL/Linux** - "Port already in use":
@@ -244,6 +275,17 @@ Component import paths updated (non-breaking):
 - `npm run build` - Creates optimized production build with Turbopack
 - `npm run build:analyze` - Analyze bundle size and performance metrics
 - `npm start` - Runs production server on port 3005
+
+Note for Windows PowerShell: `npm run build:analyze` uses a Unix-style env var. If it doesn't work on your shell, run the PowerShell variant instead:
+```powershell
+$Env:ANALYZE = 'true'; npm run build; Remove-Item Env:ANALYZE
+```
+
+## Demos
+
+- Variants menu demo: visit `http://localhost:3005/variants`
+  - Component source: `app/components/navigation/AnimatedVariantsMenu.tsx`
+  - Route page: `app/variants/page.tsx`
 
 ### Performance Development
 
