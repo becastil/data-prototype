@@ -10,8 +10,27 @@
 
 import { getProject, types } from '@theatre/core';
 
-// Theatre.js project for healthcare dashboard animations
-const project = getProject('HealthcareDashboard');
+// Safely obtain a Theatre project; fallback to a no-op implementation
+// when @theatre/studio isn't present or state isn't provided.
+type NoopProject = {
+  sheet: (name: string) => { object: (id: string, _def?: any) => any };
+};
+
+const createNoopProject = (): NoopProject => ({
+  sheet: () => ({ object: () => ({}) }),
+});
+
+let project: NoopProject | ReturnType<typeof getProject>;
+try {
+  // This throws in production when Studio isn't bundled and no state is provided.
+  project = getProject('HealthcareDashboard');
+} catch (err) {
+  console.warn(
+    '[theatre] Studio not loaded or project state missing. Falling back to no-op project.',
+    err
+  );
+  project = createNoopProject();
+}
 
 /**
  * Animation Sequences - Signature micro-interactions

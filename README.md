@@ -286,6 +286,12 @@ $Env:ANALYZE = 'true'; npm run build; Remove-Item Env:ANALYZE
 - Variants menu demo: visit `http://localhost:3005/variants`
   - Component source: `app/components/navigation/AnimatedVariantsMenu.tsx`
   - Route page: `app/variants/page.tsx`
+- Buttons demo (soft gray): visit `http://localhost:3005/demos/buttons`
+  - Component: `app/components/ui/button.tsx` (`variant="soft"`)
+  - Route page: `app/demos/buttons/page.tsx`
+- Soft dropdown demo: visit `http://localhost:3005/demos/dropdown`
+  - Component: `app/components/ui/soft-dropdown.tsx`
+  - Route page: `app/demos/dropdown/page.tsx`
 
 ### Performance Development
 
