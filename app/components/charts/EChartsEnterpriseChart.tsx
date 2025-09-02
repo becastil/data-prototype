@@ -60,21 +60,19 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
     if (!chartData.length) return null;
 
     const categories = chartData.map(d => d.month);
-    const totalFixedCostData = chartData.map(d => d.totalFixedCost);
-    const stopLossReimbData = chartData.map(d => d.stopLossReimb);
-    const rxRebatesData = chartData.map(d => d.rxRebates);
-    const medicalClaimsData = chartData.map(d => d.medicalClaims);
-    const rxData = chartData.map(d => d.rx);
+    const adminData = chartData.map(d => d.totalFixedCost);
+    // Net claims = (medical + rx) - (rx rebates + stop loss reimbursements)
+    const netClaimsData = chartData.map(d => {
+      const net = (d.medicalClaims + d.rx) - (d.rxRebates + d.stopLossReimb);
+      return Math.max(0, net);
+    });
     const budgetData = chartData.map(d => d.budget);
 
     return {
       categories,
       series: [
-        { name: 'Total Fixed Cost', data: totalFixedCostData, type: 'bar', stack: 'expenses' },
-        { name: 'Stop Loss Reimb', data: stopLossReimbData, type: 'bar', stack: 'expenses' },
-        { name: 'Rx Rebates', data: rxRebatesData, type: 'bar', stack: 'expenses' },
-        { name: 'Medical Claims', data: medicalClaimsData, type: 'bar', stack: 'expenses' },
-        { name: 'Rx', data: rxData, type: 'bar', stack: 'expenses' },
+        { name: 'Claims (Net)', data: netClaimsData, type: 'bar', stack: 'expenses' },
+        { name: 'Admin', data: adminData, type: 'bar', stack: 'expenses' },
         { name: 'Budget', data: budgetData, type: 'line' }
       ]
     };
@@ -85,21 +83,21 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
     if (!chartData.length) return null;
 
     const latestData = chartData[chartData.length - 1];
-    const totalExpenses = latestData.totalFixedCost + latestData.stopLossReimb + 
-                         latestData.rxRebates + latestData.medicalClaims + latestData.rx;
+    const latestNetClaims = Math.max(0, (latestData.medicalClaims + latestData.rx) - (latestData.rxRebates + latestData.stopLossReimb));
+    const totalExpenses = latestData.totalFixedCost + latestNetClaims;
     
     const dataPoints = [
       `Latest month: ${latestData.month}`,
       `Budget: ${formatCurrency(latestData.budget)}`,
-      `Total expenses: ${formatCurrency(totalExpenses)}`,
+      `Total expenses (net): ${formatCurrency(totalExpenses)}`,
       `Budget vs expenses: ${totalExpenses > latestData.budget ? 'Over budget' : 'Under budget'} by ${formatCurrency(Math.abs(totalExpenses - latestData.budget))}`
     ];
 
     const trends = [];
     if (chartData.length > 1) {
       const previousData = chartData[chartData.length - 2];
-      const previousExpenses = previousData.totalFixedCost + previousData.stopLossReimb + 
-                              previousData.rxRebates + previousData.medicalClaims + previousData.rx;
+      const previousNetClaims = Math.max(0, (previousData.medicalClaims + previousData.rx) - (previousData.rxRebates + previousData.stopLossReimb));
+      const previousExpenses = previousData.totalFixedCost + previousNetClaims;
       
       if (totalExpenses > previousExpenses) {
         trends.push(`Expenses increased from previous month by ${formatCurrency(totalExpenses - previousExpenses)}`);
@@ -112,7 +110,7 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
 
     return {
       title: 'Budget vs Expenses Trend Chart',
-      description: `Interactive chart showing budget performance over ${chartData.length} months. Chart displays stacked bars for expenses (Total Fixed Cost, Stop Loss Reimbursements, Rx Rebates, Medical Claims, and Rx costs) with budget line overlay.`,
+      description: `Interactive chart showing budget performance over ${chartData.length} months. Stacked bars display Claims (Medical + Rx net of rebates and reimbursements) with Admin on top, plus a Budget line overlay.`,
       dataPoints,
       trends
     };
@@ -258,70 +256,36 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
       },
 
       series: [
-        // Stacked bars
+        // Stacked bars (Claims net + Admin)
         {
-          name: 'Total Fixed Cost',
+          name: 'Claims (Net)',
           type: 'bar',
           stack: 'expenses',
           data: echartsData.series[0].data,
-          itemStyle: { 
-            color: colors.totalFixedCost,
+          itemStyle: {
+            color: colors.medicalClaims,
             borderRadius: [0, 0, 2, 2]
           },
-          emphasis: {
-            focus: 'series',
-            itemStyle: {
-              shadowBlur: 10,
-              shadowOffsetX: 0,
-              shadowColor: 'rgba(0, 0, 0, 0.3)'
-            }
-          },
+          emphasis: { focus: 'series' },
           animationDelay: (idx: number) => idx * 50
         },
         {
-          name: 'Stop Loss Reimb',
+          name: 'Admin',
           type: 'bar',
           stack: 'expenses',
           data: echartsData.series[1].data,
-          itemStyle: { color: colors.stopLossReimb },
-          emphasis: { focus: 'series' },
-          animationDelay: (idx: number) => idx * 50 + 100
-        },
-        {
-          name: 'Rx Rebates',
-          type: 'bar',
-          stack: 'expenses',
-          data: echartsData.series[2].data,
-          itemStyle: { color: colors.rxRebates },
-          emphasis: { focus: 'series' },
-          animationDelay: (idx: number) => idx * 50 + 200
-        },
-        {
-          name: 'Medical Claims',
-          type: 'bar',
-          stack: 'expenses',
-          data: echartsData.series[3].data,
-          itemStyle: { color: colors.medicalClaims },
-          emphasis: { focus: 'series' },
-          animationDelay: (idx: number) => idx * 50 + 300
-        },
-        {
-          name: 'Rx',
-          type: 'bar',
-          stack: 'expenses',
-          data: echartsData.series[4].data,
-          itemStyle: { 
-            color: colors.rx,
+          itemStyle: {
+            color: colors.totalFixedCost,
             borderRadius: [2, 2, 0, 0]
           },
           emphasis: { focus: 'series' },
-          animationDelay: (idx: number) => idx * 50 + 400
+          animationDelay: (idx: number) => idx * 50 + 100
         },
         // Budget line
         {
           name: 'Budget',
           type: 'line',
-          data: echartsData.series[5].data,
+          data: echartsData.series[2].data,
           lineStyle: {
             color: colors.budget,
             width: 3,
@@ -341,7 +305,7 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
               shadowColor: colors.budget
             }
           },
-          animationDelay: 500
+          animationDelay: 300
         }
       ],
 
