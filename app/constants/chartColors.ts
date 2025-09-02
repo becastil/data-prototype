@@ -12,59 +12,59 @@ export const getChartColors = (): ChartColors => {
   const computedStyle = getComputedStyle(root);
   
   return {
-    // Financial chart colors - Keenan brand aligned
-    totalFixedCost: computedStyle.getPropertyValue('--chart-octonary').trim() || '#10B981',
-    stopLossReimb: computedStyle.getPropertyValue('--chart-secondary').trim() || '#00aeef',
-    rxRebates: computedStyle.getPropertyValue('--chart-quaternary').trim() || '#0032E1',
-    medicalClaims: computedStyle.getPropertyValue('--chart-tertiary').trim() || '#e87823',
-    rx: computedStyle.getPropertyValue('--chart-quinary').trim() || '#FF8400',
-    budget: computedStyle.getPropertyValue('--chart-primary').trim() || '#00205c',
-    
+    // Financial chart colors (colorful, color-blind friendly where possible)
+    totalFixedCost: computedStyle.getPropertyValue('--chart-octonary').trim() || '#9C755F',
+    stopLossReimb: computedStyle.getPropertyValue('--chart-secondary').trim() || '#59A14F',
+    rxRebates: computedStyle.getPropertyValue('--chart-quaternary').trim() || '#E15759',
+    medicalClaims: computedStyle.getPropertyValue('--chart-tertiary').trim() || '#F28E2B',
+    rx: computedStyle.getPropertyValue('--chart-quinary').trim() || '#76B7B2',
+    budget: computedStyle.getPropertyValue('--chart-primary').trim() || '#4E79A7',
+
     // Enrollment chart colors
-    enrollment: computedStyle.getPropertyValue('--chart-primary').trim() || '#00205c',
-    activeEmployees: computedStyle.getPropertyValue('--status-success').trim() || '#10B981',
-    dependents: computedStyle.getPropertyValue('--chart-tertiary').trim() || '#e87823',
-    retirees: computedStyle.getPropertyValue('--chart-senary').trim() || '#575A5D',
-    
+    enrollment: computedStyle.getPropertyValue('--chart-primary').trim() || '#4E79A7',
+    activeEmployees: computedStyle.getPropertyValue('--status-success').trim() || '#22C55E',
+    dependents: computedStyle.getPropertyValue('--chart-septenary').trim() || '#EDC949',
+    retirees: computedStyle.getPropertyValue('--chart-senary').trim() || '#AF7AA1',
+
     // Additional colors
     gridColor: computedStyle.getPropertyValue('--gray-300').trim() || '#CFD8DC',
-    textColor: computedStyle.getPropertyValue('--gray-700').trim() || '#455A64',
+    textColor: computedStyle.getPropertyValue('--gray-700').trim() || '#111827',
     backgroundColor: computedStyle.getPropertyValue('--background').trim() || '#FAFBFC',
-    
+
     // Status colors
-    positive: computedStyle.getPropertyValue('--status-success').trim() || '#4CAF50',
-    negative: computedStyle.getPropertyValue('--status-danger').trim() || '#EF5350',
-    warning: computedStyle.getPropertyValue('--status-warning').trim() || '#FFA726',
-    info: computedStyle.getPropertyValue('--status-info').trim() || '#42A5F5',
+    positive: computedStyle.getPropertyValue('--status-success').trim() || '#22C55E',
+    negative: computedStyle.getPropertyValue('--status-danger').trim() || '#EF4444',
+    warning: computedStyle.getPropertyValue('--status-warning').trim() || '#F59E0B',
+    info: computedStyle.getPropertyValue('--status-info').trim() || '#3B82F6',
   };
 };
 
-// Static colors for SSR and fallback - Minimalist Monochrome
+// Static colors for SSR and fallback - Colorful palette
 export const chartColors = {
-  // Financial chart colors - Grayscale with patterns
-  totalFixedCost: '#000000',     // Black - solid
-  stopLossReimb: '#333333',      // Charcoal - dashed
-  rxRebates: '#666666',          // Gray - dotted
-  medicalClaims: '#999999',      // Light gray - solid thick
-  rx: '#CCCCCC',                 // Pale gray - solid thin
-  budget: '#000000',             // Black - budget line (solid thick)
-  
-  // Enrollment colors - Different shades
-  enrollment: '#000000',         // Black - primary
-  activeEmployees: '#333333',    // Charcoal - active
-  dependents: '#666666',         // Gray - dependents
-  retirees: '#999999',           // Light gray - retired
-  
+  // Financial chart colors (Tableau-like palette)
+  totalFixedCost: '#9C755F',
+  stopLossReimb: '#59A14F',
+  rxRebates: '#E15759',
+  medicalClaims: '#F28E2B',
+  rx: '#76B7B2',
+  budget: '#4E79A7',
+
+  // Enrollment colors
+  enrollment: '#4E79A7',
+  activeEmployees: '#22C55E',
+  dependents: '#EDC949',
+  retirees: '#AF7AA1',
+
   // UI colors
-  gridColor: '#E0E0E0',          // Light gray grid
-  textColor: '#000000',          // Black text
-  backgroundColor: '#FFFFFF',    // White background
-  
-  // Status colors - Monochrome with icons
-  positive: '#000000',           // Black (use with ✓ icon)
-  negative: '#333333',           // Charcoal (use with ✗ icon)
-  warning: '#666666',            // Gray (use with ⚠ icon)
-  info: '#999999',               // Light gray (use with ℹ icon)
+  gridColor: '#E0E0E0',
+  textColor: '#111827',
+  backgroundColor: '#FFFFFF',
+
+  // Status colors
+  positive: '#22C55E',
+  negative: '#EF4444',
+  warning: '#F59E0B',
+  info: '#3B82F6',
 };
 
 export const chartTheme = {
@@ -72,14 +72,13 @@ export const chartTheme = {
   fontFamily: 'var(--font-body, "Open Sans", system-ui, -apple-system, sans-serif)',
 };
 
-// Color-blind safe palette option - Monochrome (inherently safe)
+// Color-blind safe palette (Okabe–Ito inspired)
 export const colorBlindSafeColors = {
-  primary: '#000000',    // Black
-  secondary: '#333333',  // Charcoal
-  tertiary: '#666666',   // Gray
-  quaternary: '#999999', // Light gray
-  quinary: '#CCCCCC',    // Pale gray
-  senary: '#1a1a1a',     // Off-black
-  septenary: '#808080',  // Medium gray
-  octonary: '#B0B0B0',   // Light medium gray
+  orange: '#E69F00',
+  skyBlue: '#56B4E9',
+  bluishGreen: '#009E73',
+  yellow: '#F0E442',
+  blue: '#0072B2',
+  vermillion: '#D55E00',
+  reddishPurple: '#CC79A7',
 };

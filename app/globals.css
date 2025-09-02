@@ -36,15 +36,15 @@
   --status-info-light: #666666;
   --status-info-bg: #F5F5DC;      /* Cream background */
   
-  /* Data Visualization Palette - Monochrome */
-  --chart-primary: #000000;       /* Black */
-  --chart-secondary: #333333;     /* Charcoal */
-  --chart-tertiary: #666666;      /* Gray */
-  --chart-quaternary: #999999;    /* Light gray */
-  --chart-quinary: #CCCCCC;       /* Pale gray */
-  --chart-senary: #1a1a1a;        /* Off-black */
-  --chart-septenary: #4d4d4d;     /* Mid gray */
-  --chart-octonary: #808080;      /* Standard gray */
+  /* Data Visualization Palette - Colorful (Tableau-like, accessible) */
+  --chart-primary: #4E79A7;       /* Blue */
+  --chart-secondary: #59A14F;     /* Green */
+  --chart-tertiary: #F28E2B;      /* Orange */
+  --chart-quaternary: #E15759;    /* Red */
+  --chart-quinary: #76B7B2;       /* Teal */
+  --chart-senary: #AF7AA1;        /* Purple */
+  --chart-septenary: #EDC949;     /* Yellow */
+  --chart-octonary: #9C755F;      /* Brown */
   
   /* Neutral Scale - Light Mode */
   --gray-950: #0F172A;
