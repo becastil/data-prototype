@@ -13,8 +13,7 @@ import {
   ChevronDown,
   Eye,
   EyeOff,
-  Settings,
-  Calendar
+  Settings
 } from 'lucide-react';
 
 interface FinancialDataTableProps {
@@ -81,57 +80,15 @@ const LINE_ITEMS: LineItem[] = [
   { key: 'loss_ratio', label: 'Loss Ratio %', category: 'total' },
 ];
 
-type DateRangeType = 'rolling12' | 'ytd' | 'custom' | 'all';
-
 const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, claimsData }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [hiddenColumns, setHiddenColumns] = useState<Set<number>>(new Set());
   const [showSettings, setShowSettings] = useState(false);
   const [selectedCell, setSelectedCell] = useState<{ row: string; month: string } | null>(null);
-  const [dateRangeType, setDateRangeType] = useState<DateRangeType>('rolling12');
-  const [customStartDate, setCustomStartDate] = useState('');
-  const [customEndDate, setCustomEndDate] = useState('');
+  // Date range is controlled globally via the header; no local toggles here.
 
-  // Helper function to filter data based on date range
-  const filterDataByDateRange = (data: any[]) => {
-    if (!data || data.length === 0) return [];
-    
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    
-    switch (dateRangeType) {
-      case 'rolling12':
-        // Get last 12 months
-        return data.slice(-12);
-      
-      case 'ytd':
-        // Get data from January of current year to now
-        return data.filter(row => {
-          const monthStr = row.month || row.Month || row.period || '';
-          // Assuming month format includes year (e.g., "Jan 2024")
-          if (monthStr.includes(currentYear.toString())) {
-            return true;
-          }
-          // If no year in string, check if it's from recent months
-          const monthIndex = data.indexOf(row);
-          const isCurrentYear = monthIndex >= data.length - 12; // Rough estimate
-          return isCurrentYear;
-        });
-      
-      case 'custom':
-        // Filter based on custom date range
-        if (customStartDate && customEndDate) {
-          // Implementation would depend on exact date format in data
-          return data; // For now, return all data
-        }
-        return data;
-      
-      case 'all':
-      default:
-        return data;
-    }
-  };
+  // Data provided to this component is already filtered by the global date range.
 
   // Transform data into matrix format
   const matrixData = useMemo(() => {
@@ -145,10 +102,8 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
 
     // Process budget data
     if (budgetData && budgetData.length > 0) {
-      // Filter data based on selected date range
-      const recentData = filterDataByDateRange(budgetData);
-      
-      recentData.forEach(row => {
+      // Use data as provided (already filtered upstream)
+      budgetData.forEach(row => {
         const month = row.month || row.Month || row.period || '';
         if (!months.includes(month)) months.push(month);
 
@@ -277,7 +232,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
     }
 
     return { matrix, months };
-  }, [budgetData, claimsData, dateRangeType, customStartDate, customEndDate]);
+  }, [budgetData, claimsData]);
 
   // Use shared formatters from utils (imported above)
 
@@ -435,76 +390,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
           </div>
         </div>
         
-        {/* Date Range Selector */}
-        <div className="flex items-center gap-4 mb-4">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Calendar className="w-4 h-4" />
-            <span className="font-medium">Date Range:</span>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setDateRangeType('rolling12')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                dateRangeType === 'rolling12'
-                  ? 'bg-black text-white shadow-md'
-                  : 'bg-white/70 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-800/50'
-              }`}
-            >
-              Rolling 12 Months
-            </button>
-            <button
-              onClick={() => setDateRangeType('ytd')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                dateRangeType === 'ytd'
-                  ? 'bg-black text-white shadow-md'
-                  : 'bg-white/70 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-800/50'
-              }`}
-            >
-              Plan YTD
-            </button>
-            <button
-              onClick={() => setDateRangeType('all')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                dateRangeType === 'all'
-                  ? 'bg-black text-white shadow-md'
-                  : 'bg-white/70 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-800/50'
-              }`}
-            >
-              All Data
-            </button>
-            <button
-              onClick={() => setDateRangeType('custom')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                dateRangeType === 'custom'
-                  ? 'bg-black text-white shadow-md'
-                  : 'bg-white/70 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-800/50'
-              }`}
-            >
-              Custom Range
-            </button>
-          </div>
-          
-          {/* Custom Date Range Inputs */}
-          {dateRangeType === 'custom' && (
-            <div className="flex gap-2 items-center ml-4">
-              <input
-                type="month"
-                value={customStartDate}
-                onChange={(e) => setCustomStartDate(e.target.value)}
-                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                placeholder="Start"
-              />
-              <span className="text-gray-500">to</span>
-              <input
-                type="month"
-                value={customEndDate}
-                onChange={(e) => setCustomEndDate(e.target.value)}
-                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                placeholder="End"
-              />
-            </div>
-          )}
-        </div>
+        {/* Date range controls removed; using global header selection */}
         
         {/* Search and filters */}
         <div className="flex gap-4">
@@ -667,15 +553,8 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
         <div className="flex justify-between items-center mb-3">
           <div className="text-sm text-gray-600">
             <span className="font-medium">Current View: </span>
-            <span className="text-black font-semibold">
-              {dateRangeType === 'rolling12' && 'Rolling 12 Months'}
-              {dateRangeType === 'ytd' && 'Plan Year to Date'}
-              {dateRangeType === 'all' && 'All Available Data'}
-              {dateRangeType === 'custom' && `Custom (${customStartDate || 'Start'} to ${customEndDate || 'End'})`}
-            </span>
-            <span className="ml-2 text-gray-500">
-              ({matrixData.months.length} months)
-            </span>
+            <span className="text-black font-semibold">Filtered Selection</span>
+            <span className="ml-2 text-gray-500">({matrixData.months.length} months)</span>
           </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

@@ -9,9 +9,9 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-gray-200",
+        default: "border-[#E6EEF5]",
         elevated: "panel-elevated",
-        outlined: "border-2 border-gray-300",
+        outlined: "border-2 border-[#A4CBE1]",
         ghost: "border-transparent shadow-none",
       },
       padding: {
@@ -61,7 +61,7 @@ const CardTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("font-semibold leading-none tracking-tight font-heading", className)}
+    className={cn("font-semibold leading-none tracking-tight font-heading text-[#00263E]", className)}
     {...props}
   />
 ));

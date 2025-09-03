@@ -1,5 +1,108 @@
 @import "tailwindcss";
 
+/* Gallagher Theme Overrides */
+:root {
+  /* Brand Palette */
+  --galla-white: #FFFFFF;
+  --galla-blue-primary: #6FACDE;  /* Primary Accent */
+  --galla-blue-dark: #00263E;     /* Text/Headers/Nav */
+  --galla-black: #000000;         /* Fallback for strongest contrast */
+  --galla-blue-light: #A4CBE1;    /* Borders/Hover/Secondary Accents */
+  --galla-link-hover: #2E4B66;    /* Lighter link hover */
+  --galla-border-soft: #E6EEF5;   /* Card/Table borders */
+  --galla-row-hover: #F4F8FC;     /* Row hover + secondary hover */
+  --galla-table-head: #F7FAFD;    /* Table header background */
+  --galla-placeholder: #6B7C8C;   /* Placeholder (80% opacity applied in rules) */
+
+  /* Map to existing variables used across the app */
+  --background: var(--galla-white);
+  --foreground: var(--galla-blue-dark);
+  --primary: var(--galla-blue-primary);
+  --primary-dark: var(--galla-blue-dark);
+  --primary-light: var(--galla-blue-light);
+}
+
+/* Global base */
+html, body {
+  background-color: var(--galla-white);
+  color: var(--galla-blue-dark);
+}
+
+/* Links */
+a { color: var(--galla-blue-dark); text-decoration: none; }
+a:hover { text-decoration: underline; color: var(--galla-link-hover); }
+a:visited { color: var(--galla-blue-dark); }
+
+/* Header/Nav/Footer */
+header, nav, footer { background-color: var(--galla-white); border-bottom: 1px solid var(--galla-blue-light); }
+
+/* Buttons (utility classes for consistency) */
+.btn-primary {
+  background-color: var(--galla-blue-primary);
+  color: var(--galla-blue-dark);
+}
+.btn-primary:hover { filter: brightness(0.92); }
+.btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--galla-blue-light); }
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--galla-blue-dark);
+  border: 1px solid var(--galla-blue-primary);
+}
+.btn-secondary:hover { background-color: var(--galla-row-hover); }
+.btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--galla-blue-light); }
+
+.btn-link { color: var(--galla-blue-dark); }
+.btn-link:hover { color: var(--galla-link-hover); text-decoration: underline; }
+
+/* Cards / Panels */
+.panel-elevated {
+  background: var(--galla-white);
+  border: 1px solid var(--galla-border-soft);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* Inputs */
+input, select, textarea {
+  background-color: var(--galla-white);
+  border: 1px solid var(--galla-blue-light);
+  color: var(--galla-blue-dark);
+}
+input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--galla-placeholder) 80%, transparent); }
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--galla-blue-primary);
+  box-shadow: 0 0 0 2px var(--galla-blue-light);
+}
+
+/* Tabs */
+.tabs-list { background: var(--galla-white); border-bottom: 1px solid var(--galla-blue-light); }
+.tabs-trigger { color: var(--galla-blue-dark); }
+.tabs-trigger[data-state="active"] { box-shadow: none; background: transparent; border-bottom: 2px solid var(--galla-blue-primary); color: var(--galla-blue-dark); }
+.tabs-trigger:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--galla-blue-light); }
+
+/* Tables */
+table thead { background: var(--galla-table-head); color: var(--galla-blue-dark); }
+table th, table td { border-color: var(--galla-border-soft); }
+table tr:hover { background: var(--galla-row-hover); }
+
+/* Alerts */
+.alert { border-left-width: 4px; border-radius: 12px; padding: 12px 16px; }
+.alert-info { border-left-color: var(--galla-blue-primary); background: var(--galla-row-hover); color: var(--galla-blue-dark); }
+.alert-success { border-left-color: #1E8E5A; background: #F1FAF5; color: #0C3B28; }
+.alert-warning { border-left-color: #C98A00; background: #FFF7E6; color: #4A3200; }
+.alert-error { border-left-color: #C23A3A; background: #FFF1F1; color: #4A1111; }
+
+/* Badges/Chips */
+.chip { background: var(--galla-row-hover); border: 1px solid var(--galla-blue-light); color: var(--galla-blue-dark); border-radius: 9999px; padding: 2px 10px; font-size: 12px; }
+
+/* Icons */
+.icon, svg { color: var(--galla-blue-dark); }
+.icon-muted { color: var(--galla-placeholder); }
+
+/* Focus utility */
+.focus-ring { outline: none !important; box-shadow: 0 0 0 2px var(--galla-blue-light) !important; }
+
 :root {
   --background: #FFFFFF;
   --foreground: #000000; /* Pure Black */
@@ -444,26 +547,22 @@ input, textarea, select {
 
 /* Minimalist Panel - Clean elevated style */
 .panel-elevated {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08),
-              0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  background: var(--galla-white);
+  border: 1px solid var(--galla-border-soft);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.06);
   border-radius: var(--radius-card);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .panel-elevated:hover {
-  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.12),
-              0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.10), 0 2px 4px 0 rgba(0,0,0,0.04);
   transform: translateY(-1px);
 }
 
 [data-theme="dark"] .panel-elevated {
-  background: rgba(26, 26, 26, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.6),
-              0 1px 2px 0 rgba(0, 0, 0, 0.3),
-              inset 0 1px 0 0 rgba(255, 255, 255, 0.03);
+  background: #FFFFFF; /* Keep white-dominant per spec */
+  border: 1px solid var(--galla-border-soft);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.20);
 }
 
 /* Neumorphic Elements */
