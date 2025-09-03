@@ -45,7 +45,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "critters": "^0.0.22",
     "@next/bundle-analyzer": "^15.5.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
@@ -53,11 +52,13 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/recharts": "^1.8.29",
+    "@welldone-software/why-did-you-render": "^10.0.1",
+    "critters": "^0.0.22",
+    "esbuild-loader": "^4.3.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "xo": "^0.59.0"
-  }
-  ,
+  },
   "xo": {
     "extensions": [
       "ts",
