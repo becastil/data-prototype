@@ -1,3 +1,4 @@
+import './wdyr';
 import type { Metadata } from "next";
 import "./globals.css";
 import { lightTheme, darkTheme } from './styles';

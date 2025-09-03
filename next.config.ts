@@ -25,6 +25,19 @@ const nextConfig: NextConfig = {
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 60,
   },
+  
+  // Use esbuild-loader for faster client prod builds
+  webpack: (config, { dev, isServer }) => {
+    if (!dev && !isServer) {
+      config.module.rules.push({
+        test: /\.[jt]sx?$/,
+        loader: 'esbuild-loader',
+        options: { target: 'es2017' },
+        exclude: /node_modules/
+      });
+    }
+    return config;
+  }
 };
 
 const withVanillaExtract = createVanillaExtractPlugin();
