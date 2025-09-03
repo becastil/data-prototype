@@ -1,5 +1,48 @@
 @import "tailwindcss";
 
+/* Galaxie Polaris - self-hosted font faces */
+@font-face {
+  font-family: 'Galaxie Polaris';
+  src:
+    local('Galaxie Polaris Regular'),
+    local('GalaxiePolaris-Regular'),
+    url('/fonts/galaxie-polaris/GalaxiePolaris-Regular.woff2') format('woff2'),
+    url('/fonts/galaxie-polaris/GalaxiePolaris-Regular.woff') format('woff'),
+    url('/fonts/galaxie-polaris/GalaxiePolaris-Regular.ttf') format('truetype'),
+    url('/fonts/galaxie-polaris/GalaxiePolaris-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Galaxie Polaris';
+  src:
+    local('Galaxie Polaris Italic'),
+    local('GalaxiePolaris-Italic'),
+    url('/fonts/galaxie-polaris/GalaxiePolaris-Italic.woff2') format('woff2'),
+    url('/fonts/galaxie-polaris/GalaxiePolaris-Italic.woff') format('woff'),
+    url('/fonts/galaxie-polaris/GalaxiePolaris-Italic.ttf') format('truetype'),
+    url('/fonts/galaxie-polaris/GalaxiePolaris-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Galaxie Polaris';
+  src:
+    local('Galaxie Polaris Bold'),
+    local('GalaxiePolaris-Bold'),
+    url('/fonts/galaxie-polaris/GalaxiePolaris-Bold.woff2') format('woff2'),
+    url('/fonts/galaxie-polaris/GalaxiePolaris-Bold.woff') format('woff'),
+    url('/fonts/galaxie-polaris/GalaxiePolaris-Bold.ttf') format('truetype'),
+    url('/fonts/galaxie-polaris/GalaxiePolaris-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Gallagher Theme Overrides */
 :root {
   /* Brand Palette */
@@ -168,10 +211,10 @@ table tr:hover { background: var(--galla-row-hover); }
   --gradient-end: #F0F0F0;        /* Light gray */
   --gradient-accent: #000000;     /* Black accent */
   
-  /* Typography System */
-  --font-heading: 'TASA Orbiter Display', system-ui, -apple-system, sans-serif;
-  --font-subheading: 'Montserrat', system-ui, -apple-system, sans-serif;
-  --font-body: 'Open Sans', system-ui, -apple-system, sans-serif;
+  /* Typography System - Use Galaxie Polaris for headings and body */
+  --font-heading: 'Galaxie Polaris', Arial, Helvetica, sans-serif;
+  --font-subheading: 'Galaxie Polaris', Arial, Helvetica, sans-serif;
+  --font-body: 'Galaxie Polaris', Arial, Helvetica, sans-serif;
   --font-data: 'Roboto Mono', 'Courier New', monospace;
   
   /* Font Weights */
