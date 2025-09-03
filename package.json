@@ -6,7 +6,9 @@
     "dev": "next dev -p 3005",
     "build": "next build",
     "build:analyze": "ANALYZE=true npm run build",
-    "start": "next start -p 3005"
+    "start": "next start -p 3005",
+    "lint": "xo",
+    "lint:fix": "xo --fix"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -39,7 +41,8 @@
     "react-dom": "19.1.0",
     "recharts": "^3.1.2",
     "tailwind-merge": "^3.3.1",
-    "web-vitals": "^5.1.0"
+    "web-vitals": "^5.1.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "critters": "^0.0.22",
@@ -51,6 +54,22 @@
     "@types/react-dom": "^19",
     "@types/recharts": "^1.8.29",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "xo": "^0.59.0"
+  }
+  ,
+  "xo": {
+    "extensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx"
+    ],
+    "prettier": true,
+    "ignores": [
+      ".next/**",
+      "node_modules/**",
+      "docs/**"
+    ]
   }
 }

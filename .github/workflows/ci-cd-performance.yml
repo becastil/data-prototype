@@ -32,8 +32,8 @@ jobs:
       - name: TypeScript check
         run: npx tsc --noEmit
 
-      - name: ESLint check
-        run: npx eslint . --ext .ts,.tsx,.js,.jsx --max-warnings 0
+      - name: Lint (XO)
+        run: npx xo
         continue-on-error: true
 
       - name: Security audit

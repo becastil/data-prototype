@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CSVLoader, { ParsedCSVData } from './CSVLoader';
+import { validateBudgetData, validateClaimsData } from '@/app/utils/schemas';
 
 interface DualCSVLoaderProps {
   onBothFilesLoaded: (budgetData: ParsedCSVData, claimsData: ParsedCSVData) => void;
@@ -17,10 +18,23 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
   const submittedRef = React.useRef(false);
   React.useEffect(() => {
     if (!submittedRef.current && budgetData && claimsData) {
+      // Validate both datasets before proceeding
+      const budgetCheck = validateBudgetData({ headers: budgetData.headers, rows: budgetData.rows });
+      if (budgetCheck.success !== true) {
+        onError(budgetCheck.message);
+        return;
+      }
+
+      const claimsCheck = validateClaimsData({ headers: claimsData.headers, rows: claimsData.rows });
+      if (claimsCheck.success !== true) {
+        onError(claimsCheck.message);
+        return;
+      }
+
       submittedRef.current = true;
       onBothFilesLoaded(budgetData, claimsData);
     }
-  }, [budgetData, claimsData, onBothFilesLoaded]);
+  }, [budgetData, claimsData, onBothFilesLoaded, onError]);
 
   const handleBudgetLoaded = (data: ParsedCSVData) => {
     // Validate budget data columns
