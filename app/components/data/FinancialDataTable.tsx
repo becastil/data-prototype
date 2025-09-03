@@ -525,7 +525,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
                       </td>
                     );
                   })}
-                  <td className={`px-4 py-3 text-sm text-right font-semibold border-l border-gray-200 bg-gray-50 font-data ${
+                  <td className={`px-4 py-3 text-sm text-right font-semibold border-l border-gray-200 bg-gray-50 font-body ${
                     item.key === 'variance' && total !== 0 ? (total > 0 ? 'text-black' : 'text-gray-700') : ''
                   }`}>
                     {(item.key === 'variance_percent' || item.key === 'loss_ratio')
@@ -533,7 +533,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
                       : formatCurrency(total)
                     }
                   </td>
-                  <td className={`px-4 py-3 text-sm text-right bg-gray-50 font-data ${
+                  <td className={`px-4 py-3 text-sm text-right bg-gray-50 font-body ${
                     item.key === 'variance' && average !== 0 ? (average > 0 ? 'text-black' : 'text-gray-700') : ''
                   }`}>
                     {(item.key === 'variance_percent' || item.key === 'loss_ratio')
@@ -560,7 +560,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
             <p className="text-xs text-gray-600 font-body">Total Budget (YTD)</p>
-            <p className="text-lg font-semibold text-black font-data">
+            <p className="text-lg font-semibold text-black font-body">
               {formatCurrency(
                 matrixData.months.reduce((sum, month) => 
                   sum + (matrixData.matrix['budget']?.[month] || 0), 0
@@ -570,7 +570,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
           </div>
           <div>
             <p className="text-xs text-gray-600 font-body">Total Net Cost (YTD)</p>
-            <p className="text-lg font-semibold text-gray-800 font-data">
+            <p className="text-lg font-semibold text-gray-800 font-body">
               {formatCurrency(
                 matrixData.months.reduce((sum, month) => 
                   sum + (matrixData.matrix['net_cost']?.[month] || 0), 0
@@ -580,7 +580,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
           </div>
           <div>
             <p className="text-xs text-gray-600 font-body">Total Variance (YTD)</p>
-            <p className={`text-lg font-semibold font-data ${
+            <p className={`text-lg font-semibold font-body ${
               matrixData.months.reduce((sum, month) => sum + (matrixData.matrix['variance']?.[month] || 0), 0) >= 0
                 ? 'text-black'
                 : 'text-gray-700'
@@ -594,7 +594,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
           </div>
           <div>
             <p className="text-xs text-gray-600 font-body">Avg Monthly Variance %</p>
-            <p className={`text-lg font-semibold font-data ${
+            <p className={`text-lg font-semibold font-body ${
               (matrixData.months.length > 0 
                 ? matrixData.months.reduce((sum, month) => sum + (matrixData.matrix['variance_percent']?.[month] || 0), 0) / matrixData.months.length 
                 : 0) >= 0
