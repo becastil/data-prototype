@@ -63,6 +63,7 @@ jobs:
         run: |
           npm ci
           npm install -g @axe-core/cli
+          npm install -g pa11y
 
       - name: Build application
         run: npm run build
@@ -81,6 +82,12 @@ jobs:
             --exit \
             --verbose \
             --timeout 30000
+
+      - name: Run Pa11y accessibility tests (key routes)
+        run: |
+          pa11y http://localhost:3005 --standard WCAG2AA --threshold 0 --timeout 60000
+          pa11y http://localhost:3005/variants --standard WCAG2AA --threshold 0 --timeout 60000 || true
+          pa11y http://localhost:3005/csv-demo --standard WCAG2AA --threshold 0 --timeout 60000 || true
 
       - name: Check color contrast compliance
         run: |
