@@ -14,6 +14,7 @@ interface EChartsEnterpriseChartProps {
   enableWebGL?: boolean;
   streamingData?: boolean;
   maxDataPoints?: number;
+  rollingMonths?: number; // if provided, overrides default 12-month window
 }
 
 const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({ 
@@ -22,7 +23,8 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
   error = '',
   enableWebGL = true,
   streamingData = false,
-  maxDataPoints = 10000
+  maxDataPoints = 10000,
+  rollingMonths
 }) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const chartInstance = useRef<echarts.ECharts | null>(null);
@@ -50,10 +52,11 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
   const prefersReducedMotion = useReducedMotion();
   const [chartStatus, setChartStatus] = React.useState<string>('');
 
-  // Process data with 12-month rolling window
+  // Process data with rolling window (default 12). If not provided, use data length.
   const chartData = useMemo(() => {
-    return processFinancialData(data, 12);
-  }, [data]);
+    const window = typeof rollingMonths === 'number' ? rollingMonths : (Array.isArray(data) ? data.length : 12);
+    return processFinancialData(data, window);
+  }, [data, rollingMonths]);
 
   // Prepare ECharts data format
   const echartsData = useMemo(() => {

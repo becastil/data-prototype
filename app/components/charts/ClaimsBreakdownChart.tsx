@@ -27,8 +27,8 @@ const ClaimsBreakdownChart: React.FC<ClaimsBreakdownChartProps> = ({
   const chartData = useMemo(() => {
     if (!budgetData || budgetData.length === 0) return [];
     
-    // Get last 12 months of data
-    const recentData = budgetData.slice(-12);
+    // Use provided data as-is to respect global range filtering
+    const recentData = budgetData;
     
     return recentData.map(row => {
       const parseValue = (value: any): number => {
@@ -177,7 +177,7 @@ const ClaimsBreakdownChart: React.FC<ClaimsBreakdownChartProps> = ({
         <div className="flex gap-4">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-gray-500" />
-            <span className="text-sm text-gray-600 font-body">Rolling 12 Months</span>
+            <span className="text-sm text-gray-600 font-body">Selected Range</span>
           </div>
         </div>
       </div>

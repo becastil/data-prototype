@@ -25,6 +25,10 @@ import RiveSuccess from '@components/loaders/RiveSuccess';
 import MotionButton from '@components/MotionButton';
 import MotionCard from '@components/MotionCard';
 import { Button } from '@components/ui/button';
+import SoftDropdown from '@components/ui/soft-dropdown';
+import AnimatedVariantsMenu from '@components/navigation/AnimatedVariantsMenu';
+import DateRangeDropdown from '@components/ui/date-range-dropdown';
+import { DateRangeSelection, filterRowsByRange } from '@/app/utils/dateRange';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs';
 // Removed unused imports to reduce bundle size
 import { ParsedCSVData } from '@components/loaders/CSVLoader';
@@ -45,6 +49,7 @@ const Home: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRangeSelection>({ preset: '12M' });
   
   // Persist and hydrate loaded data across refreshes
   useEffect(() => {
@@ -147,6 +152,20 @@ const Home: React.FC = () => {
     setCurrentPage(page);
   };
 
+  // Quick navigation items for soft dropdown (dashboard views)
+  const quickNavItems = [
+    { id: 'dashboard', label: 'Dashboard', description: 'Summary tiles & metrics' },
+    { id: 'table', label: 'Financial Table', description: 'Browse raw financial data' },
+    { id: 'charts', label: 'Charts & Analytics', description: 'Visualize trends' },
+  ];
+
+  // Build ordered month labels from budget data
+  const monthsTimeline: string[] = (budgetData?.rows || []).map((r: any) => String(r.month || r.Month || r.period || r.Period || ''));
+
+  // Filtered datasets by selected range
+  const filteredBudget = filterRowsByRange(budgetData?.rows || [], monthsTimeline, dateRange);
+  const filteredClaims = filterRowsByRange(claimsData?.rows || [], monthsTimeline, dateRange);
+
   return (
     <>
       <GooeyFilter />
@@ -237,6 +256,14 @@ const Home: React.FC = () => {
               </div>
               <div className="flex items-center gap-3">
                 <ThemeToggle />
+                <DateRangeDropdown months={monthsTimeline} value={dateRange} onChange={setDateRange} />
+                {/* Soft gray quick navigation dropdown */}
+                <SoftDropdown
+                  label="Quick Navigate"
+                  items={quickNavItems}
+                  selectedId={currentPage}
+                  onSelect={handleNavigate}
+                />
                 <Button
                   onClick={handleReset}
                   className="shadow-lg"
@@ -285,8 +312,8 @@ const Home: React.FC = () => {
             <div className="p-8">
               {/* Dashboard Summary Tiles */}
               <Dashboard.Root 
-                budgetData={budgetData?.rows || []} 
-                claimsData={claimsData?.rows || []}
+                budgetData={filteredBudget} 
+                claimsData={filteredClaims}
               >
                 <Dashboard.Budget />
                 <Dashboard.Claims />
@@ -305,8 +332,8 @@ const Home: React.FC = () => {
                     transition={{ duration: 0.3 }}
                   >
                     <FinancialDataTable 
-                      budgetData={budgetData?.rows || []} 
-                      claimsData={claimsData?.rows || []}
+                      budgetData={filteredBudget} 
+                      claimsData={filteredClaims}
                     />
                   </motion.div>
                 ) : currentPage === 'charts' || currentPage === 'analytics' ? (
@@ -323,7 +350,8 @@ const Home: React.FC = () => {
                 <MotionCard delay={0.1}>
                   <LazyChartWrapper>
                     <EChartsEnterpriseChart 
-                      data={budgetData?.rows || []} 
+                      data={filteredBudget} 
+                      rollingMonths={filteredBudget.length}
                       enableWebGL={true}
                       streamingData={true}
                       maxDataPoints={10000}
@@ -335,8 +363,8 @@ const Home: React.FC = () => {
                 <MotionCard delay={0.2}>
                   <LazyChartWrapper>
                     <ClaimsBreakdownChart 
-                      budgetData={budgetData?.rows || []} 
-                      claimsData={claimsData?.rows || []}
+                      budgetData={filteredBudget} 
+                      claimsData={filteredClaims}
                     />
                   </LazyChartWrapper>
                 </MotionCard>
@@ -345,8 +373,8 @@ const Home: React.FC = () => {
                 <MotionCard delay={0.3}>
                   <LazyChartWrapper>
                     <MedicalClaimsBreakdownChart 
-                      budgetData={budgetData?.rows || []} 
-                      claimsData={claimsData?.rows || []}
+                      budgetData={filteredBudget} 
+                      claimsData={filteredClaims}
                     />
                   </LazyChartWrapper>
                 </MotionCard>
@@ -354,14 +382,14 @@ const Home: React.FC = () => {
                 {/* Tile 4: Cost Band Scatter Chart */}
                 <MotionCard delay={0.4}>
                   <LazyChartWrapper>
-                    <CostBandScatterChart data={claimsData?.rows || []} />
+                    <CostBandScatterChart data={filteredClaims} />
                   </LazyChartWrapper>
                 </MotionCard>
 
                 {/* Tile 5: Enrollment Line Chart with MUI */}
                 <MotionCard delay={0.5}>
                   <LazyChartWrapper>
-                    <MUIEnrollmentChart data={budgetData?.rows || []} />
+                    <MUIEnrollmentChart data={filteredBudget} rollingMonths={filteredBudget.length} />
                   </LazyChartWrapper>
                 </MotionCard>
 
@@ -369,8 +397,8 @@ const Home: React.FC = () => {
                 <MotionCard delay={0.6}>
                   <LazyChartWrapper>
                     <DomesticVsNonDomesticChart 
-                      budgetData={budgetData?.rows || []} 
-                      claimsData={claimsData?.rows || []}
+                      budgetData={filteredBudget} 
+                      claimsData={filteredClaims}
                     />
                   </LazyChartWrapper>
                 </MotionCard>
@@ -378,7 +406,7 @@ const Home: React.FC = () => {
                 {/* Tile 7: HCC Data Table */}
                 <MotionCard delay={0.7}>
                   <LazyChartWrapper>
-                    <HCCDataTable data={claimsData?.rows || []} />
+                    <HCCDataTable data={filteredClaims} />
                   </LazyChartWrapper>
                 </MotionCard>
                 </motion.div>
@@ -393,6 +421,14 @@ const Home: React.FC = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
+            </div>
+            {/* Motion playground (animated variants menu) */}
+            <div className="p-8 pt-0">
+              <div className="panel-elevated p-4">
+                <h2 className="text-lg font-semibold text-black font-heading mb-3">Animated Variants Menu</h2>
+                <p className="text-sm text-gray-600 mb-4">Experimental navigation demo integrated into the dashboard.</p>
+                <AnimatedVariantsMenu />
+              </div>
             </div>
           </div>
         </motion.div>

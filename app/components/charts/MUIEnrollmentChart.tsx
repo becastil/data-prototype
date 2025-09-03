@@ -16,17 +16,20 @@ interface MUIEnrollmentChartProps {
   data: any[];
   loading?: boolean;
   error?: string;
+  rollingMonths?: number;
 }
 
 const MUIEnrollmentChart: React.FC<MUIEnrollmentChartProps> = ({ 
   data, 
   loading = false, 
-  error = '' 
+  error = '',
+  rollingMonths,
 }) => {
-  // Process enrollment data with 12-month rolling window
+  // Process enrollment data with rolling window (default 12). If not provided, use data length
   const chartData = useMemo(() => {
-    return processEnrollmentData(data, 12);
-  }, [data]);
+    const window = typeof rollingMonths === 'number' ? rollingMonths : (Array.isArray(data) ? data.length : 12);
+    return processEnrollmentData(data, window);
+  }, [data, rollingMonths]);
 
   // Calculate statistics
   const stats = useMemo(() => {
@@ -54,7 +57,7 @@ const MUIEnrollmentChart: React.FC<MUIEnrollmentChartProps> = ({
       {/* Header with statistics */}
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-3">
-          Enrollment Trends (Rolling 12 Months)
+          Enrollment Trends (Selected Range)
         </h3>
         <div className="grid grid-cols-3 gap-3">
           <motion.div
