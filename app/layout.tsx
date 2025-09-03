@@ -21,26 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={lightTheme}>
       <head>
-        {/* Preload self-hosted Galaxie Polaris fonts (ensure files exist) */}
-        <link
-          rel="preload"
-          href="/fonts/galaxie-polaris/GalaxiePolaris-Regular.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/galaxie-polaris/GalaxiePolaris-Bold.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link 
-          href="https://fonts.googleapis.com/css2?family=TASA+Orbiter+Display:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@300;400;500;600&family=Roboto+Mono:wght@300;400;500&display=swap" 
-          rel="stylesheet" 
+        <link
+          href="https://fonts.googleapis.com/css2?family=Jura:wght@300..700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&family=TASA+Orbiter:wght@400..800&display=swap"
+          rel="stylesheet"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#000000" />

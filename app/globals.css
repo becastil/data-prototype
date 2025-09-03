@@ -211,11 +211,13 @@ table tr:hover { background: var(--galla-row-hover); }
   --gradient-end: #F0F0F0;        /* Light gray */
   --gradient-accent: #000000;     /* Black accent */
   
-  /* Typography System - Use Galaxie Polaris for headings and body */
-  --font-heading: 'Galaxie Polaris', Arial, Helvetica, sans-serif;
-  --font-subheading: 'Galaxie Polaris', Arial, Helvetica, sans-serif;
-  --font-body: 'Galaxie Polaris', Arial, Helvetica, sans-serif;
-  --font-data: 'Roboto Mono', 'Courier New', monospace;
+  /* Typography System - Use Google fonts across the app */
+  /* Primary font order: TASA Orbiter → Space Grotesk → Open Sans → Roboto */
+  --font-heading: 'TASA Orbiter', 'Space Grotesk', 'Open Sans', 'Roboto', Arial, Helvetica, sans-serif;
+  --font-subheading: 'TASA Orbiter', 'Space Grotesk', 'Open Sans', 'Roboto', Arial, Helvetica, sans-serif;
+  --font-body: 'TASA Orbiter', 'Space Grotesk', 'Open Sans', 'Roboto', Arial, Helvetica, sans-serif;
+  /* Use the same family for data to keep typography consistent throughout the table */
+  --font-data: 'TASA Orbiter', 'Space Grotesk', 'Open Sans', 'Roboto', Arial, Helvetica, sans-serif;
   
   /* Font Weights */
   --weight-light: 300;
