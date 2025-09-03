@@ -1,0 +1,29 @@
+version: 1
+env:
+  variables:
+    NODE_OPTIONS: "--max-old-space-size=8192"
+    NEXT_TELEMETRY_DISABLED: 1
+    NODE_ENV: production
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - nvm use 20
+        - npm ci --prefer-offline --no-audit
+        - echo "Node heap limit = $(node -e 'console.log(require(\"v8\").getHeapStatistics().heap_size_limit / (1024 * 1024))')Mb"
+    build:
+      commands:
+        - npm run build
+    postBuild:
+      commands:
+        - echo "Build completed at $(date)"
+        - du -sh .next
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      - .next/cache/**/*
+      - ~/.npm/**/*
