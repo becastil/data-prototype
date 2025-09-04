@@ -28,6 +28,13 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
 }) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const chartInstance = useRef<echarts.ECharts | null>(null);
+  const canvasListenerRefs = useRef<Array<{
+    el: HTMLCanvasElement;
+    onLost: (e: Event) => void;
+    onRestored: (e: Event) => void;
+    onGenericLost: (e: Event) => void;
+    onGenericRestored: (e: Event) => void;
+  }>>([]);
   // Track theme changes to avoid recreating color object every render
   const [themeKey, setThemeKey] = React.useState<string>('');
   useEffect(() => {
@@ -393,7 +400,48 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
     };
 
     chartInstance.current.setOption(option);
-    
+
+    // Attach WebGL/Canvas context loss handlers for reliability
+    const detachContextHandlers = () => {
+      canvasListenerRefs.current.forEach(({ el, onLost, onRestored, onGenericLost, onGenericRestored }) => {
+        el.removeEventListener('webglcontextlost', onLost as EventListener);
+        el.removeEventListener('webglcontextrestored', onRestored as EventListener);
+        el.removeEventListener('contextlost', onGenericLost as EventListener);
+        el.removeEventListener('contextrestored', onGenericRestored as EventListener);
+      });
+      canvasListenerRefs.current = [];
+    };
+
+    if (enableWebGL) {
+      const dom = chartInstance.current.getDom() as HTMLElement;
+      const canvases = dom.querySelectorAll('canvas');
+      canvases.forEach((el) => {
+        const canvas = el as HTMLCanvasElement;
+        const onLost = (e: Event) => {
+          e.preventDefault?.();
+          setChartStatus('Graphics context lost. Attempting recovery...');
+        };
+        const onRestored = (e: Event) => {
+          setChartStatus('Graphics context restored. Re-rendering...');
+          try {
+            detachContextHandlers();
+            chartInstance.current?.dispose();
+          } catch {}
+          chartInstance.current = null;
+          setTimeout(() => {
+            initChart();
+          }, 0);
+        };
+        const onGenericLost = onLost;
+        const onGenericRestored = onRestored;
+        canvas.addEventListener('webglcontextlost', onLost as EventListener, { passive: false } as any);
+        canvas.addEventListener('webglcontextrestored', onRestored as EventListener);
+        canvas.addEventListener('contextlost', onGenericLost as EventListener);
+        canvas.addEventListener('contextrestored', onGenericRestored as EventListener);
+        canvasListenerRefs.current.push({ el: canvas, onLost, onRestored, onGenericLost, onGenericRestored });
+      });
+    }
+
     // Announce chart completion for screen readers
     setChartStatus('Chart loaded successfully. Use Tab to navigate chart elements.');
 
@@ -419,6 +467,7 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
     window.addEventListener('resize', handleResize);
     
     return () => {
+      detachContextHandlers();
       window.removeEventListener('resize', handleResize);
     };
   }, [echartsData, enableWebGL, streamingData, maxDataPoints, themeKey]);

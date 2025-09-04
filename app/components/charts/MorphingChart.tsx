@@ -62,6 +62,60 @@ const MorphingChart: React.FC<MorphingChartProps> = ({
     ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
     : false;
 
+  // ECharts instance and context recovery handlers
+  const echartsInstanceRef = useRef<any>(null);
+  const canvasListenerRefs = useRef<Array<{
+    el: HTMLCanvasElement;
+    onLost: (e: Event) => void;
+    onRestored: (e: Event) => void;
+    onGenericLost: (e: Event) => void;
+    onGenericRestored: (e: Event) => void;
+  }>>([]);
+
+  const detachContextHandlers = () => {
+    canvasListenerRefs.current.forEach(({ el, onLost, onRestored, onGenericLost, onGenericRestored }) => {
+      el.removeEventListener('webglcontextlost', onLost as EventListener);
+      el.removeEventListener('webglcontextrestored', onRestored as EventListener);
+      el.removeEventListener('contextlost', onGenericLost as EventListener);
+      el.removeEventListener('contextrestored', onGenericRestored as EventListener);
+    });
+    canvasListenerRefs.current = [];
+  };
+
+  const attachContextHandlers = (inst: any) => {
+    try {
+      const dom: HTMLElement | undefined = inst?.getDom?.();
+      if (!dom) return;
+      const canvases = dom.querySelectorAll('canvas');
+      canvases.forEach((el) => {
+        const canvas = el as HTMLCanvasElement;
+        const onLost = (e: Event) => {
+          e.preventDefault?.();
+          // No state update noise here; keep it silent for this component
+        };
+        const onRestored = (e: Event) => {
+          try {
+            detachContextHandlers();
+            // Force re-render by resetting option
+            const currentOption = inst?.getOption?.();
+            inst?.dispose?.();
+            // ECharts-for-React will recreate instance on next render; minimal workaround:
+            setTimeout(() => {
+              echartsInstanceRef.current = null;
+            }, 0);
+          } catch {}
+        };
+        const onGenericLost = onLost;
+        const onGenericRestored = onRestored;
+        canvas.addEventListener('webglcontextlost', onLost as EventListener, { passive: false } as any);
+        canvas.addEventListener('webglcontextrestored', onRestored as EventListener);
+        canvas.addEventListener('contextlost', onGenericLost as EventListener);
+        canvas.addEventListener('contextrestored', onGenericRestored as EventListener);
+        canvasListenerRefs.current.push({ el: canvas, onLost, onRestored, onGenericLost, onGenericRestored });
+      });
+    } catch {}
+  };
+
   // Data morphing animation using Theatre.js principles
   useEffect(() => {
     if (previousData && JSON.stringify(previousData) !== JSON.stringify(data)) {
@@ -106,6 +160,13 @@ const MorphingChart: React.FC<MorphingChartProps> = ({
       controls.start('visible');
     }
   }, [isInView, controls]);
+
+  // Cleanup context handlers on unmount
+  useEffect(() => {
+    return () => {
+      detachContextHandlers();
+    };
+  }, []);
 
   // Generate ECharts configuration based on chart type
   const generateChartOption = () => {
@@ -396,6 +457,10 @@ const MorphingChart: React.FC<MorphingChartProps> = ({
           }}
           notMerge={!isAnimating} // Prevent conflicts during morphing
           lazyUpdate={true} // Optimize re-renders
+          onChartReady={(inst) => {
+            echartsInstanceRef.current = inst;
+            attachContextHandlers(inst);
+          }}
         />
       </div>
 
