@@ -8,56 +8,56 @@ import { motion } from 'framer-motion';
 const EChartsEnterpriseChart = dynamic(
   () => import('./EChartsEnterpriseChart'),
   {
-    loading: () => <ChartLoadingSkeleton title="Loading Enterprise Chart..." />,
-    ssr: false // ECharts requires client-side rendering
+    ssr: false, // ECharts requires client-side rendering
+    suspense: true
   }
 );
 
 const ClaimsBreakdownChart = dynamic(
   () => import('./ClaimsBreakdownChart'),
   {
-    loading: () => <ChartLoadingSkeleton title="Loading Claims Analysis..." />,
-    ssr: false
+    ssr: false,
+    suspense: true
   }
 );
 
 const MedicalClaimsBreakdownChart = dynamic(
   () => import('./MedicalClaimsBreakdownChart'),
   {
-    loading: () => <ChartLoadingSkeleton title="Loading Medical Claims..." />,
-    ssr: false
+    ssr: false,
+    suspense: true
   }
 );
 
 const CostBandScatterChart = dynamic(
   () => import('./CostBandScatterChart'),
   {
-    loading: () => <ChartLoadingSkeleton title="Loading Cost Analysis..." />,
-    ssr: false
+    ssr: false,
+    suspense: true
   }
 );
 
 const MUIEnrollmentChart = dynamic(
   () => import('./MUIEnrollmentChart'),
   {
-    loading: () => <ChartLoadingSkeleton title="Loading Enrollment Data..." />,
-    ssr: false
+    ssr: false,
+    suspense: true
   }
 );
 
 const DomesticVsNonDomesticChart = dynamic(
   () => import('./DomesticVsNonDomesticChart'),
   {
-    loading: () => <ChartLoadingSkeleton title="Loading Regional Analysis..." />,
-    ssr: false
+    ssr: false,
+    suspense: true
   }
 );
 
 const HCCDataTable = dynamic(
   () => import('@components/data/HCCDataTable'),
   {
-    loading: () => <ChartLoadingSkeleton title="Loading Data Table..." />,
-    ssr: false
+    ssr: false,
+    suspense: true
   }
 );
 

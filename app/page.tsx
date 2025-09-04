@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Suspense } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import DualCSVLoader from '@components/loaders/DualCSVLoader';
 import {
@@ -229,13 +230,14 @@ const Home: React.FC = () => {
           )}
         </motion.div>
       ) : (
-        <motion.div
-          key="dashboard"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="min-h-screen gradient-smooth p-6"
-        >
+        <Suspense fallback={<div className="p-8 text-gray-600">Loading analytics...</div>}>
+          <motion.div
+            key="dashboard"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="min-h-screen gradient-smooth p-6"
+          >
           {/* Header */}
           <div className="max-w-7xl mx-auto mb-6">
             <div className="flex justify-between items-center mb-4">
@@ -264,6 +266,9 @@ const Home: React.FC = () => {
                   selectedId={currentPage}
                   onSelect={handleNavigate}
                 />
+                <Button asChild variant="soft" className="shadow-sm">
+                  <Link href="/demos">Demos</Link>
+                </Button>
                 <Button
                   onClick={handleReset}
                   className="shadow-lg"
@@ -431,7 +436,8 @@ const Home: React.FC = () => {
               </div>
             </div>
           </div>
-        </motion.div>
+          </motion.div>
+        </Suspense>
       )}
     </AnimatePresence>
       {/* Performance Monitoring */}
