@@ -33,6 +33,7 @@ import { DateRangeSelection, filterRowsByRange } from '@/app/utils/dateRange';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs';
 // Removed unused imports to reduce bundle size
 import { ParsedCSVData } from '@components/loaders/CSVLoader';
+import { secureHealthcareStorage } from '@/app/lib/SecureHealthcareStorage';
 import { useAutoAnimateCards } from '@/app/hooks/useAutoAnimate';
 import { RotateCcw, Table, BarChart3, Bell, Search } from 'lucide-react';
 import CommandPalette from '@components/navigation/CommandPalette';
@@ -52,20 +53,17 @@ const Home: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [dateRange, setDateRange] = useState<DateRangeSelection>({ preset: '12M' });
   
-  // Persist and hydrate loaded data across refreshes
+  // HIPAA-aligned hydration: use in-memory token reference (no PHI in localStorage)
   useEffect(() => {
     try {
-      const saved = typeof window !== 'undefined' ? localStorage.getItem('dashboardData') : null;
-      if (saved) {
-        const parsed = JSON.parse(saved) as { budgetData?: ParsedCSVData; claimsData?: ParsedCSVData };
-        if (parsed?.budgetData && parsed?.claimsData) {
-          setBudgetData(parsed.budgetData);
-          setClaimsData(parsed.claimsData);
-          setShowDashboard(true);
-        }
+      const saved = secureHealthcareStorage.retrieve<{ budgetData?: ParsedCSVData; claimsData?: ParsedCSVData }>('dashboardData');
+      if (saved?.budgetData && saved?.claimsData) {
+        setBudgetData(saved.budgetData);
+        setClaimsData(saved.claimsData);
+        setShowDashboard(true);
       }
     } catch (e) {
-      console.error('Failed to hydrate saved dashboard data', e);
+      console.error('Secure storage hydration failed', e);
     }
   }, []);
   
@@ -101,13 +99,17 @@ const Home: React.FC = () => {
       clearTimeout(timeoutRefs.current.successTimeout);
     }
     
-    timeoutRefs.current.loadingTimeout = setTimeout(() => {
+    timeoutRefs.current.loadingTimeout = setTimeout(async () => {
       setBudgetData(budget);
       setClaimsData(claims);
       try {
-        localStorage.setItem('dashboardData', JSON.stringify({ budgetData: budget, claimsData: claims, savedAt: new Date().toISOString() }));
+        await secureHealthcareStorage.storeTemporary('dashboardData', {
+          budgetData: budget,
+          claimsData: claims,
+          savedAt: new Date().toISOString(),
+        });
       } catch (e) {
-        console.warn('Could not persist dashboard data', e);
+        console.warn('Could not store dashboard data securely', e);
       }
       setIsLoading(false);
       setShowSuccess(true);
@@ -134,7 +136,7 @@ const Home: React.FC = () => {
     setClaimsData(null);
     setError('');
     try {
-      localStorage.removeItem('dashboardData');
+      secureHealthcareStorage.clear('dashboardData');
     } catch {}
   };
 
