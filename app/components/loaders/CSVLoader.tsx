@@ -3,6 +3,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import Papa from 'papaparse';
+import { sanitizeCSVData } from '@utils/phi';
 import { Upload, FileSpreadsheet, AlertCircle, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
 export interface ParsedCSVData {
@@ -233,12 +234,14 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
           Object.values(row).some(val => val !== '')
         );
 
+        const sanitized = sanitizeCSVData(headers, rows);
+
         const parsedData: ParsedCSVData = {
-          headers,
-          rows,
+          headers: sanitized.headers,
+          rows: sanitized.rows,
           rawData: '',
           fileName: file.name,
-          rowCount: rows.length
+          rowCount: sanitized.rows.length
         };
 
         setPreviewData(parsedData);
