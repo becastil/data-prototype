@@ -9,11 +9,10 @@ frontend:
     preBuild:
       commands:
         - nvm use 20
-        - npm ci --prefer-offline --no-audit
         - echo "Node heap limit = $(node -e 'console.log(require(\"v8\").getHeapStatistics().heap_size_limit / (1024 * 1024))')Mb"
     build:
       commands:
-        - npm run build
+        - npm run build:amplify
     postBuild:
       commands:
         - echo "Build completed at $(date)"

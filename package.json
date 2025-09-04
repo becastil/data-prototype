@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev -p 3005",
     "build": "next build",
+    "install:legacy": "npm install --legacy-peer-deps",
+    "build:amplify": "npm run install:legacy && npm run build",
     "build:analyze": "ANALYZE=true npm run build",
     "start": "next start -p 3005",
     "lint": "xo",
