@@ -52,6 +52,7 @@ const Home: React.FC = () => {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [dateRange, setDateRange] = useState<DateRangeSelection>({ preset: '12M' });
+  const [emergencyMode, setEmergencyMode] = useState(false);
   
   // HIPAA-aligned hydration: use in-memory token reference (no PHI in localStorage)
   useEffect(() => {
@@ -100,23 +101,31 @@ const Home: React.FC = () => {
     }
     
     timeoutRefs.current.loadingTimeout = setTimeout(async () => {
+      console.log('[CSV FLOW] handleBothFilesLoaded: start delayed apply');
       setBudgetData(budget);
+      console.log('[CSV FLOW] setBudgetData called; rows:', budget?.rowCount);
       setClaimsData(claims);
+      console.log('[CSV FLOW] setClaimsData called; rows:', claims?.rowCount);
       try {
+        console.log('[SecureHealthcareStorage] storeTemporary("dashboardData") invoked');
         await secureHealthcareStorage.storeTemporary('dashboardData', {
           budgetData: budget,
           claimsData: claims,
           savedAt: new Date().toISOString(),
         });
+        console.log('[SecureHealthcareStorage] storeTemporary("dashboardData") success');
       } catch (e) {
         console.warn('Could not store dashboard data securely', e);
       }
       setIsLoading(false);
       setShowSuccess(true);
+      console.log('[CSV FLOW] setShowSuccess(true)');
       
       timeoutRefs.current.successTimeout = setTimeout(() => {
+        console.log('[CSV FLOW] transitioning to dashboard');
         setShowDashboard(true);
         setShowSuccess(false);
+        console.log('[CSV FLOW] setShowSuccess(false)');
         timeoutRefs.current.successTimeout = null;
       }, 1500);
       
@@ -171,6 +180,11 @@ const Home: React.FC = () => {
 
   return (
     <>
+      {emergencyMode && (
+        <div className="fixed top-0 inset-x-0 z-50 bg-red-600 text-white text-center py-2 text-sm">
+          Emergency Mode Active
+        </div>
+      )}
       <GooeyFilter />
       <AnimatePresence mode="wait">
         {!showDashboard ? (
@@ -460,6 +474,15 @@ const Home: React.FC = () => {
         onExport={handleExport}
         onThemeToggle={handleThemeToggle}
         onCommandPaletteOpen={() => setCommandPaletteOpen(true)}
+        onEmergencyMode={() => {
+          console.log('[Shortcuts] Emergency mode activated via Ctrl/⌘+Shift+E');
+          setEmergencyMode(true);
+          setTimeout(() => setEmergencyMode(false), 4000);
+        }}
+        onPatientSearch={() => {
+          console.log('[Shortcuts] Patient search invoked via Ctrl/⌘+P');
+          setCommandPaletteOpen(true);
+        }}
       />
     </>
   );

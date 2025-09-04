@@ -46,6 +46,8 @@ interface KeyboardShortcutsProps {
   onExport?: (format: string) => void;
   onThemeToggle?: () => void;
   onCommandPaletteOpen?: () => void;
+  onEmergencyMode?: () => void; // Ctrl+Shift+E
+  onPatientSearch?: () => void; // Ctrl+P
 }
 
 const KeyboardShortcuts: React.FC<KeyboardShortcutsProps> = ({
@@ -53,6 +55,8 @@ const KeyboardShortcuts: React.FC<KeyboardShortcutsProps> = ({
   onExport,
   onThemeToggle,
   onCommandPaletteOpen,
+  onEmergencyMode,
+  onPatientSearch,
 }) => {
   const [showOverlay, setShowOverlay] = useState(false);
   const [activeShortcuts, setActiveShortcuts] = useState<string[]>([]);
@@ -96,6 +100,13 @@ const KeyboardShortcuts: React.FC<KeyboardShortcutsProps> = ({
       icon: Command,
     },
     {
+      key: '⌘P',
+      description: 'Open Patient Search',
+      category: 'Command & Search',
+      action: () => onPatientSearch?.() || onCommandPaletteOpen?.(),
+      icon: Search,
+    },
+    {
       key: '⌘F',
       description: 'Focus Search / Filter',
       category: 'Command & Search',
@@ -127,8 +138,17 @@ const KeyboardShortcuts: React.FC<KeyboardShortcutsProps> = ({
       action: () => onExport?.('csv'),
       icon: Download,
     },
+    // Emergency Workflow (Ctrl/Cmd+Shift+E)
     {
       key: '⌘⇧E',
+      description: 'Activate Emergency Mode',
+      category: 'Healthcare',
+      action: () => onEmergencyMode?.(),
+      icon: Zap,
+    },
+    // JSON export moved to avoid conflict with Emergency Mode
+    {
+      key: '⌘⇧J',
       description: 'Export as JSON',
       category: 'Data Management',
       action: () => onExport?.('json'),

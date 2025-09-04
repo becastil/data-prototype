@@ -62,6 +62,7 @@ export class SecureHealthcareStorage {
 
     // Persist only the token reference and expiry metadata on disk
     try {
+      console.log('[SecureHealthcareStorage] storeTemporary key:', key, 'ttlMs:', ttlMs);
       const storageVal = JSON.stringify({ token, expiresAt });
       window.localStorage.setItem(this.storageKey(key), storageVal);
     } catch {
@@ -86,11 +87,13 @@ export class SecureHealthcareStorage {
   retrieve<T = unknown>(key: string): T | undefined {
     if (!isBrowser()) return undefined;
     try {
+      console.log('[SecureHealthcareStorage] retrieve key:', key);
       const refRaw = window.localStorage.getItem(this.storageKey(key));
       if (!refRaw) return undefined;
       const { token, expiresAt } = JSON.parse(refRaw) as { token: string; expiresAt: number | null };
 
       if (expiresAt && now() > expiresAt) {
+        console.warn('[SecureHealthcareStorage] token expired for key:', key);
         this.clear(key);
         return undefined;
       }
@@ -98,11 +101,13 @@ export class SecureHealthcareStorage {
       const entry = this.memoryCache.get(token);
       if (!entry) {
         // Token exists but memory is gone (reload/new tab). Remove stale token.
+        console.warn('[SecureHealthcareStorage] token found but memory entry missing (stale). Clearing key:', key);
         this.safeRemoveKey(key);
         return undefined;
       }
 
       if (entry.expiresAt && now() > entry.expiresAt) {
+        console.warn('[SecureHealthcareStorage] memory entry expired for key:', key);
         this.clear(key);
         return undefined;
       }
@@ -119,6 +124,7 @@ export class SecureHealthcareStorage {
   clear(key: string) {
     if (!isBrowser()) return;
     try {
+      console.log('[SecureHealthcareStorage] clear key:', key);
       const refRaw = window.localStorage.getItem(this.storageKey(key));
       if (refRaw) {
         const { token } = JSON.parse(refRaw) as { token: string };
@@ -136,6 +142,7 @@ export class SecureHealthcareStorage {
 
   clearAll() {
     if (!isBrowser()) return;
+    console.log('[SecureHealthcareStorage] clearAll keys under namespace');
     // Remove all keys under this namespace
     try {
       const keysToRemove: string[] = [];
@@ -161,4 +168,3 @@ export class SecureHealthcareStorage {
 
 // Export a singleton instance for app-wide use
 export const secureHealthcareStorage = new SecureHealthcareStorage();
-

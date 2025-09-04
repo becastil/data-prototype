@@ -20,18 +20,23 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
     if (!submittedRef.current && budgetData && claimsData) {
       // Validate both datasets before proceeding
       const budgetCheck = validateBudgetData({ headers: budgetData.headers, rows: budgetData.rows });
+      console.log('[CSV VALIDATION] Budget headers:', budgetData.headers);
+      console.log('[CSV VALIDATION] Budget result:', budgetCheck);
       if (budgetCheck.success !== true) {
         onError(budgetCheck.message);
         return;
       }
 
       const claimsCheck = validateClaimsData({ headers: claimsData.headers, rows: claimsData.rows });
+      console.log('[CSV VALIDATION] Claims headers:', claimsData.headers);
+      console.log('[CSV VALIDATION] Claims result:', claimsCheck);
       if (claimsCheck.success !== true) {
         onError(claimsCheck.message);
         return;
       }
 
       submittedRef.current = true;
+      console.log('[CSV FLOW] Both files validated. Invoking onBothFilesLoaded');
       onBothFilesLoaded(budgetData, claimsData);
     }
   }, [budgetData, claimsData, onBothFilesLoaded, onError]);
@@ -44,6 +49,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
     );
     
     if (!hasRequiredColumns) {
+      console.error('[CSV VALIDATION] Budget missing required column: month');
       onError('Budget CSV must include a month column');
       return;
     }
@@ -67,6 +73,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
     );
     
     if (missingColumns.length > 0) {
+      console.error('[CSV VALIDATION] Claims missing required columns:', missingColumns);
       onError(`Claims CSV missing required columns: ${missingColumns.join(', ')}`);
       return;
     }
