@@ -9,6 +9,16 @@ frontend:
     preBuild:
       commands:
         - nvm use 20
+        - |
+          if [ "$AWS_BRANCH" = "production" ]; then
+            echo "NEXT_PUBLIC_API_URL=$HEALTHCARE_API_URL_PROD" >> .env.production.local
+            echo "NEXT_PUBLIC_ENVIRONMENT=production" >> .env.production.local
+          elif [ "$AWS_BRANCH" = "staging" ]; then
+            echo "NEXT_PUBLIC_API_URL=$HEALTHCARE_API_URL_STAGING" >> .env.production.local
+            echo "NEXT_PUBLIC_ENVIRONMENT=staging" >> .env.production.local
+          else
+            echo "NEXT_PUBLIC_ENVIRONMENT=development" >> .env.production.local
+          fi
         - echo "Node heap limit = $(node -e 'console.log(require(\"v8\").getHeapStatistics().heap_size_limit / (1024 * 1024))')Mb"
     build:
       commands:
