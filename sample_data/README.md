@@ -191,7 +191,7 @@ Employer group information.
    npm run dev
    ```
 
-2. **Navigate to the dashboard** at http://localhost:3000
+2. **Navigate to the dashboard** at http://localhost:3005
 
 3. **Upload the CSV files**:
    - First box: Upload `sample_data/main_data/budget_data.csv`

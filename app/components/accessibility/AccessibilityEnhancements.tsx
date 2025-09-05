@@ -350,34 +350,108 @@ export class AccessibleErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Accessible Error Boundary caught an error:', error, errorInfo);
+    console.error('Component Stack:', errorInfo.componentStack);
+    console.error('Error Stack:', error.stack);
+    
+    // Log additional debugging information
+    console.group('Detailed Error Debug Info');
+    console.log('Error Name:', error.name);
+    console.log('Error Message:', error.message);
+    console.log('Error Cause:', (error as any).cause);
+    console.log('Component Stack:', errorInfo.componentStack);
+    console.log('Timestamp:', new Date().toISOString());
+    console.groupEnd();
   }
 
   render() {
     if (this.state.hasError && this.state.error) {
       const FallbackComponent = this.props.fallback;
-      
       if (FallbackComponent) {
         return <FallbackComponent error={this.state.error} />;
       }
 
+      const message = this.state.error?.message || '';
+      const stack = this.state.error?.stack || '';
+      const errorName = this.state.error?.name || 'Unknown Error';
+
+      // Try to provide more specific error context
+      const getErrorContext = (error: Error) => {
+        const msg = error.message;
+        if (msg.includes('CSV') || msg.includes('validation')) {
+          return {
+            type: 'CSV Validation Error',
+            suggestion: 'Please check your CSV file format and column headers.'
+          };
+        }
+        if (msg.includes('chart') || msg.includes('render')) {
+          return {
+            type: 'Chart Rendering Error', 
+            suggestion: 'There may be an issue with your data format for visualization.'
+          };
+        }
+        if (msg.includes('network') || msg.includes('fetch')) {
+          return {
+            type: 'Network Error',
+            suggestion: 'Please check your internet connection and try again.'
+          };
+        }
+        return {
+          type: 'Application Error',
+          suggestion: 'An unexpected error occurred. Please try refreshing the page.'
+        };
+      };
+
+      const errorContext = getErrorContext(this.state.error);
+
       return (
-        <div 
-          className="panel-elevated p-6 m-4 text-center"
+        <div
+          className="panel-elevated p-6 m-4 text-left border-l-4 border-red-500"
           role="alert"
           aria-live="assertive"
         >
           <h2 className="text-xl font-semibold text-red-600 dark:text-red-400 mb-2">
-            Something went wrong
+            {errorContext.type}
           </h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-4">
-            We encountered an error while loading this content. Please try refreshing the page.
+          <p className="text-gray-700 dark:text-gray-300 mb-2">
+            {message || 'We encountered an error while loading this content.'}
           </p>
-          <AccessibleButton 
-            onClick={() => window.location.reload()}
-            variant="primary"
-          >
-            Refresh Page
-          </AccessibleButton>
+          <p className="text-sm text-blue-700 dark:text-blue-300 mb-4 p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+            💡 {errorContext.suggestion}
+          </p>
+          
+          {/* More detailed error info */}
+          <details className="mb-4">
+            <summary className="cursor-pointer text-sm text-gray-600 font-medium">Show technical details</summary>
+            <div className="mt-2 p-3 bg-gray-100 dark:bg-gray-800 rounded">
+              <p className="text-xs text-gray-600 mb-2"><strong>Error Type:</strong> {errorName}</p>
+              <p className="text-xs text-gray-600 mb-2"><strong>Timestamp:</strong> {new Date().toISOString()}</p>
+              {stack && (
+                <details className="mt-2">
+                  <summary className="cursor-pointer text-xs text-gray-500">Stack trace</summary>
+                  <pre className="mt-1 p-2 bg-white dark:bg-gray-900 rounded text-xs overflow-auto max-h-60 border">
+                    {stack}
+                  </pre>
+                </details>
+              )}
+            </div>
+          </details>
+          
+          <div className="flex gap-2">
+            <AccessibleButton onClick={() => window.location.reload()} variant="primary">
+              Refresh Page
+            </AccessibleButton>
+            <AccessibleButton
+              onClick={() => {
+                try {
+                  window.localStorage.clear();
+                } catch {}
+                window.location.reload();
+              }}
+              variant="secondary"
+            >
+              Clear State & Retry
+            </AccessibleButton>
+          </div>
         </div>
       );
     }

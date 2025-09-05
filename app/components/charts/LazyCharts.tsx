@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 import { motion } from 'framer-motion';
@@ -94,17 +95,74 @@ const ChartLoadingSkeleton = ({ title }: { title: string }) => (
   </div>
 );
 
-// Performance-optimized chart wrapper with intersection observer
+// Chart-specific error boundary
+class ChartErrorBoundary extends React.Component<
+  { children: React.ReactNode; chartName?: string },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode; chartName?: string }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error(`Chart Error Boundary (${this.props.chartName || 'Unknown Chart'}):`, error, errorInfo);
+    console.group(`Chart Rendering Error - ${this.props.chartName || 'Unknown Chart'}`);
+    console.error('Error:', error.message);
+    console.error('Stack:', error.stack);
+    console.error('Component Stack:', errorInfo.componentStack);
+    console.groupEnd();
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="panel-elevated rounded-xl p-6 h-[500px] flex items-center justify-center border-l-4 border-red-500">
+          <div className="text-center">
+            <div className="text-red-600 text-4xl mb-4">📊⚠️</div>
+            <h3 className="text-lg font-semibold text-red-600 mb-2">
+              Chart Failed to Load
+            </h3>
+            <p className="text-gray-600 text-sm mb-4">
+              {this.props.chartName || 'Chart'} encountered an error during rendering.
+            </p>
+            <p className="text-xs text-gray-500 mb-4">
+              Error: {this.state.error?.message || 'Unknown error'}
+            </p>
+            <button
+              onClick={() => this.setState({ hasError: false, error: null })}
+              className="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded text-sm"
+            >
+              Retry Chart
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Performance-optimized chart wrapper with intersection observer and error boundary
 const LazyChartWrapper = ({ 
   children, 
-  fallback 
+  fallback,
+  chartName
 }: { 
   children: React.ReactNode;
   fallback?: React.ReactNode;
+  chartName?: string;
 }) => (
-  <Suspense fallback={fallback || <ChartLoadingSkeleton title="Loading Chart..." />}>
-    {children}
-  </Suspense>
+  <ChartErrorBoundary chartName={chartName}>
+    <Suspense fallback={fallback || <ChartLoadingSkeleton title={`Loading ${chartName || 'Chart'}...`} />}>
+      {children}
+    </Suspense>
+  </ChartErrorBoundary>
 );
 
 // Export all lazy-loaded components

@@ -38,6 +38,7 @@ import { useAutoAnimateCards } from '@/app/hooks/useAutoAnimate';
 import { RotateCcw, Table, BarChart3, Bell, Search } from 'lucide-react';
 import CommandPalette from '@components/navigation/CommandPalette';
 import KeyboardShortcuts from '@components/navigation/KeyboardShortcuts';
+import { AccessibleErrorBoundary } from '@components/accessibility/AccessibilityEnhancements';
 
 const Home: React.FC = () => {
   const chartsGridRef = useAutoAnimateCards<HTMLDivElement>();
@@ -53,6 +54,7 @@ const Home: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [dateRange, setDateRange] = useState<DateRangeSelection>({ preset: '12M' });
   const [emergencyMode, setEmergencyMode] = useState(false);
+  const [debugMode, setDebugMode] = useState(false);
   
   // HIPAA-aligned hydration: use in-memory token reference (no PHI in localStorage)
   useEffect(() => {
@@ -90,48 +92,85 @@ const Home: React.FC = () => {
   }, []);
 
   const handleBothFilesLoaded = (budget: ParsedCSVData, claims: ParsedCSVData) => {
-    setIsLoading(true);
+    console.log('[CSV FLOW] handleBothFilesLoaded called with:', {
+      budgetHeaders: budget?.headers,
+      budgetRows: budget?.rowCount,
+      claimsHeaders: claims?.headers, 
+      claimsRows: claims?.rowCount
+    });
     
-    // Clear any existing timeouts
-    if (timeoutRefs.current.loadingTimeout) {
-      clearTimeout(timeoutRefs.current.loadingTimeout);
-    }
-    if (timeoutRefs.current.successTimeout) {
-      clearTimeout(timeoutRefs.current.successTimeout);
-    }
-    
-    timeoutRefs.current.loadingTimeout = setTimeout(async () => {
-      console.log('[CSV FLOW] handleBothFilesLoaded: start delayed apply');
-      setBudgetData(budget);
-      console.log('[CSV FLOW] setBudgetData called; rows:', budget?.rowCount);
-      setClaimsData(claims);
-      console.log('[CSV FLOW] setClaimsData called; rows:', claims?.rowCount);
-      try {
-        console.log('[SecureHealthcareStorage] storeTemporary("dashboardData") invoked');
-        await secureHealthcareStorage.storeTemporary('dashboardData', {
-          budgetData: budget,
-          claimsData: claims,
-          savedAt: new Date().toISOString(),
-        });
-        console.log('[SecureHealthcareStorage] storeTemporary("dashboardData") success');
-      } catch (e) {
-        console.warn('Could not store dashboard data securely', e);
+    try {
+      setIsLoading(true);
+      
+      // Clear any existing timeouts
+      if (timeoutRefs.current.loadingTimeout) {
+        clearTimeout(timeoutRefs.current.loadingTimeout);
       }
+      if (timeoutRefs.current.successTimeout) {
+        clearTimeout(timeoutRefs.current.successTimeout);
+      }
+      
+      timeoutRefs.current.loadingTimeout = setTimeout(async () => {
+        try {
+          console.log('[CSV FLOW] Processing data for dashboard...');
+          
+          // Validate data before setting state
+          if (!budget || !budget.rows || budget.rows.length === 0) {
+            throw new Error('Budget data is empty or invalid');
+          }
+          if (!claims || !claims.rows || claims.rows.length === 0) {
+            throw new Error('Claims data is empty or invalid');
+          }
+          
+          console.log('[CSV FLOW] Setting budget data...');
+          setBudgetData(budget);
+          console.log('[CSV FLOW] Setting claims data...');
+          setClaimsData(claims);
+          
+          try {
+            console.log('[SecureHealthcareStorage] Storing data securely...');
+            await secureHealthcareStorage.storeTemporary('dashboardData', {
+              budgetData: budget,
+              claimsData: claims,
+              savedAt: new Date().toISOString(),
+            });
+            console.log('[SecureHealthcareStorage] Data stored successfully');
+          } catch (storageError) {
+            console.warn('[SecureHealthcareStorage] Storage failed (non-critical):', storageError);
+          }
+          
+          setIsLoading(false);
+          setShowSuccess(true);
+          console.log('[CSV FLOW] Success animation started');
+          
+          timeoutRefs.current.successTimeout = setTimeout(() => {
+            try {
+              console.log('[CSV FLOW] Transitioning to dashboard view...');
+              setShowDashboard(true);
+              setShowSuccess(false);
+              setError(''); // Clear any previous errors
+              console.log('[CSV FLOW] Dashboard transition complete');
+              timeoutRefs.current.successTimeout = null;
+            } catch (transitionError) {
+              console.error('[CSV FLOW] Dashboard transition failed:', transitionError);
+              setError(`Dashboard transition failed: ${transitionError instanceof Error ? transitionError.message : 'Unknown error'}`);
+            }
+          }, 1500);
+          
+          timeoutRefs.current.loadingTimeout = null;
+        } catch (processingError) {
+          console.error('[CSV FLOW] Data processing failed:', processingError);
+          setIsLoading(false);
+          setShowSuccess(false);
+          setError(`Data processing failed: ${processingError instanceof Error ? processingError.message : 'Unknown error'}`);
+          timeoutRefs.current.loadingTimeout = null;
+        }
+      }, 1000);
+    } catch (outerError) {
+      console.error('[CSV FLOW] Critical error in handleBothFilesLoaded:', outerError);
+      setError(`Critical error: ${outerError instanceof Error ? outerError.message : 'Unknown error'}`);
       setIsLoading(false);
-      setShowSuccess(true);
-      console.log('[CSV FLOW] setShowSuccess(true)');
-      
-      timeoutRefs.current.successTimeout = setTimeout(() => {
-        console.log('[CSV FLOW] transitioning to dashboard');
-        setShowDashboard(true);
-        setShowSuccess(false);
-        console.log('[CSV FLOW] setShowSuccess(false)');
-        timeoutRefs.current.successTimeout = null;
-      }, 1500);
-      
-      setError('');
-      timeoutRefs.current.loadingTimeout = null;
-    }, 1000);
+    }
   };
 
   const handleError = (errorMessage: string) => {
@@ -247,6 +286,7 @@ const Home: React.FC = () => {
         </motion.div>
       ) : (
         <Suspense fallback={<div className="p-8 text-gray-600">Loading analytics...</div>}>
+          <AccessibleErrorBoundary>
           <motion.div
             key="dashboard"
             initial={{ opacity: 0 }}
@@ -275,6 +315,16 @@ const Home: React.FC = () => {
               <div className="flex items-center gap-3">
                 <ThemeToggle />
                 <DateRangeDropdown months={monthsTimeline} value={dateRange} onChange={setDateRange} />
+                {/* Debug Mode Toggle */}
+                <Button
+                  onClick={() => setDebugMode(!debugMode)}
+                  variant={debugMode ? "default" : "soft"}
+                  size="sm"
+                  className="shadow-sm"
+                  title="Toggle debug mode for detailed error information"
+                >
+                  🐛 Debug
+                </Button>
                 {/* Soft gray quick navigation dropdown */}
                 <SoftDropdown
                   label="Quick Navigate"
@@ -299,7 +349,8 @@ const Home: React.FC = () => {
             
             {/* Page Navigation Tabs and Export Controls */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <Tabs value={currentPage} onValueChange={setCurrentPage} className="w-fit">
+              {/* Map 'dashboard' to 'table' to keep Radix Tabs value valid */}
+              <Tabs value={currentPage === 'dashboard' ? 'table' : currentPage} onValueChange={setCurrentPage} className="w-fit">
                 <TabsList ref={navigationRef}>
                   <TabsTrigger value="table" className="flex items-center gap-2">
                     <Table className="w-4 h-4" />
@@ -328,6 +379,47 @@ const Home: React.FC = () => {
                 />
               </div>
             </div>
+
+            {/* Debug Panel */}
+            {debugMode && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-yellow-600 font-semibold">🐛 Debug Mode Active</span>
+                  <button
+                    onClick={() => console.clear()}
+                    className="text-xs bg-yellow-100 hover:bg-yellow-200 px-2 py-1 rounded"
+                  >
+                    Clear Console
+                  </button>
+                </div>
+                <div className="text-sm text-yellow-700 space-y-1">
+                  <p><strong>Budget Data:</strong> {budgetData?.rowCount || 0} rows, {budgetData?.headers?.length || 0} columns</p>
+                  <p><strong>Claims Data:</strong> {claimsData?.rowCount || 0} rows, {claimsData?.headers?.length || 0} columns</p>
+                  <p><strong>Date Filter:</strong> {dateRange.preset || 'Custom'}</p>
+                  <p><strong>Current Page:</strong> {currentPage}</p>
+                  {budgetData?.headers && (
+                    <details className="mt-2">
+                      <summary className="cursor-pointer text-xs font-medium">Budget Headers</summary>
+                      <p className="text-xs mt-1 font-mono bg-yellow-100 p-2 rounded">
+                        {budgetData.headers.join(', ')}
+                      </p>
+                    </details>
+                  )}
+                  {claimsData?.headers && (
+                    <details className="mt-2">
+                      <summary className="cursor-pointer text-xs font-medium">Claims Headers</summary>
+                      <p className="text-xs mt-1 font-mono bg-yellow-100 p-2 rounded">
+                        {claimsData.headers.join(', ')}
+                      </p>
+                    </details>
+                  )}
+                </div>
+              </motion.div>
+            )}
 
             {/* Main Content Area */}
             <div className="p-8">
@@ -369,7 +461,7 @@ const Home: React.FC = () => {
                   >
                 {/* Tile 1: Enterprise Budget vs Expenses Chart with ECharts WebGL */}
                 <MotionCard delay={0.1}>
-                  <LazyChartWrapper>
+                  <LazyChartWrapper chartName="Enterprise Budget vs Expenses">
                     <EChartsEnterpriseChart 
                       data={filteredBudget} 
                       rollingMonths={filteredBudget.length}
@@ -382,7 +474,7 @@ const Home: React.FC = () => {
 
                 {/* Tile 2: Claims Breakdown Chart */}
                 <MotionCard delay={0.2}>
-                  <LazyChartWrapper>
+                  <LazyChartWrapper chartName="Claims Breakdown">
                     <ClaimsBreakdownChart 
                       budgetData={filteredBudget} 
                       claimsData={filteredClaims}
@@ -392,7 +484,7 @@ const Home: React.FC = () => {
 
                 {/* Tile 3: Medical Claims Breakdown Pie Chart */}
                 <MotionCard delay={0.3}>
-                  <LazyChartWrapper>
+                  <LazyChartWrapper chartName="Medical Claims Pie Chart">
                     <MedicalClaimsBreakdownChart 
                       budgetData={filteredBudget} 
                       claimsData={filteredClaims}
@@ -402,21 +494,21 @@ const Home: React.FC = () => {
 
                 {/* Tile 4: Cost Band Scatter Chart */}
                 <MotionCard delay={0.4}>
-                  <LazyChartWrapper>
+                  <LazyChartWrapper chartName="Cost Band Scatter Plot">
                     <CostBandScatterChart data={filteredClaims} />
                   </LazyChartWrapper>
                 </MotionCard>
 
                 {/* Tile 5: Enrollment Line Chart with MUI */}
                 <MotionCard delay={0.5}>
-                  <LazyChartWrapper>
+                  <LazyChartWrapper chartName="Enrollment Trends">
                     <MUIEnrollmentChart data={filteredBudget} rollingMonths={filteredBudget.length} />
                   </LazyChartWrapper>
                 </MotionCard>
 
                 {/* Tile 6: Domestic vs Non-Domestic Chart */}
                 <MotionCard delay={0.6}>
-                  <LazyChartWrapper>
+                  <LazyChartWrapper chartName="Domestic vs Non-Domestic">
                     <DomesticVsNonDomesticChart 
                       budgetData={filteredBudget} 
                       claimsData={filteredClaims}
@@ -426,7 +518,7 @@ const Home: React.FC = () => {
 
                 {/* Tile 7: HCC Data Table */}
                 <MotionCard delay={0.7}>
-                  <LazyChartWrapper>
+                  <LazyChartWrapper chartName="HCC Data Table">
                     <HCCDataTable data={filteredClaims} />
                   </LazyChartWrapper>
                 </MotionCard>
@@ -453,6 +545,7 @@ const Home: React.FC = () => {
             </div>
           </div>
           </motion.div>
+          </AccessibleErrorBoundary>
         </Suspense>
       )}
     </AnimatePresence>

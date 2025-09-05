@@ -31,20 +31,39 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
   React.useEffect(() => {
     if (!submittedRef.current && budgetData && claimsData) {
       // Validate both datasets before proceeding
+      console.log('[CSV VALIDATION] Starting detailed validation...');
       const budgetCheck = validateBudgetData({ headers: budgetData.headers, rows: budgetData.rows });
-      console.log('[CSV VALIDATION] Budget headers:', budgetData.headers);
       console.log('[CSV VALIDATION] Budget result:', budgetCheck);
+      
       if (budgetCheck.success !== true) {
-        pushToast({ type: 'error', title: 'Budget CSV Validation Failed', message: budgetCheck.message });
+        console.error('[CSV VALIDATION] Budget validation failed:', budgetCheck);
+        const details = budgetCheck.details ? [
+          'Error details: ' + JSON.stringify(budgetCheck.details, null, 2)
+        ] : [];
+        pushToast({ 
+          type: 'error', 
+          title: 'Budget CSV Validation Failed', 
+          message: budgetCheck.message,
+          details
+        });
         onError(budgetCheck.message);
         return;
       }
 
       const claimsCheck = validateClaimsData({ headers: claimsData.headers, rows: claimsData.rows });
-      console.log('[CSV VALIDATION] Claims headers:', claimsData.headers);
       console.log('[CSV VALIDATION] Claims result:', claimsCheck);
+      
       if (claimsCheck.success !== true) {
-        pushToast({ type: 'error', title: 'Claims CSV Validation Failed', message: claimsCheck.message });
+        console.error('[CSV VALIDATION] Claims validation failed:', claimsCheck);
+        const details = claimsCheck.details ? [
+          'Error details: ' + JSON.stringify(claimsCheck.details, null, 2)
+        ] : [];
+        pushToast({ 
+          type: 'error', 
+          title: 'Claims CSV Validation Failed', 
+          message: claimsCheck.message,
+          details
+        });
         onError(claimsCheck.message);
         return;
       }

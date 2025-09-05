@@ -26,8 +26,8 @@ npm install --save-dev @types/papaparse
 ## Basic Usage
 
 ```typescript
-import { CSVLoader } from '@/app/components';
-import type { ParsedCSVData } from '@/app/components';
+import { CSVLoader } from '@components';
+import type { ParsedCSVData } from '@components';
 
 export default function MyComponent() {
   const handleDataLoaded = (data: ParsedCSVData) => {

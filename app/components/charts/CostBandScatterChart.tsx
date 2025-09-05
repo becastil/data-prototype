@@ -31,44 +31,99 @@ interface CostBandScatterChartProps {
 
 const CostBandScatterChart: React.FC<CostBandScatterChartProps> = ({ data }) => {
   const processData = (): ChartDataPoint[] => {
-    return data.map(row => {
-      const medical = parseFloat(String(row.Medical || '0').replace(/[$,]/g, ''));
-      const rx = parseFloat(String(row.Rx || '0').replace(/[$,]/g, ''));
-      const total = parseFloat(String(row.Total || '0').replace(/[$,]/g, ''));
-      
-      let band = '';
-      let color = '';
-      
-      if (total <= 25000) {
-        band = '$0-25K';
-        color = '#10B981'; // green
-      } else if (total <= 50000) {
-        band = '$25K-50K';
-        color = '#F59E0B'; // yellow
-      } else if (total <= 75000) {
-        band = '$50K-75K';
-        color = '#F97316'; // orange
-      } else if (total <= 100000) {
-        band = '$75K-100K';
-        color = '#EF4444'; // red
-      } else {
-        band = '$100K+';
-        color = '#991B1B'; // dark red
-      }
-      
-      return {
-        claimantNumber: parseInt(row['Claimant Number']) || 0,
-        medical,
-        rx,
-        total,
-        serviceType: row['Service Type'] || 'Unknown',
-        band,
-        color
-      };
-    });
+    console.log('📊 CostBandScatterChart: Processing data...', { dataLength: data?.length });
+    
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      console.warn('📊 CostBandScatterChart: No data provided or empty array');
+      return [];
+    }
+
+    try {
+      return data.map((row, idx) => {
+        if (!row || typeof row !== 'object') {
+          console.warn(`📊 CostBandScatterChart: Invalid row at index ${idx}:`, row);
+          return null;
+        }
+
+        // Try multiple possible column names for flexibility
+        const medicalValue = row.Medical || row.medical || row['Medical Cost'] || row['medical cost'] || '0';
+        const rxValue = row.Rx || row.rx || row.RX || row.Pharmacy || row.pharmacy || '0';
+        const totalValue = row.Total || row.total || row['Total Cost'] || row['total cost'] || '0';
+
+        const parseAmount = (value: any): number => {
+          if (value == null) return 0;
+          const str = String(value).replace(/[$,\s]/g, '');
+          const num = parseFloat(str);
+          return Number.isFinite(num) && num >= 0 ? num : 0;
+        };
+
+        const medical = parseAmount(medicalValue);
+        const rx = parseAmount(rxValue);
+        const total = parseAmount(totalValue);
+        
+        let band = '';
+        let color = '';
+        
+        if (total <= 25000) {
+          band = '$0-25K';
+          color = '#10B981'; // green
+        } else if (total <= 50000) {
+          band = '$25K-50K';
+          color = '#F59E0B'; // yellow
+        } else if (total <= 75000) {
+          band = '$50K-75K';
+          color = '#F97316'; // orange
+        } else if (total <= 100000) {
+          band = '$75K-100K';
+          color = '#EF4444'; // red
+        } else {
+          band = '$100K+';
+          color = '#991B1B'; // dark red
+        }
+        
+        // Derive a numeric claimant id even if identifiers were pseudonymized
+        const rawId = row['Claimant Number'] || row['claimant number'] || row['claimant_number'] || row.claimant || '';
+        const cleanId = String(rawId).replace(/[^0-9]/g, '');
+        const parsedId = parseInt(cleanId);
+
+        // Service type with multiple fallbacks
+        const serviceType = row['Service Type'] || row['service type'] || row.service || row.type || 'Unknown';
+
+        return {
+          claimantNumber: Number.isFinite(parsedId) && parsedId > 0 ? parsedId : idx + 1,
+          medical,
+          rx,
+          total,
+          serviceType: String(serviceType),
+          band,
+          color
+        };
+      }).filter((item): item is ChartDataPoint => item !== null);
+    } catch (error) {
+      console.error('📊 CostBandScatterChart: Error processing data:', error);
+      return [];
+    }
   };
 
   const chartData = processData();
+  console.log('📊 CostBandScatterChart: Processed data:', { 
+    originalLength: data?.length, 
+    processedLength: chartData.length,
+    sampleRow: chartData[0]
+  });
+  
+  // Handle empty data case
+  if (chartData.length === 0) {
+    return (
+      <div className="w-full h-[500px] flex items-center justify-center">
+        <div className="text-center text-gray-500">
+          <div className="text-4xl mb-4">📊</div>
+          <p className="text-lg font-semibold mb-2">No Chart Data Available</p>
+          <p className="text-sm">Unable to process the provided data for cost band visualization.</p>
+        </div>
+      </div>
+    );
+  }
   
   // Calculate band statistics
   const bandStats = chartData.reduce((acc, item) => {
@@ -206,11 +261,11 @@ const CostBandScatterChart: React.FC<CostBandScatterChartProps> = ({ data }) => 
             fill="#10B981"
             shape={(props: any) => {
               const { cx, cy, payload } = props;
+              const size = Math.min(8, 3 + (payload.total / 50000) * 5);
+              const half = size / 2;
               return (
-                <diamond
-                  cx={cx}
-                  cy={cy}
-                  size={Math.min(8, 3 + (payload.total / 50000) * 5)}
+                <polygon
+                  points={`${cx},${cy - half} ${cx + half},${cy} ${cx},${cy + half} ${cx - half},${cy}`}
                   fill={payload.color}
                   fillOpacity={0.5}
                   stroke={payload.color}
@@ -222,22 +277,6 @@ const CostBandScatterChart: React.FC<CostBandScatterChartProps> = ({ data }) => 
         </ComposedChart>
       </ResponsiveContainer>
     </div>
-  );
-};
-
-// Diamond shape component for Rx scatter points
-const diamond = (props: any) => {
-  const { cx, cy, size, fill, fillOpacity, stroke, strokeWidth } = props;
-  const halfSize = size / 2;
-  
-  return (
-    <polygon
-      points={`${cx},${cy - halfSize} ${cx + halfSize},${cy} ${cx},${cy + halfSize} ${cx - halfSize},${cy}`}
-      fill={fill}
-      fillOpacity={fillOpacity}
-      stroke={stroke}
-      strokeWidth={strokeWidth}
-    />
   );
 };
 
