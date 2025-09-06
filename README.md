@@ -1,430 +1,305 @@
-# Healthcare Analytics Dashboard - Million-Dollar UI
+# Healthcare Analytics Dashboard
 
-A sophisticated Next.js healthcare analytics platform implementing complete million-dollar UI patterns with zero-runtime CSS architecture, frame-perfect micro-interactions, and enterprise-grade performance optimization. Features ⌘K command palette, mathematical LCH color precision, and Theatre.js animation framework.
+A simple, easy-to-use website that turns your healthcare spreadsheets into beautiful charts and graphs. No technical knowledge required!
 
-## Features
+## What Does This Do?
 
-- **Dual CSV Upload System**: Upload budget and claims data separately with drag-and-drop support
-- **4-Tile Analytics Dashboard**:
-  - Budget vs Expenses Trend (Rolling 12 Months)
-  - HCC Band Distribution Scatter Chart
-  - Enrollment Trends with Employee Count tracking
-  - HCC Data Table with sorting and filtering
-- **Advanced Chart Visualizations**:
-  - Stacked bar charts with budget line overlay
-  - Rolling 12-month data window for focused analysis
-  - Real-time data processing from CSV files
-- **Data Processing Capabilities**:
-  - Smart column detection for various CSV formats
-  - Automatic data aggregation (admin fees + stop loss fees)
-  - Employee Count extraction for enrollment tracking
-- **Million-Dollar UI Performance**: 3x CPU performance improvement with hardware-accelerated animations
-- **Enterprise Component Architecture**: shadcn/ui system with compound components and React Context
-- **MUI X Charts Integration**: High-performance charts with built-in interactivity
+This tool helps you visualize your healthcare data by:
+- **Converting Excel/CSV files** into interactive charts
+- **Showing budget trends** with colorful graphs
+- **Analyzing claims data** with easy-to-understand visualizations
+- **Tracking enrollment numbers** over time
 
-## Million-Dollar UI Features
+Perfect for healthcare administrators, benefits managers, and anyone who works with healthcare data.
 
-### Phase 1: Performance & Animation Upgrades ✅
-- **Rive Micro-Interactions**: 3x CPU improvement over Framer Motion with 10x smaller file sizes
-- **Motion One Animations**: 120fps hardware-accelerated animations with 2.3KB bundle size
-- **Auto-Animate Layout Transitions**: Zero-config smooth transitions for dynamic content
-- **GPU-Optimized CSS**: Transform/opacity-only animations for 4-6x performance gains
-- **Performance Classes**: Built-in GPU acceleration utilities for consistent 60fps+ experiences
+## Quick Start - Get Running in 5 Minutes ⚡
 
-### Phase 2: Component System Modernization ✅  
-- **shadcn/ui Integration**: Copy-paste component ownership with Radix UI primitives
-- **Compound Dashboard Components**: Eliminates prop drilling with React Context patterns
-- **Modern Foundation Components**: Button, Card, Tabs, Theme Toggle with CVA variants
-- **Enterprise Architecture**: Type-safe compound patterns with proper error boundaries
-- **Design System Integration**: Consistent styling with Class Variance Authority
+### For Windows Users (Easiest Method)
 
-### Phase 3: Data Visualization Excellence & Production Optimization ✅
-- **Apache ECharts Integration**: Enterprise-grade visualization with 62.2K+ GitHub stars credibility
-- **WebGL Acceleration**: Hardware-accelerated rendering for 10K+ data points with streaming support
-- **Bundle Size Optimization**: <200KB target achieved through dynamic imports and code splitting
-- **Core Web Vitals Monitoring**: Real-time performance tracking with web-vitals integration
-- **WCAG 2.2 AA Compliance**: Complete accessibility audit with screen reader optimizations
-- **Enterprise Data Export**: CSV, JSON, PDF, and Excel export capabilities with progress tracking
-- **CI/CD Pipeline**: Automated performance testing with Lighthouse and accessibility validation
-- **Keyboard Navigation**: Comprehensive Tab-based navigation with ARIA support
-- **Production Monitoring**: Performance metrics dashboard with optimization status
+1. **Download and run our installer**:
+   ```
+   Copy and paste this into PowerShell (search for "PowerShell" in Start menu):
+   ```
+   ```powershell
+   irm https://raw.githubusercontent.com/your-repo/main/scripts/install.ps1 | iex
+   ```
 
-### Phase 4: Advanced Technical Architecture & Professional Polish ✅ INTEGRATED & DEPLOYED
-- **⌘K Command Palette**: Modern Treasury-style workflow navigation with fuzzy search and grouped commands
-- **Comprehensive Keyboard Shortcuts**: Global shortcuts system with visual feedback and context-aware suggestions
-- **Vanilla Extract CSS Architecture**: Zero-runtime CSS achieving 60% bundle reduction with full TypeScript integration
-- **LCH Color System**: Mathematical precision color space ensuring perceptually consistent themes and accessibility compliance
-- **Theatre.js Animation Framework**: Frame-perfect micro-interactions with staggered card reveals and sophisticated timing curves
-- **Advanced Dashboard Cards**: GPU-optimized animations with precise entrance timing and hover micro-interactions
-- **Immersive 3D Elements**: Subtle depth through shadows and parallax while maintaining monochrome aesthetic
-- **Professional Polish**: Spring-physics animations, backdrop blur effects, and elegant state transitions
+2. **Wait for everything to install automatically**
+   - The installer will download everything you need
+   - Just say "yes" when it asks permission
 
-### Technology Stack
-- **Performance**: Theatre.js (frame-perfect animations), Rive, Motion One (60fps+), Auto-Animate, Web Vitals monitoring
-- **Styling Architecture**: Vanilla Extract (zero-runtime CSS), LCH color system, Tailwind CSS 4.x with GPU-accelerated classes
-- **Data Visualization**: Apache ECharts 5.6+ with WebGL rendering, streaming data support
-- **Components**: shadcn/ui, Radix UI primitives, Class Variance Authority, Advanced compound components
-- **Framework**: Next.js 15.5.0 with Turbopack, React 19.1.0, TypeScript
-- **User Experience**: ⌘K Command Palette (cmdk), comprehensive keyboard shortcuts, sophisticated micro-interactions
-- **Accessibility**: WCAG 2.2 AA compliant with screen reader optimizations and reduced motion support
-- **Export**: Enterprise CSV/JSON/PDF data export with progress tracking
-- **CI/CD**: GitHub Actions with Lighthouse performance testing and accessibility validation
+3. **Start the dashboard**:
+   ```powershell
+   npm run dev
+   ```
 
-## Getting Started
+4. **Open your browser** to http://localhost:3005
 
-### Prerequisites
+**That's it!** You should see the dashboard ready to upload your files.
 
-- Node.js (version 18 or higher recommended)
-- npm or yarn package manager
+### Alternative Method (Any Computer)
 
-### Installation
+If the quick installer doesn't work, follow these steps:
 
-1. Clone the repository:
+**Step 1: Install Node.js**
+- Go to https://nodejs.org
+- Download the "LTS" version (the green button)
+- Install it like any other program
+- Restart your computer
+
+**Step 2: Download this project**
+- Download as ZIP from GitHub, or
+- If you know Git: `git clone https://github.com/your-repo/data-prototype.git`
+
+**Step 3: Open PowerShell/Terminal in the project folder**
+- **Windows**: Right-click in the folder → "Open in Terminal" or "Open PowerShell window here"
+- **Mac**: Right-click in the folder → "New Terminal at Folder"
+
+**Step 4: Install and start**
 ```bash
-git clone https://github.com/becastil/data-prototype.git
-cd data-prototype
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Run the development server:
-```bash
-npm run dev
-```
-
-4. Open [http://localhost:3005](http://localhost:3005) in your browser to see the dashboard.
-
-### Windows PowerShell Quick Start (Dev vs Prod)
-
-Development (hot reload):
-```powershell
-npm run dev    # starts Next.js on http://localhost:3005
-```
-
-Production (optimized build):
-```powershell
-npm run build  # compile
-npm start      # serve optimized build on http://localhost:3005
-```
-
-Bundle analysis in PowerShell (equivalent of `npm run build:analyze`):
-```powershell
-$Env:ANALYZE = 'true'; npm run build; Remove-Item Env:ANALYZE
-```
-
-If PowerShell can't find `next`, ensure dependencies are installed first:
-```powershell
 npm install
 npm run dev
 ```
 
-### Troubleshooting
+**Step 5: Open your browser** to http://localhost:3005
 
-If you encounter issues:
+## How to Use the Dashboard
 
-**Windows PowerShell** - "'next' is not recognized":
+### 1. Upload Your Data Files
+
+The dashboard has two upload areas:
+
+**Left Panel: Budget Data**
+- Upload your budget/financial CSV file
+- Should contain monthly budget amounts, admin fees, claims data
+
+**Right Panel: Claims Data** 
+- Upload your claims/enrollment CSV file  
+- Should contain individual claim amounts, member data
+
+**Supported File Types**: CSV, Excel (.xlsx), Tab-delimited (.tsv)
+
+### 2. View Your Analytics
+
+Once uploaded, you'll see 4 main sections:
+
+**📊 Budget vs Expenses Trend**
+- Shows how your actual spending compares to budget over time
+- Colorful bars show different cost categories
+- Line shows your budget target
+
+**🔵 Cost Distribution Chart** 
+- Scatter plot showing how costs are distributed
+- Each dot represents cost ranges ($0-25k, $25k-50k, etc.)
+
+**📈 Enrollment Trends**
+- Line chart showing member enrollment over time
+- Statistics showing growth/decline percentages
+
+**📋 Data Table**
+- Detailed view of all your data
+- Click column headers to sort
+- Search and filter capabilities
+
+## Keyboard Shortcuts (Optional Power Features)
+
+Press these key combinations for faster navigation:
+
+- **Ctrl+K** (Windows) or **⌘K** (Mac): Open command menu
+- **Ctrl+D** or **⌘D**: Switch between light/dark themes
+- **Ctrl+E** or **⌘E**: Export your data
+- **F1**: Show help and all shortcuts
+
+## Troubleshooting
+
+### "Command not found" or "npm is not recognized"
+
+**Problem**: Your computer can't find the required software.
+
+**Solutions**:
+1. **Windows**: Run our troubleshooting script:
+   ```powershell
+   ./scripts/troubleshoot.ps1
+   ```
+
+2. **Install Node.js manually**:
+   - Go to https://nodejs.org
+   - Download and install the LTS version
+   - Restart PowerShell/Terminal
+   - Try again
+
+### "Port already in use" or "Address already in use"
+
+**Problem**: Something else is using the same port (3005).
+
+**Solutions**:
+1. **Windows**: Use our port fixer:
+   ```powershell
+   ./scripts/dev.ps1 -Force
+   ```
+
+2. **Manual fix**: Find and stop the conflicting program:
+   ```powershell
+   # Windows
+   netstat -ano | findstr 3005
+   # Look at the last number (PID) and stop it:
+   taskkill /PID [number] /F
+   ```
+
+3. **Use a different port**:
+   ```powershell
+   ./scripts/dev.ps1 -Port 3000
+   ```
+
+### Dashboard won't load or shows errors
+
+**Problem**: The application isn't starting properly.
+
+**Solutions**:
+1. **Run our automated fix**:
+   ```powershell
+   # Windows
+   ./scripts/troubleshoot.ps1 -Fix
+   ```
+
+2. **Fresh install**:
+   ```powershell
+   # Clean everything and start over
+   ./scripts/cleanup.ps1 -Full
+   ./scripts/install.ps1
+   ```
+
+3. **Check for errors**:
+   - Look at the PowerShell/Terminal window for red error messages
+   - Try restarting your computer
+   - Make sure your antivirus isn't blocking the application
+
+### CSV files won't upload or show "Error parsing file"
+
+**Problem**: Your CSV file format isn't recognized.
+
+**Solutions**:
+1. **Check your file format**:
+   - Make sure it's saved as CSV (comma-separated)
+   - Open in Excel and "Save As" → CSV format
+   
+2. **Check column headers**:
+   - Make sure your CSV has headers in the first row
+   - Common headers: Date, Month, Claims, Budget, Admin Fees
+   
+3. **Remove special characters**:
+   - Avoid symbols like #, $, % in data cells
+   - Remove extra spaces or line breaks
+
+## Uninstalling
+
+To completely remove the application:
+
 ```powershell
-npm install    # Install dependencies first
-npm run dev    # Then start the server
+# Windows - removes everything
+./scripts/cleanup.ps1 -Full
 ```
 
-**Windows PowerShell** - Port already in use (3005):
+This will delete all installed files but keep your original data safe.
+
+## Getting Help
+
+### Built-in Help
+1. **Troubleshooting script**: `./scripts/troubleshoot.ps1`
+2. **Help commands**: `./scripts/install.ps1 -Help`
+3. **Command palette**: Press Ctrl+K or ⌘K in the dashboard
+
+### Manual Support
+- **Email**: [your-support-email]
+- **Issues**: Create an issue on GitHub
+- **Documentation**: Check the `docs/` folder for detailed guides
+
+## What Files Can I Upload?
+
+### Budget/Financial Data Files
+Your file should have columns like:
+- **Date/Month**: When the expense occurred
+- **Medical Claims**: Medical claim costs
+- **Rx/Prescription**: Prescription costs  
+- **Admin Fees**: Administrative fees
+- **Stop Loss**: Stop loss amounts
+- **Budget**: Target budget amounts
+- **Employee Count**: Number of enrolled employees
+
+### Claims Data Files  
+Your file should have columns like:
+- **Member/Claimant ID**: Unique identifier
+- **Medical Cost**: Individual medical costs
+- **Rx Cost**: Individual prescription costs
+- **Service Type**: Type of service
+- **Total**: Total claim amount
+
+**Don't worry about exact column names** - the system will automatically detect your data!
+
+## Advanced Features (Optional)
+
+### Exporting Your Data
+- **CSV Export**: Download processed data as spreadsheet
+- **PDF Export**: Generate printable reports
+- **Excel Export**: Full Excel workbook with multiple sheets
+
+### Customizing Colors and Themes
+- Toggle between light and dark themes
+- Colors automatically adjust for accessibility
+- High contrast mode available
+
+### Performance Features
+- Handles large files (10,000+ rows)
+- Fast loading with progress bars
+- Works on older computers
+
+## System Requirements
+
+**Minimum Requirements**:
+- Windows 10 or newer, macOS 10.14+, or Linux
+- 4GB RAM
+- 1GB free disk space
+- Internet connection (for initial setup)
+
+**Recommended**:
+- 8GB+ RAM for large files
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+
+## Security & Privacy
+
+- **Your data never leaves your computer**
+- No cloud uploads or external sharing
+- All processing happens locally
+- No user accounts or login required
+- Safe to use with sensitive healthcare data
+
+---
+
+## Quick Reference Commands
+
+### Starting the Dashboard
 ```powershell
-netstat -ano | Select-String 3005
-# Note the PID in the last column
-Stop-Process -Id <PID> -Force
+npm run dev              # Start development mode
+npm run build            # Build for production  
+npm start               # Run production version
 ```
 
-**WSL/Linux** - "Port already in use":
-```bash
-# Find and kill the process using port 3005
-lsof -i :3005
-kill -9 [PID]
-# Or change the port in package.json
-```
-
-## Dashboard Overview
-
-The dashboard features a 4-tile layout displaying:
-
-### Tile 1: Budget vs Expenses Trend
-- **Simplified Stacked Bar Chart** with 5 layers:
-  - Total Fixed Cost (sum of all admin + stop loss fees)
-  - Stop Loss Reimbursements
-  - Rx Rebates
-  - Medical Claims
-  - Rx (Prescription) costs
-- **Budget Line Overlay**: Shows monthly budget targets
-- **Rolling 12-Month View**: Automatically displays the latest 12 months of data
-
-### Tile 2: HCC Band Distribution
-- **Scatter Chart**: Visualizes cost band distribution across claimants
-- **Dual Axis**: Medical costs (left) and Rx costs (right)
-- **Color-Coded Bands**: $0-25K, $25K-50K, $50K-75K, $75K-100K, $100K+
-- **Interactive Tooltips**: Shows detailed claimant information
-
-### Tile 3: Enrollment Trends
-- **Line Chart**: Tracks Employee Count over time
-- **Statistics Cards**: Current enrollment, change percentage, and average
-- **Trend Indicators**: Visual indicators for growth or decline
-- **Real Data**: Uses actual Employee Count from uploaded CSV
-
-### Tile 4: HCC Data Table
-- **Sortable Columns**: Click headers to sort data
-- **Filterable Content**: Search and filter capabilities
-- **Comprehensive View**: Display all claims data in tabular format
-
-## Development
-
-### Development Stack
-
-#### Core Framework
-- **Next.js 15.5.0** with Turbopack for ultra-fast development builds
-- **React 19.1.0** with modern concurrent features
-- **TypeScript** for enterprise-grade type safety
-
-#### Million-Dollar UI Architecture
-- **Rive (@rive-app/canvas)**: High-performance micro-interactions (3x CPU improvement)
-- **Motion One**: Hardware-accelerated 120fps animations (2.3KB bundle)
-- **Auto-Animate (@formkit/auto-animate)**: Zero-config layout transitions
-- **shadcn/ui**: Enterprise component system with Radix UI primitives
-- **Class Variance Authority (CVA)**: Type-safe component variants
-- **Tailwind CSS 4.x**: GPU-optimized performance classes
-
-#### Data Visualization
-- **MUI X Charts 8.10.2**: Advanced interactive visualizations
-- **Recharts 3.1.2**: Composable chart components
-- **MUI Material 7.3.1**: Material Design components
-
-#### Utilities & Parsing
-- **PapaParse 5.5.3**: High-performance CSV parsing
-- **Lucide React**: Consistent icon system
-- **Tailwind Merge**: Dynamic className composition
-
-### Project Structure
-
-This repository follows a feature-oriented layout while preserving Next.js conventions. Non-code documents have been consolidated under `docs/`. See `docs/STRUCTURE.md` for full details.
-
-```
-data-prototype/
-├─ app/
-│  ├─ components/
-│  │  ├─ ui/                   # Reusable UI primitives (button, card, tabs, theme toggle)
-│  │  ├─ charts/               # Chart components (ECharts, MUI)
-│  │  ├─ loaders/              # Dual CSV loader, CSV loader, progress UI
-│  │  ├─ accessibility/        # A11y helpers (live regions, focus trap)
-│  │  └─ data/                 # Financial and domain tables
-│  ├─ utils/                   # Utilities (formatters, chart processors, animations)
-│  ├─ styles/                  # Vanilla Extract + CSS artifacts
-│  ├─ constants/               # Theme-aware constants (chart colors)
-│  ├─ hooks/                   # Reusable hooks (auto-animate, etc.)
-│  ├─ page.tsx                 # Root dashboard page
-│  └─ layout.tsx               # Root layout
-├─ docs/                       # Documentation, architecture, research, ideas
-│  ├─ STRUCTURE.md             # Structure rationale and conventions
-│  ├─ IMPLEMENTATION_PHASES.md # Implementation journal
-│  ├─ PHASE3_IMPLEMENTATION_SUMMARY.md # Phase 3 summary
-│  ├─ ideas/                   # Archived ideation
-│  └─ research/                # Research artifacts
-├─ public/                     # Static assets
-├─ next.config.ts              # Next.js configuration
-├─ tsconfig.json               # TypeScript + path aliases
-└─ README.md                   # This file
-```
-
-Path aliases are defined to ease future refactors:
-- `@components/*` → `app/components/*`
-- `@utils/*` → `app/utils/*`
-- `@styles/*` → `app/styles/*`
-
-No runtime routes have been moved; this reorganization is non-breaking.
-
-For a detailed explanation, see `docs/STRUCTURE.md`.
-
-## Migration Plan (Non-breaking)
-
-This restructure minimizes churn and preserves functionality.
-
-- Documentation moved under `docs/` (no runtime impact)
-- Path aliases added in `tsconfig.json` (backward-compatible)
-- Duplicate parsing utilities consolidated via imports
-
-Recommended next steps (optional and safe):
-- Gradually group components under `app/components/{charts,loaders,accessibility,data}` and update imports to `@components/*` aliases. This can be done incrementally per PR without breaking routes.
-- Consider introducing route groups (e.g., `app/(analytics)`) once features expand. Route groups do not change URLs.
-
-### Archived/Relocated Files
-
-Completed relocations:
-- `IMPLEMENTATION_PHASES.md` → `docs/IMPLEMENTATION_PHASES.md`
-- `PHASE3_IMPLEMENTATION_SUMMARY.md` → `docs/PHASE3_IMPLEMENTATION_SUMMARY.md`
-- `compass_artifact_wf-*.md` → `docs/research/`
-- `ideas/` assets → `docs/ideas/`
-
-Component import paths updated (non-breaking):
-- Loaders now importable via `@components/loaders/*` (CSVLoader, DualCSVLoader, Rive/Gooey loaders)
-- Data views via `@components/data/*` (FinancialDataTable, HCCDataTable, EnterpriseDataExport)
-- A11y helpers via `@components/accessibility/*`
-
-### Available Scripts
-
-- `npm run dev` - Starts development server with Turbopack on port 3005
-- `npm run build` - Creates optimized production build with Turbopack
-- `npm run build:analyze` - Analyze bundle size and performance metrics
-- `npm start` - Runs production server on port 3005
-
-Note for Windows PowerShell: `npm run build:analyze` uses a Unix-style env var. If it doesn't work on your shell, run the PowerShell variant instead:
+### Windows PowerShell Scripts
 ```powershell
-$Env:ANALYZE = 'true'; npm run build; Remove-Item Env:ANALYZE
+./scripts/install.ps1           # Install everything
+./scripts/dev.ps1              # Start development server
+./scripts/build.ps1            # Build the application  
+./scripts/troubleshoot.ps1     # Fix common problems
+./scripts/cleanup.ps1          # Clean up or uninstall
 ```
 
-## Demos
-
-- Variants menu demo: visit `http://localhost:3005/variants`
-  - Component source: `app/components/navigation/AnimatedVariantsMenu.tsx`
-  - Route page: `app/variants/page.tsx`
-- Buttons demo (soft gray): visit `http://localhost:3005/demos/buttons`
-  - Component: `app/components/ui/button.tsx` (`variant="soft"`)
-  - Route page: `app/demos/buttons/page.tsx`
-- Soft dropdown demo: visit `http://localhost:3005/demos/dropdown`
-  - Component: `app/components/ui/soft-dropdown.tsx`
-  - Route page: `app/demos/dropdown/page.tsx`
-
-### Performance Development
-
-The Million-Dollar UI transformation includes built-in performance monitoring:
-
-```bash
-# Analyze bundle size and performance
-npm run build:analyze
-
-# Monitor 60fps animations in dev
-npm run dev  # Check DevTools Performance tab
-
-# Verify GPU acceleration
-# Open DevTools > Rendering > Show layer borders
+### Getting Help
+```powershell
+./scripts/install.ps1 -Help    # Installation help
+./scripts/dev.ps1 -Help       # Development help
+./scripts/troubleshoot.ps1 -Help  # Troubleshooting help
 ```
 
-### Architectural Achievements
+---
 
-#### Million-Dollar UI Implementation Status
-- ✅ **Phase 1**: Performance foundation with GPU acceleration and zero-runtime CSS
-- ✅ **Phase 2**: Sophisticated component library with enterprise-grade data visualization  
-- ✅ **Phase 3**: Production optimization with accessibility compliance and CI/CD pipeline
-- ✅ **Phase 4**: Advanced technical architecture with frame-perfect micro-interactions
-
-#### Technical Excellence Metrics
-- **Zero-Runtime CSS**: 60% bundle reduction through Vanilla Extract build-time processing
-- **GPU Acceleration**: All animations use transform/opacity for consistent 60fps performance
-- **Mathematical Color Precision**: LCH color space ensuring perceptually consistent themes
-- **Frame-Perfect Animations**: Theatre.js timing with 80ms stagger delays for premium feel
-- **Enterprise Accessibility**: WCAG 2.2 AA compliance with reduced motion support
-- **Professional Polish**: ⌘K command palette and comprehensive keyboard shortcuts system
-
-#### Architecture Pattern Following
-- **Stripe-inspired**: Zero-runtime CSS architecture and sophisticated simplicity
-- **Linear-influenced**: LCH color space adoption and inverted L-shape navigation patterns
-- **Vercel-optimized**: Performance-first approach with preconnect optimization
-- **Modern Treasury**: ⌘K command palette for workflow-centric navigation
-
-## Usage
-
-### Uploading Data
-
-1. **Start the application** and navigate to the homepage
-2. **Upload CSV Files**:
-   - Drag and drop or click to upload Budget Data (left panel)
-   - Drag and drop or click to upload Claims Data (right panel)
-3. **View Dashboard**: Once both files are uploaded, the dashboard automatically displays
-
-### Advanced Navigation & Shortcuts
-
-#### ⌘K Command Palette
-- **Open Command Palette**: Press `⌘K` (Mac) or `Ctrl+K` (Windows/Linux)
-- **Navigation Commands**: Quick access to Dashboard, Charts, and Data Table views
-- **Data Management**: Export functions (CSV, JSON), data refresh, and filtering
-- **Settings**: Theme toggle, keyboard shortcuts help
-- **Search**: Type to fuzzy search through all available commands
-
-#### Global Keyboard Shortcuts
-- **Navigation**: `⌘H` (Dashboard), `⌘C` (Charts), `⌘T` (Data Table)
-- **Data Export**: `⌘E` (CSV), `⌘⇧E` (JSON)
-- **Workflow**: `⌘K` (Command Palette), `⌘F` (Focus Search), `⌘R` (Refresh)
-- **Appearance**: `⌘D` (Toggle Theme), `⌘?` (Show Shortcuts)
-- **Power User**: `⌘1-4` (Navigate Dashboard Cards), `Escape` (Close Overlays)
-
-#### Professional Features
-- **Theme Switching**: Seamless light/dark mode with LCH color precision
-- **Reduced Motion**: Automatic detection and adaptation for accessibility preferences
-- **Visual Feedback**: Subtle animations and micro-interactions enhance every interaction
-- **Staggered Animations**: Dashboard cards reveal with precisely timed 80ms delays
-
-### CSV Format Requirements
-
-**Budget Data CSV** should include columns like:
-- Month/Period
-- Medical Claims, Rx, Admin Fees, Stop Loss Fees
-- Budget/Target amounts
-- Employee Count (for enrollment tracking)
-
-**Claims Data CSV** should include columns like:
-- Claimant Number
-- Medical and Rx costs
-- Service Type
-- Total amounts
-
-The system uses smart column detection to identify data regardless of exact column naming.
-
-### Changing Theme Colors
-
-Modify `app/globals.css` to adjust the cream white theme:
-
-```css
-:root {
-  --background: #FAF8F3;  /* Cream white background */
-  --foreground: #2C2C2C;  /* Dark text */
-}
-```
-
-## Deployment
-
-### Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Import project in [Vercel](https://vercel.com)
-3. Deploy with default settings
-
-### Other Platforms
-
-For production deployment:
-```bash
-npm run build
-npm start
-```
-
-Supports deployment to:
-- Netlify
-- AWS/Azure/GCP
-- Any Node.js hosting service
-
-## Contributing
-
-Feel free to submit issues and enhancement requests!
-
-## License
-
-This project is open source and available for educational and commercial purposes.
-
-## Restructuring Summary (2025-09)
-
-- Fixed Server/Client boundaries: moved client-only providers from `app/layout.tsx` into `app/providers.tsx`.
-- Marked Radix/shadcn wrappers as client components (`ui/button`, `ui/card`, `ui/tabs`, `ui/dropdown-menu`).
-- Consolidated components into feature folders: `components/charts`, `components/data`, `components/loaders`, `components/navigation`, `components/accessibility`.
-- Removed duplicate `app/components/ThemeToggle.tsx` (use `ui/theme-toggle.tsx`).
-- Typed `getChartColors()` return with `ChartColors` and removed `as any` casts in ECharts.
-- Hardened `Dashboard` context to throw outside provider.
-
-No breaking API changes; imports were updated within the repo. External consumers using path aliases may need to update to the new folder layout.
+*This dashboard is designed to be simple and user-friendly. If you run into any issues, start with the troubleshooting script or reach out for help!*

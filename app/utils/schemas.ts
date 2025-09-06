@@ -2,6 +2,37 @@ import { z } from 'zod';
 
 export type Row = Record<string, string>;
 
+// Development-only logging utility
+const isDev = process.env.NODE_ENV === 'development';
+const devLog = (...args: any[]) => isDev && console.log(...args);
+const devError = (...args: any[]) => isDev && console.error(...args);
+const devWarn = (...args: any[]) => isDev && console.warn(...args);
+const devGroup = (label: string) => isDev && console.group(label);
+const devGroupEnd = () => isDev && console.groupEnd();
+
+// Standardized validation result interfaces
+export interface ValidationSuccess {
+  success: true;
+}
+
+export interface ValidationError {
+  success: false;
+  message: string;
+  errorCode?: string;
+  details?: {
+    row?: number;
+    column?: string;
+    expectedType?: string;
+    hasValue?: boolean;
+    valueType?: string;
+    availableHeaders?: string[];
+    searchedFor?: string[];
+    zodError?: z.ZodIssue[];
+  };
+}
+
+export type ValidationResult = ValidationSuccess | ValidationError;
+
 export interface ParsedCSVLike {
   headers: string[];
   rows: Row[];
@@ -15,7 +46,7 @@ const findHeader = (headers: string[], candidates: string[], debug = false): str
   const candidatesNorm = candidates.map(normalize);
 
   if (debug) {
-    console.log('🔍 Header search:', { 
+    devLog('🔍 Header search:', { 
       availableHeaders: headers, 
       searchingFor: candidates,
       normalizedHeaders: lowered,
@@ -27,7 +58,7 @@ const findHeader = (headers: string[], candidates: string[], debug = false): str
   for (const c of candidatesNorm) {
     const idx = lowered.findIndex((h) => h === c);
     if (idx !== -1) {
-      if (debug) console.log('✅ Exact match found:', headers[idx]);
+      if (debug) devLog('✅ Exact match found:', headers[idx]);
       return headers[idx];
     }
   }
@@ -36,7 +67,7 @@ const findHeader = (headers: string[], candidates: string[], debug = false): str
   for (const c of candidatesNorm) {
     for (let i = 0; i < lowered.length; i++) {
       if (lowered[i].startsWith(c) || c.startsWith(lowered[i])) {
-        if (debug) console.log('✅ Starts-with match found:', headers[i]);
+        if (debug) devLog('✅ Starts-with match found:', headers[i]);
         return headers[i];
       }
     }
@@ -57,10 +88,10 @@ const findHeader = (headers: string[], candidates: string[], debug = false): str
         // Skip if header contains excluded descriptive words
         const hasExcluded = [...excludeWords].some((w) => words.has(w));
         if (hasExcluded) {
-          if (debug) console.log('⚠️ Skipping descriptive match:', headers[i]);
+          if (debug) devLog('⚠️ Skipping descriptive match:', headers[i]);
           continue;
         }
-        if (debug) console.log('✅ Word match found:', headers[i]);
+        if (debug) devLog('✅ Word match found:', headers[i]);
         return headers[i];
       }
     }
@@ -73,14 +104,14 @@ const findHeader = (headers: string[], candidates: string[], debug = false): str
         const words = new Set(splitWords(lowered[i]));
         const hasExcluded = [...excludeWords].some((w) => words.has(w));
         if (!hasExcluded) {
-          if (debug) console.log('✅ Fuzzy match found:', headers[i]);
+          if (debug) devLog('✅ Fuzzy match found:', headers[i]);
           return headers[i];
         }
       }
     }
   }
 
-  if (debug) console.log('❌ No match found for candidates:', candidates);
+  if (debug) devLog('❌ No match found for candidates:', candidates);
   return undefined;
 };
 
@@ -125,34 +156,36 @@ const ALLOWED_SERVICE_TYPES = new Set(
   ].map((s) => s.toLowerCase())
 );
 
-export function validateBudgetData(data: ParsedCSVLike): { success: true } | { success: false; message: string; details?: any } {
-  console.group('🔍 Budget CSV Validation');
-  console.log('Input data:', { headerCount: data.headers.length, rowCount: data.rows.length });
-  console.log('Headers found:', data.headers);
+export function validateBudgetData(data: ParsedCSVLike): ValidationResult {
+  devGroup('🔍 Budget CSV Validation');
+  devLog('Input data:', { headerCount: data.headers.length, rowCount: data.rows.length });
+  devLog('Headers found:', data.headers);
 
   try {
     // Basic structure check via Zod
     const Base = z.object({ headers: z.array(z.string()), rows: z.array(z.record(z.string())) });
     const baseParsed = Base.safeParse(data);
     if (!baseParsed.success) {
-      console.error('❌ Basic structure validation failed:', baseParsed.error);
-      console.groupEnd();
+      devError('❌ Basic structure validation failed:', baseParsed.error);
+      devGroupEnd();
       return { 
         success: false, 
         message: 'Budget CSV structure invalid.',
+        errorCode: 'INVALID_STRUCTURE',
         details: { zodError: baseParsed.error.issues }
       };
     }
 
-    const monthHeader = findHeader(data.headers, ['month', 'period'], true);
-    console.log('🗓️ Month header search result:', monthHeader);
+    const monthHeader = findHeader(data.headers, ['month', 'period'], isDev);
+    devLog('🗓️ Month header search result:', monthHeader);
     if (!monthHeader) {
       const suggestion = 'Available headers: ' + data.headers.join(', ');
-      console.error('❌ No month header found. Available:', data.headers);
-      console.groupEnd();
+      devError('❌ No month header found. Available:', data.headers);
+      devGroupEnd();
       return { 
         success: false, 
         message: `Budget CSV must include a "month" or "period" column. ${suggestion}`,
+        errorCode: 'MISSING_REQUIRED_COLUMN',
         details: { availableHeaders: data.headers, searchedFor: ['month', 'period'] }
       };
     }
@@ -165,23 +198,23 @@ export function validateBudgetData(data: ParsedCSVLike): { success: true } | { s
       const found = findHeader(data.headers, [candidate]);
       if (found) foundColumns[candidate] = found;
     });
-    console.log('💰 Numeric columns found:', foundColumns);
+    devLog('💰 Numeric columns found:', foundColumns);
 
     // Validate first 50 rows for speed
     const sample = data.rows.slice(0, 50);
-    console.log(`🔍 Validating first ${sample.length} rows...`);
+    devLog(`🔍 Validating first ${sample.length} rows...`);
     
     for (let i = 0; i < sample.length; i++) {
       const row = sample[i];
       
       // Check month column
       if (!row[monthHeader] || String(row[monthHeader]).trim() === '') {
-        console.error(`❌ Row ${i + 1}: missing "${monthHeader}" value`);
-        console.groupEnd();
+        devError(`❌ Row ${i + 1}: missing "${monthHeader}" value`);
+        devGroupEnd();
         return { 
           success: false, 
           message: `Row ${i + 1}: missing value in "${monthHeader}".`,
-          details: { row: i + 1, column: monthHeader, value: row[monthHeader] }
+          details: { row: i + 1, column: monthHeader, hasValue: !!row[monthHeader] }
         };
       }
 
@@ -191,23 +224,23 @@ export function validateBudgetData(data: ParsedCSVLike): { success: true } | { s
         if (!col) continue;
         const v = row[col];
         if (v && !isNumericString(v)) {
-          console.error(`❌ Row ${i + 1}: "${col}" not numeric:`, v);
-          console.groupEnd();
+          devError(`❌ Row ${i + 1}: "${col}" not numeric:`, v);
+          devGroupEnd();
           return { 
             success: false, 
-            message: `Row ${i + 1}: "${col}" must be numeric (found: "${v}").`,
-            details: { row: i + 1, column: col, value: v, expectedType: 'numeric' }
+            message: `Row ${i + 1}: "${col}" must be numeric.`,
+            details: { row: i + 1, column: col, expectedType: 'numeric', valueType: typeof v }
           };
         }
       }
     }
 
-    console.log('✅ Budget validation successful');
-    console.groupEnd();
+    devLog('✅ Budget validation successful');
+    devGroupEnd();
     return { success: true };
   } catch (error) {
-    console.error('💥 Unexpected error in budget validation:', error);
-    console.groupEnd();
+    devError('💥 Unexpected error in budget validation:', error);
+    devGroupEnd();
     return { 
       success: false, 
       message: `Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -216,33 +249,35 @@ export function validateBudgetData(data: ParsedCSVLike): { success: true } | { s
   }
 }
 
-export function validateClaimsData(data: ParsedCSVLike): { success: true } | { success: false; message: string; details?: any } {
-  console.group('🏥 Claims CSV Validation');
-  console.log('Input data:', { headerCount: data.headers.length, rowCount: data.rows.length });
-  console.log('Headers found:', data.headers);
+export function validateClaimsData(data: ParsedCSVLike): ValidationResult {
+  devGroup('🏥 Claims CSV Validation');
+  devLog('Input data:', { headerCount: data.headers.length, rowCount: data.rows.length });
+  devLog('Headers found:', data.headers);
 
   try {
     const Base = z.object({ headers: z.array(z.string()), rows: z.array(z.record(z.string())) });
     const baseParsed = Base.safeParse(data);
     if (!baseParsed.success) {
-      console.error('❌ Basic structure validation failed:', baseParsed.error);
-      console.groupEnd();
+      devError('❌ Basic structure validation failed:', baseParsed.error);
+      devGroupEnd();
       return { 
         success: false, 
         message: 'Claims CSV structure invalid.',
+        errorCode: 'INVALID_STRUCTURE',
         details: { zodError: baseParsed.error.issues }
       };
     }
 
-    const claimantHeader = findHeader(data.headers, ['claimant number', 'claim number', 'member id'], true);
-    console.log('👤 Claimant header search result:', claimantHeader);
+    const claimantHeader = findHeader(data.headers, ['claimant number', 'claim number', 'member id'], isDev);
+    devLog('👤 Claimant header search result:', claimantHeader);
     if (!claimantHeader) {
       const suggestion = 'Available headers: ' + data.headers.join(', ');
-      console.error('❌ No claimant header found. Available:', data.headers);
-      console.groupEnd();
+      devError('❌ No claimant header found. Available:', data.headers);
+      devGroupEnd();
       return { 
         success: false, 
         message: `Claims CSV must include a Claimant Number-like column. ${suggestion}`,
+        errorCode: 'MISSING_CLAIMANT_COLUMN',
         details: { availableHeaders: data.headers, searchedFor: ['claimant number', 'claim number', 'member id'] }
       };
     }
@@ -254,28 +289,30 @@ export function validateClaimsData(data: ParsedCSVLike): { success: true } | { s
       'icd10',
       'icd code',
       'icd'
-    ], true);
-    console.log('🩺 ICD header search result:', icdHeader);
+    ], isDev);
+    devLog('🩺 ICD header search result:', icdHeader);
     if (!icdHeader) {
       const suggestion = 'Available headers: ' + data.headers.join(', ');
-      console.error('❌ No ICD header found. Available:', data.headers);
-      console.groupEnd();
+      devError('❌ No ICD header found. Available:', data.headers);
+      devGroupEnd();
       return { 
         success: false, 
         message: `Claims CSV must include an ICD-10-CM code column. ${suggestion}`,
+        errorCode: 'MISSING_ICD_COLUMN',
         details: { availableHeaders: data.headers, searchedFor: ['icd-10-cm code', 'icd-10-cm', 'icd-10', 'icd10', 'icd code', 'icd'] }
       };
     }
 
-    const serviceTypeHeader = findHeader(data.headers, ['service type', 'service', 'type'], true);
-    console.log('🏥 Service type header search result:', serviceTypeHeader);
+    const serviceTypeHeader = findHeader(data.headers, ['service type', 'service', 'type'], isDev);
+    devLog('🏥 Service type header search result:', serviceTypeHeader);
     if (!serviceTypeHeader) {
       const suggestion = 'Available headers: ' + data.headers.join(', ');
-      console.error('❌ No service type header found. Available:', data.headers);
-      console.groupEnd();
+      devError('❌ No service type header found. Available:', data.headers);
+      devGroupEnd();
       return { 
         success: false, 
         message: `Claims CSV must include a Service Type column. ${suggestion}`,
+        errorCode: 'MISSING_SERVICE_TYPE_COLUMN',
         details: { availableHeaders: data.headers, searchedFor: ['service type', 'service', 'type'] }
       };
     }
@@ -285,61 +322,61 @@ export function validateClaimsData(data: ParsedCSVLike): { success: true } | { s
     const rxCol = findHeader(data.headers, ['rx', 'pharmacy']);
     const totalCol = findHeader(data.headers, ['total', 'total amount', 'total cost']);
     
-    console.log('💰 Found numeric columns:', { 
+    devLog('💰 Found numeric columns:', { 
       medical: medicalCol, 
       rx: rxCol, 
       total: totalCol 
     });
 
     const sample = data.rows.slice(0, 50);
-    console.log(`🔍 Validating first ${sample.length} rows...`);
+    devLog(`🔍 Validating first ${sample.length} rows...`);
     
     for (let i = 0; i < sample.length; i++) {
       const row = sample[i];
       
       // Check claimant number
       if (!row[claimantHeader] || String(row[claimantHeader]).trim() === '') {
-        console.error(`❌ Row ${i + 1}: missing "${claimantHeader}" value`);
-        console.groupEnd();
+        devError(`❌ Row ${i + 1}: missing "${claimantHeader}" value`);
+        devGroupEnd();
         return { 
           success: false, 
           message: `Row ${i + 1}: missing value in "${claimantHeader}".`,
-          details: { row: i + 1, column: claimantHeader, value: row[claimantHeader] }
+          details: { row: i + 1, column: claimantHeader, hasValue: !!row[claimantHeader] }
         };
       }
 
       // ICD-10 format validation - make this more lenient
       const icdVal = (row[icdHeader] || '').toString().trim();
       if (!icdVal) {
-        console.error(`❌ Row ${i + 1}: missing ICD-10 code`);
-        console.groupEnd();
+        devError(`❌ Row ${i + 1}: missing ICD-10 code`);
+        devGroupEnd();
         return { 
           success: false, 
           message: `Row ${i + 1}: missing ICD-10-CM code in "${icdHeader}".`,
-          details: { row: i + 1, column: icdHeader, value: icdVal }
+          details: { row: i + 1, column: icdHeader, hasValue: !!icdVal }
         };
       }
       
       // More lenient ICD validation - just check it looks reasonable
       if (icdVal.length < 3 || !/^[A-Z][0-9]/.test(icdVal)) {
-        console.warn(`⚠️ Row ${i + 1}: potentially invalid ICD-10 code format:`, icdVal);
+        devWarn(`⚠️ Row ${i + 1}: potentially invalid ICD-10 code format:`, icdVal);
         // Don't fail, just warn
       }
 
       // Service type validation - make more lenient
       const stVal = (row[serviceTypeHeader] || '').toString().trim().toLowerCase();
       if (!stVal) {
-        console.error(`❌ Row ${i + 1}: missing service type`);
-        console.groupEnd();
+        devError(`❌ Row ${i + 1}: missing service type`);
+        devGroupEnd();
         return { 
           success: false, 
           message: `Row ${i + 1}: missing Service Type in "${serviceTypeHeader}".`,
-          details: { row: i + 1, column: serviceTypeHeader, value: row[serviceTypeHeader] }
+          details: { row: i + 1, column: serviceTypeHeader, hasValue: !!row[serviceTypeHeader] }
         };
       }
       
       if (!ALLOWED_SERVICE_TYPES.has(stVal)) {
-        console.warn(`⚠️ Row ${i + 1}: unrecognized Service Type "${row[serviceTypeHeader]}" - allowing anyway`);
+        devWarn(`⚠️ Row ${i + 1}: unrecognized Service Type "${row[serviceTypeHeader]}" - allowing anyway`);
         // Don't fail for unknown service types, just warn
       }
 
@@ -353,11 +390,11 @@ export function validateClaimsData(data: ParsedCSVLike): { success: true } | { s
           return { success: true as const }; // Optional column
         }
         if (!isNumericString(v)) {
-          return { success: false as const, message: `Row ${i + 1}: "${col}" must be numeric (found: "${v}").` };
+          return { success: false as const, message: `Row ${i + 1}: "${col}" must be numeric.` };
         }
         const n = parseNumeric(v);
         if (n != null && n < 0) {
-          return { success: false as const, message: `Row ${i + 1}: "${col}" cannot be negative (found: ${n}).` };
+          return { success: false as const, message: `Row ${i + 1}: "${col}" cannot be negative.` };
         }
         return { success: true as const };
       };
@@ -370,8 +407,8 @@ export function validateClaimsData(data: ParsedCSVLike): { success: true } | { s
       
       for (const c of checks) {
         if (!c.success) {
-          console.error('❌ Numeric validation failed:', c.message);
-          console.groupEnd();
+          devError('❌ Numeric validation failed:', c.message);
+          devGroupEnd();
           return c as any;
         }
       }
@@ -385,18 +422,18 @@ export function validateClaimsData(data: ParsedCSVLike): { success: true } | { s
         
         // Allow up to $1 difference instead of 1 cent
         if (diff > 1.0) {
-          console.warn(`⚠️ Row ${i + 1}: Total calculation diff = $${diff.toFixed(2)} (Med: ${med}, Rx: ${rx}, Total: ${total})`);
+          devWarn(`⚠️ Row ${i + 1}: Total calculation diff = $${diff.toFixed(2)} (Med: ${med}, Rx: ${rx}, Total: ${total})`);
           // Don't fail on calculation differences, just warn
         }
       }
     }
 
-    console.log('✅ Claims validation successful');
-    console.groupEnd();
+    devLog('✅ Claims validation successful');
+    devGroupEnd();
     return { success: true };
   } catch (error) {
-    console.error('💥 Unexpected error in claims validation:', error);
-    console.groupEnd();
+    devError('💥 Unexpected error in claims validation:', error);
+    devGroupEnd();
     return { 
       success: false, 
       message: `Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`,

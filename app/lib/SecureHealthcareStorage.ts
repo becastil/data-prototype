@@ -5,6 +5,11 @@
 // - Only stores an opaque session token reference on disk
 // - Data lives in-memory and auto-expires
 
+// Development-only logging utility
+const isDev = process.env.NODE_ENV === 'development';
+const devLog = (...args: any[]) => isDev && console.log(...args);
+const devWarn = (...args: any[]) => isDev && console.warn(...args);
+
 type CacheEntry<T = unknown> = {
   data: T;
   expiresAt: number | null;
@@ -41,9 +46,53 @@ export class SecureHealthcareStorage {
   private memoryCache = new Map<string, CacheEntry>();
   private timeouts = new Map<string, ReturnType<typeof setTimeout>>();
   private namespace = 'schs:'; // secure healthcare storage
+  private maxCacheSize = 100; // Prevent unlimited memory growth
+  private cleanupInterval: ReturnType<typeof setInterval> | null = null;
+  private isInitialized = false;
 
   private storageKey(key: string) {
     return `${this.namespace}${key}`;
+  }
+
+  private initCleanup() {
+    if (this.isInitialized || !isBrowser()) return;
+    this.isInitialized = true;
+    
+    // Cleanup expired entries every 5 minutes
+    this.cleanupInterval = setInterval(() => {
+      this.cleanupExpired();
+    }, 5 * 60 * 1000);
+    
+    // Cleanup on page unload
+    const handleUnload = () => this.destroy();
+    window.addEventListener('beforeunload', handleUnload);
+    window.addEventListener('unload', handleUnload);
+    
+    // Store cleanup reference
+    (window as any).__secureHealthcareCleanup = handleUnload;
+  }
+  
+  private cleanupExpired() {
+    if (!isBrowser()) return;
+    const nowTs = now();
+    const expiredTokens: string[] = [];
+    
+    for (const [token, entry] of this.memoryCache.entries()) {
+      if (entry.expiresAt && nowTs > entry.expiresAt) {
+        expiredTokens.push(token);
+      }
+    }
+    
+    expiredTokens.forEach(token => {
+      this.memoryCache.delete(token);
+    });
+    
+    // Enforce cache size limit
+    if (this.memoryCache.size > this.maxCacheSize) {
+      const excess = this.memoryCache.size - this.maxCacheSize;
+      const tokens = Array.from(this.memoryCache.keys()).slice(0, excess);
+      tokens.forEach(token => this.memoryCache.delete(token));
+    }
   }
 
   /**
@@ -53,6 +102,7 @@ export class SecureHealthcareStorage {
    */
   async storeTemporary<T = unknown>(key: string, data: T, opts?: { ttlMs?: number }): Promise<string | null> {
     if (!isBrowser()) return null;
+    this.initCleanup(); // Ensure cleanup is initialized
     const ttlMs = opts?.ttlMs ?? 60 * 60 * 1000; // default 1 hour
     const token = await generateSecureToken();
 
@@ -62,7 +112,7 @@ export class SecureHealthcareStorage {
 
     // Persist only the token reference and expiry metadata on disk
     try {
-      console.log('[SecureHealthcareStorage] storeTemporary key:', key, 'ttlMs:', ttlMs);
+      devLog('[SecureHealthcareStorage] storeTemporary key:', key, 'ttlMs:', ttlMs);
       const storageVal = JSON.stringify({ token, expiresAt });
       window.localStorage.setItem(this.storageKey(key), storageVal);
     } catch {
@@ -71,6 +121,12 @@ export class SecureHealthcareStorage {
 
     // Auto-expire from memory and disk
     if (ttlMs > 0) {
+      // Clear any existing timeout for this key
+      const existingTimeout = this.timeouts.get(key);
+      if (existingTimeout) {
+        clearTimeout(existingTimeout);
+      }
+      
       const timeout = setTimeout(() => {
         this.clear(key);
       }, ttlMs);
@@ -87,13 +143,13 @@ export class SecureHealthcareStorage {
   retrieve<T = unknown>(key: string): T | undefined {
     if (!isBrowser()) return undefined;
     try {
-      console.log('[SecureHealthcareStorage] retrieve key:', key);
+      devLog('[SecureHealthcareStorage] retrieve key:', key);
       const refRaw = window.localStorage.getItem(this.storageKey(key));
       if (!refRaw) return undefined;
       const { token, expiresAt } = JSON.parse(refRaw) as { token: string; expiresAt: number | null };
 
       if (expiresAt && now() > expiresAt) {
-        console.warn('[SecureHealthcareStorage] token expired for key:', key);
+        devWarn('[SecureHealthcareStorage] token expired for key:', key);
         this.clear(key);
         return undefined;
       }
@@ -101,13 +157,13 @@ export class SecureHealthcareStorage {
       const entry = this.memoryCache.get(token);
       if (!entry) {
         // Token exists but memory is gone (reload/new tab). Remove stale token.
-        console.warn('[SecureHealthcareStorage] token found but memory entry missing (stale). Clearing key:', key);
+        devWarn('[SecureHealthcareStorage] token found but memory entry missing (stale). Clearing key:', key);
         this.safeRemoveKey(key);
         return undefined;
       }
 
       if (entry.expiresAt && now() > entry.expiresAt) {
-        console.warn('[SecureHealthcareStorage] memory entry expired for key:', key);
+        devWarn('[SecureHealthcareStorage] memory entry expired for key:', key);
         this.clear(key);
         return undefined;
       }
@@ -124,7 +180,7 @@ export class SecureHealthcareStorage {
   clear(key: string) {
     if (!isBrowser()) return;
     try {
-      console.log('[SecureHealthcareStorage] clear key:', key);
+      devLog('[SecureHealthcareStorage] clear key:', key);
       const refRaw = window.localStorage.getItem(this.storageKey(key));
       if (refRaw) {
         const { token } = JSON.parse(refRaw) as { token: string };
@@ -133,6 +189,7 @@ export class SecureHealthcareStorage {
     } catch {}
     this.safeRemoveKey(key);
 
+    // Always cleanup timeout, even if localStorage operations fail
     const t = this.timeouts.get(key);
     if (t) {
       clearTimeout(t);
@@ -142,7 +199,7 @@ export class SecureHealthcareStorage {
 
   clearAll() {
     if (!isBrowser()) return;
-    console.log('[SecureHealthcareStorage] clearAll keys under namespace');
+    devLog('[SecureHealthcareStorage] clearAll keys under namespace');
     // Remove all keys under this namespace
     try {
       const keysToRemove: string[] = [];
@@ -153,10 +210,36 @@ export class SecureHealthcareStorage {
       for (const k of keysToRemove) window.localStorage.removeItem(k);
     } catch {}
 
-    // Clear memory
+    // Clear memory and timeouts
     this.memoryCache.clear();
     this.timeouts.forEach((t) => clearTimeout(t));
     this.timeouts.clear();
+  }
+  
+  destroy() {
+    if (!isBrowser()) return;
+    devLog('[SecureHealthcareStorage] destroying instance');
+    
+    // Clear all data
+    this.clearAll();
+    
+    // Clear cleanup interval
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+      this.cleanupInterval = null;
+    }
+    
+    // Remove event listeners
+    try {
+      const cleanup = (window as any).__secureHealthcareCleanup;
+      if (cleanup) {
+        window.removeEventListener('beforeunload', cleanup);
+        window.removeEventListener('unload', cleanup);
+        delete (window as any).__secureHealthcareCleanup;
+      }
+    } catch {}
+    
+    this.isInitialized = false;
   }
 
   private safeRemoveKey(key: string) {

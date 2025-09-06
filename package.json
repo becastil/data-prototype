@@ -7,10 +7,18 @@
     "build": "next build",
     "install:legacy": "npm install --legacy-peer-deps",
     "build:amplify": "npm run install:legacy && npm run build",
-    "build:analyze": "ANALYZE=true npm run build",
+    "build:analyze": "cross-env ANALYZE=true npm run build",
+    "build:analyze:win": "powershell -Command \"$env:ANALYZE='true'; npm run build\"",
     "start": "next start -p 3005",
     "lint": "xo",
-    "lint:fix": "xo --fix"
+    "lint:fix": "xo --fix",
+    "win:install": "powershell -ExecutionPolicy Bypass -File ./scripts/install.ps1",
+    "win:dev": "powershell -ExecutionPolicy Bypass -File ./scripts/dev.ps1",
+    "win:build": "powershell -ExecutionPolicy Bypass -File ./scripts/build.ps1",
+    "win:build:analyze": "powershell -ExecutionPolicy Bypass -File ./scripts/build.ps1 -Analyze",
+    "win:troubleshoot": "powershell -ExecutionPolicy Bypass -File ./scripts/troubleshoot.ps1",
+    "win:cleanup": "powershell -ExecutionPolicy Bypass -File ./scripts/cleanup.ps1",
+    "win:help": "powershell -Command \"Get-Help ./scripts/install.ps1; Get-Help ./scripts/dev.ps1; Get-Help ./scripts/build.ps1\""
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -56,6 +64,7 @@
     "@types/recharts": "^1.8.29",
     "@welldone-software/why-did-you-render": "^10.0.1",
     "critters": "^0.0.22",
+    "cross-env": "^7.0.3",
     "esbuild-loader": "^4.3.0",
     "tailwindcss": "^4",
     "typescript": "^5",

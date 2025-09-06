@@ -3,6 +3,15 @@ import { animate, spring, stagger } from '@motionone/dom';
 // Hardware-accelerated animation utilities using Motion One
 // 2.3KB bundle size, 120fps GPU-accelerated animations
 
+// Motion One types
+type Keyframes = Record<string, string[] | number[]>;
+type AnimationOptions = {
+  duration?: number;
+  delay?: number;
+  easing?: any; // MotionOne easing functions
+  [key: string]: any; // Additional options
+};
+
 export const motionPresets = {
   // Smooth entrance animations
   fadeIn: {
@@ -64,7 +73,7 @@ export const motionPresets = {
 export const animateElement = (
   selector: string | Element, 
   preset: keyof typeof motionPresets,
-  customOptions: any = {}
+  customOptions: Partial<AnimationOptions> = {}
 ) => {
   const { keyframes, options } = motionPresets[preset];
   return animate(selector, keyframes, { ...options, ...customOptions });
@@ -113,8 +122,8 @@ export const addHoverAnimation = (element: Element) => {
 // GPU-optimized scroll animations
 export const createScrollAnimation = (
   element: Element,
-  keyframes: any,
-  options: any = {}
+  keyframes: Keyframes,
+  options: Partial<AnimationOptions> = {}
 ) => {
   const observer = new IntersectionObserver(
     ([entry]) => {

@@ -2,6 +2,11 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Development-only logging utility
+const isDev = process.env.NODE_ENV === 'development';
+const devLog = (...args: any[]) => isDev && console.log(...args);
+const devError = (...args: any[]) => isDev && console.error(...args);
 import CSVLoader, { ParsedCSVData } from './CSVLoader';
 import { validateBudgetData, validateClaimsData } from '@/app/utils/schemas';
 import { analyzeHeaders, type HeaderRequirement } from '@/app/utils/headers';
@@ -31,14 +36,14 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
   React.useEffect(() => {
     if (!submittedRef.current && budgetData && claimsData) {
       // Validate both datasets before proceeding
-      console.log('[CSV VALIDATION] Starting detailed validation...');
+      devLog('[CSV VALIDATION] Starting detailed validation...');
       const budgetCheck = validateBudgetData({ headers: budgetData.headers, rows: budgetData.rows });
-      console.log('[CSV VALIDATION] Budget result:', budgetCheck);
+      devLog('[CSV VALIDATION] Budget result:', budgetCheck);
       
       if (budgetCheck.success !== true) {
-        console.error('[CSV VALIDATION] Budget validation failed:', budgetCheck);
+        devError('[CSV VALIDATION] Budget validation failed:', budgetCheck);
         const details = budgetCheck.details ? [
-          'Error details: ' + JSON.stringify(budgetCheck.details, null, 2)
+          `Validation failed at row ${budgetCheck.details.row || 'unknown'} in column '${budgetCheck.details.column || 'unknown'}'`
         ] : [];
         pushToast({ 
           type: 'error', 
@@ -51,12 +56,12 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
       }
 
       const claimsCheck = validateClaimsData({ headers: claimsData.headers, rows: claimsData.rows });
-      console.log('[CSV VALIDATION] Claims result:', claimsCheck);
+      devLog('[CSV VALIDATION] Claims result:', claimsCheck);
       
       if (claimsCheck.success !== true) {
-        console.error('[CSV VALIDATION] Claims validation failed:', claimsCheck);
+        devError('[CSV VALIDATION] Claims validation failed:', claimsCheck);
         const details = claimsCheck.details ? [
-          'Error details: ' + JSON.stringify(claimsCheck.details, null, 2)
+          `Validation failed at row ${claimsCheck.details.row || 'unknown'} in column '${claimsCheck.details.column || 'unknown'}'`
         ] : [];
         pushToast({ 
           type: 'error', 
@@ -69,7 +74,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
       }
 
       submittedRef.current = true;
-      console.log('[CSV FLOW] Both files validated. Invoking onBothFilesLoaded');
+      devLog('[CSV FLOW] Both files validated. Invoking onBothFilesLoaded');
       onBothFilesLoaded(budgetData, claimsData);
     }
   }, [budgetData, claimsData, onBothFilesLoaded, onError]);
@@ -80,14 +85,14 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
       { name: 'month', aliases: ['month', 'period'] },
     ];
     const analysis = analyzeHeaders(data.headers, required);
-    console.log('[CSV HEADERS] Budget analysis found:', analysis.found, 'missing:', analysis.missing);
+    devLog('[CSV HEADERS] Budget analysis found:', analysis.found, 'missing:', analysis.missing);
     const hasRequiredColumns = analysis.missing.length === 0;
     
     if (!hasRequiredColumns) {
       const msg = `Budget CSV missing required column(s): ${analysis.missing.join(', ')}`;
-      console.error('[CSV VALIDATION]', msg);
+      devError('[CSV VALIDATION]', msg);
       pushToast({ type: 'error', title: 'Missing Columns in Budget CSV', message: msg, details: [
-        'Found: ' + JSON.stringify(analysis.found)
+        `Found ${analysis.found.length} valid columns of ${data.headers.length} total`
       ]});
       onError('Budget CSV must include a month or period column');
       return;
@@ -108,14 +113,14 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
     ];
     const analysis = analyzeHeaders(data.headers, required);
     const missingColumns = analysis.missing;
-    console.log('[CSV HEADERS] Claims analysis found:', analysis.found, 'missing:', analysis.missing);
+    devLog('[CSV HEADERS] Claims analysis found:', analysis.found, 'missing:', analysis.missing);
     
     if (missingColumns.length > 0) {
-      console.error('[CSV VALIDATION] Claims missing required columns:', missingColumns);
+      devError('[CSV VALIDATION] Claims missing required columns:', missingColumns);
       const msg = `Claims CSV missing required column(s): ${missingColumns.join(', ')}`;
       pushToast({ type: 'error', title: 'Missing Columns in Claims CSV', message: msg, details: [
-        'Found: ' + JSON.stringify(analysis.found),
-        'Headers: ' + data.headers.join(', ')
+        `Found ${analysis.found.length} valid columns of ${data.headers.length} total`,
+        `Missing: ${missingColumns.length} required columns`
       ]});
       onError(`Claims CSV missing required columns: ${missingColumns.join(', ')}`);
       return;

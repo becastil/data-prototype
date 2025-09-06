@@ -1,0 +1,61 @@
+# Healthcare Analytics Dashboard - Editor Configuration
+# Ensures consistent coding styles across different editors and IDEs
+# For more information, visit: https://editorconfig.org
+
+# Top-most EditorConfig file
+root = true
+
+# All files
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
+indent_size = 2
+
+# JavaScript, TypeScript, JSON files
+[*.{js,jsx,ts,tsx,json}]
+indent_style = tab
+indent_size = 2
+
+# HTML, CSS, SCSS files
+[*.{html,css,scss,less}]
+indent_style = tab
+indent_size = 2
+
+# Markdown files
+[*.{md,mdx}]
+trim_trailing_whitespace = false
+indent_style = space
+indent_size = 2
+
+# YAML files
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# PowerShell files (Windows compatibility)
+[*.ps1]
+end_of_line = crlf
+charset = utf-8-bom
+indent_style = space
+indent_size = 4
+
+# Configuration files
+[{package.json,*.config.js,*.config.ts}]
+indent_style = space
+indent_size = 2
+
+# Dotfiles
+[.{env*,gitignore,gitattributes}]
+indent_style = space
+indent_size = 2
+
+# README and documentation
+[README.md]
+trim_trailing_whitespace = false
+
+# Lock files (auto-generated)
+[{package-lock.json,pnpm-lock.yaml,yarn.lock}]
+insert_final_newline = false

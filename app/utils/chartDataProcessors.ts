@@ -23,7 +23,7 @@ interface ProcessedEnrollmentData {
 }
 
 // Helper function to parse currency/numeric values
-export const parseNumericValue = (value: any): number => {
+export const parseNumericValue = (value: string | number | null | undefined): number => {
   if (typeof value === 'number') return value;
   if (!value) return 0;
   

@@ -2,6 +2,12 @@
 
 import React, { useState, useRef, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+
+// Development-only logging utility
+const isDev = process.env.NODE_ENV === 'development';
+const devLog = (...args: any[]) => isDev && console.log(...args);
+const devError = (...args: any[]) => isDev && console.error(...args);
+const devWarn = (...args: any[]) => isDev && console.warn(...args);
 import { motion, AnimatePresence } from 'framer-motion';
 import DualCSVLoader from '@components/loaders/DualCSVLoader';
 import {
@@ -21,7 +27,6 @@ import EnterpriseDataExport from '@components/data/EnterpriseDataExport';
 import { ThemeToggle } from '@components/ui/theme-toggle';
 import GooeyFilter from '@components/loaders/GooeyFilter';
 import RiveLoader from '@components/loaders/RiveLoader';
-import MetaballSuccess from '@components/loaders/MetaballSuccess';
 import RiveSuccess from '@components/loaders/RiveSuccess';
 import MotionButton from '@components/MotionButton';
 import MotionCard from '@components/MotionCard';
@@ -35,7 +40,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs';
 import { ParsedCSVData } from '@components/loaders/CSVLoader';
 import { secureHealthcareStorage } from '@/app/lib/SecureHealthcareStorage';
 import { useAutoAnimateCards } from '@/app/hooks/useAutoAnimate';
-import { RotateCcw, Table, BarChart3, Bell, Search } from 'lucide-react';
+import { RotateCcw, Table, BarChart3, Bell } from 'lucide-react';
 import CommandPalette from '@components/navigation/CommandPalette';
 import KeyboardShortcuts from '@components/navigation/KeyboardShortcuts';
 import { AccessibleErrorBoundary } from '@components/accessibility/AccessibilityEnhancements';
@@ -66,7 +71,7 @@ const Home: React.FC = () => {
         setShowDashboard(true);
       }
     } catch (e) {
-      console.error('Secure storage hydration failed', e);
+      devError('Secure storage hydration failed', e);
     }
   }, []);
   
@@ -92,7 +97,7 @@ const Home: React.FC = () => {
   }, []);
 
   const handleBothFilesLoaded = (budget: ParsedCSVData, claims: ParsedCSVData) => {
-    console.log('[CSV FLOW] handleBothFilesLoaded called with:', {
+    devLog('[CSV FLOW] handleBothFilesLoaded called with:', {
       budgetHeaders: budget?.headers,
       budgetRows: budget?.rowCount,
       claimsHeaders: claims?.headers, 
@@ -112,7 +117,7 @@ const Home: React.FC = () => {
       
       timeoutRefs.current.loadingTimeout = setTimeout(async () => {
         try {
-          console.log('[CSV FLOW] Processing data for dashboard...');
+          devLog('[CSV FLOW] Processing data for dashboard...');
           
           // Validate data before setting state
           if (!budget || !budget.rows || budget.rows.length === 0) {
@@ -122,44 +127,44 @@ const Home: React.FC = () => {
             throw new Error('Claims data is empty or invalid');
           }
           
-          console.log('[CSV FLOW] Setting budget data...');
+          devLog('[CSV FLOW] Setting budget data...');
           setBudgetData(budget);
-          console.log('[CSV FLOW] Setting claims data...');
+          devLog('[CSV FLOW] Setting claims data...');
           setClaimsData(claims);
           
           try {
-            console.log('[SecureHealthcareStorage] Storing data securely...');
+            devLog('[SecureHealthcareStorage] Storing data securely...');
             await secureHealthcareStorage.storeTemporary('dashboardData', {
               budgetData: budget,
               claimsData: claims,
               savedAt: new Date().toISOString(),
             });
-            console.log('[SecureHealthcareStorage] Data stored successfully');
+            devLog('[SecureHealthcareStorage] Data stored successfully');
           } catch (storageError) {
-            console.warn('[SecureHealthcareStorage] Storage failed (non-critical):', storageError);
+            devWarn('[SecureHealthcareStorage] Storage failed (non-critical):', storageError);
           }
           
           setIsLoading(false);
           setShowSuccess(true);
-          console.log('[CSV FLOW] Success animation started');
+          devLog('[CSV FLOW] Success animation started');
           
           timeoutRefs.current.successTimeout = setTimeout(() => {
             try {
-              console.log('[CSV FLOW] Transitioning to dashboard view...');
+              devLog('[CSV FLOW] Transitioning to dashboard view...');
               setShowDashboard(true);
               setShowSuccess(false);
               setError(''); // Clear any previous errors
-              console.log('[CSV FLOW] Dashboard transition complete');
+              devLog('[CSV FLOW] Dashboard transition complete');
               timeoutRefs.current.successTimeout = null;
             } catch (transitionError) {
-              console.error('[CSV FLOW] Dashboard transition failed:', transitionError);
+              devError('[CSV FLOW] Dashboard transition failed:', transitionError);
               setError(`Dashboard transition failed: ${transitionError instanceof Error ? transitionError.message : 'Unknown error'}`);
             }
           }, 1500);
           
           timeoutRefs.current.loadingTimeout = null;
         } catch (processingError) {
-          console.error('[CSV FLOW] Data processing failed:', processingError);
+          devError('[CSV FLOW] Data processing failed:', processingError);
           setIsLoading(false);
           setShowSuccess(false);
           setError(`Data processing failed: ${processingError instanceof Error ? processingError.message : 'Unknown error'}`);
@@ -167,7 +172,7 @@ const Home: React.FC = () => {
         }
       }, 1000);
     } catch (outerError) {
-      console.error('[CSV FLOW] Critical error in handleBothFilesLoaded:', outerError);
+      devError('[CSV FLOW] Critical error in handleBothFilesLoaded:', outerError);
       setError(`Critical error: ${outerError instanceof Error ? outerError.message : 'Unknown error'}`);
       setIsLoading(false);
     }
@@ -175,7 +180,7 @@ const Home: React.FC = () => {
 
   const handleError = (errorMessage: string) => {
     setError(errorMessage);
-    console.error(errorMessage);
+    devError(errorMessage);
   };
 
   const handleReset = () => {
@@ -195,7 +200,7 @@ const Home: React.FC = () => {
   };
 
   const handleExport = (format: string) => {
-    console.log(`Exporting data as ${format}`);
+    devLog(`Exporting data as ${format}`);
     // Implementation would depend on the selected format
   };
 
@@ -211,7 +216,7 @@ const Home: React.FC = () => {
   ];
 
   // Build ordered month labels from budget data
-  const monthsTimeline: string[] = (budgetData?.rows || []).map((r: any) => String(r.month || r.Month || r.period || r.Period || ''));
+  const monthsTimeline: string[] = (budgetData?.rows || []).map((r: Record<string, string>) => String(r.month || r.Month || r.period || r.Period || ''));
 
   // Filtered datasets by selected range
   const filteredBudget = filterRowsByRange(budgetData?.rows || [], monthsTimeline, dateRange);
@@ -568,12 +573,12 @@ const Home: React.FC = () => {
         onThemeToggle={handleThemeToggle}
         onCommandPaletteOpen={() => setCommandPaletteOpen(true)}
         onEmergencyMode={() => {
-          console.log('[Shortcuts] Emergency mode activated via Ctrl/⌘+Shift+E');
+          devLog('[Shortcuts] Emergency mode activated via Ctrl/⌘+Shift+E');
           setEmergencyMode(true);
           setTimeout(() => setEmergencyMode(false), 4000);
         }}
         onPatientSearch={() => {
-          console.log('[Shortcuts] Patient search invoked via Ctrl/⌘+P');
+          devLog('[Shortcuts] Patient search invoked via Ctrl/⌘+P');
           setCommandPaletteOpen(true);
         }}
       />

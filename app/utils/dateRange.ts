@@ -34,12 +34,15 @@ export const normalizeMonthKey = (label: string): string => {
   return s; // fallback
 };
 
+// Row type (matches schemas.ts)
+type Row = Record<string, string>;
+
 // Filter rows by month range (inclusive) using a months timeline list for fallback
 export const filterRowsByRange = (
-  rows: any[],
+  rows: Row[],
   monthsTimeline: string[], // ordered labels as appear in data
   range: DateRangeSelection
-): any[] => {
+): Row[] => {
   if (!rows || rows.length === 0) return rows;
   if (range.preset === 'ALL') return rows;
 
