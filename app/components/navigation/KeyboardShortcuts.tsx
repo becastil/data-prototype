@@ -238,11 +238,27 @@ const KeyboardShortcuts: React.FC<KeyboardShortcutsProps> = ({
         break;
     }
 
+    // Helper: match patterns like '⌘1-4' as a range
+    const matchesShortcut = (pattern: string, pressed: string) => {
+      if (pattern === pressed) return true;
+      if (pattern.includes('-')) {
+        const m = pattern.match(/^(.*?)([A-Za-z0-9])\-([A-Za-z0-9])$/);
+        if (m) {
+          const [, prefix, start, end] = m;
+          if (!pressed.startsWith(prefix)) return false;
+          const ch = pressed.slice(prefix.length);
+          if (ch.length !== 1) return false;
+          const code = ch.charCodeAt(0);
+          const startCode = start.charCodeAt(0);
+          const endCode = end.charCodeAt(0);
+          return code >= Math.min(startCode, endCode) && code <= Math.max(startCode, endCode);
+        }
+      }
+      return false;
+    };
+
     // Find and execute matching shortcut
-    const matchingShortcut = shortcuts.find(s => 
-      s.key === shortcutKey || 
-      (s.key.includes('-') && shortcutKey.match(new RegExp(s.key.replace('-', '|'))))
-    );
+    const matchingShortcut = shortcuts.find(s => matchesShortcut(s.key, shortcutKey));
 
     if (matchingShortcut && !matchingShortcut.disabled) {
       event.preventDefault();

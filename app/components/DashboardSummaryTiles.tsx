@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import CircularProgress from './CircularProgress';
-import AccessibleIcon from './AccessibleIcon';
+import AccessibleIcon from './accessibility/AccessibleIcon';
 import {
   TrendingUp,
   TrendingDown,

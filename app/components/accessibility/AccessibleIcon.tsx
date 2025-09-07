@@ -200,9 +200,11 @@ const AccessibleIcon: React.FC<AccessibleIconProps> = ({
             ease: 'easeInOut',
           }}
         >
-          {React.cloneElement(icon as React.ReactElement, {
-            className: 'w-full h-full',
-          })}
+          {React.isValidElement(icon)
+            ? React.cloneElement(icon as React.ReactElement<{ className?: string }>, {
+                className: 'w-full h-full',
+              })
+            : icon}
         </motion.div>
 
         {/* Ripple effect on click */}

@@ -150,7 +150,7 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
 
     // ECharts supports 'canvas' and 'svg' renderers; WebGL requires extra packages.
     // Use canvas renderer for broad compatibility and performance.
-    const renderer: echarts.RendererType = 'canvas';
+    const renderer: 'canvas' | 'svg' = 'canvas';
     
     chartInstance.current = echarts.init(chartRef.current, undefined, {
       renderer,

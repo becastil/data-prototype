@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import AccessibleIcon from './AccessibleIcon';
+import AccessibleIcon from './accessibility/AccessibleIcon';
 import {
   Home,
   Settings,

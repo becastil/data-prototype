@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 interface WebVitalsMetric {
   id: string;
-  name: 'CLS' | 'FCP' | 'FID' | 'LCP' | 'TTFB';
+  name: 'CLS' | 'FCP' | 'INP' | 'LCP' | 'TTFB';
   value: number;
   rating: 'good' | 'needs-improvement' | 'poor';
   delta: number;
@@ -14,7 +14,7 @@ interface WebVitalsMetric {
 interface PerformanceMetrics {
   cls?: WebVitalsMetric;
   fcp?: WebVitalsMetric;
-  fid?: WebVitalsMetric;
+  inp?: WebVitalsMetric;
   lcp?: WebVitalsMetric;
   ttfb?: WebVitalsMetric;
   bundleSize?: number;
@@ -31,8 +31,8 @@ const PerformanceMonitor = () => {
   useEffect(() => {
     const loadWebVitals = async () => {
       try {
-        const { getCLS, getFCP, getFID, getLCP, getTTFB } = await import('web-vitals');
-        
+        const { onCLS, onFCP, onINP, onLCP, onTTFB } = await import('web-vitals');
+
         const updateMetric = (metric: WebVitalsMetric) => {
           setMetrics(prev => ({
             ...prev,
@@ -40,11 +40,11 @@ const PerformanceMonitor = () => {
           }));
         };
 
-        getCLS(updateMetric);
-        getFCP(updateMetric);
-        getFID(updateMetric);
-        getLCP(updateMetric);
-        getTTFB(updateMetric);
+        onCLS(updateMetric as any);
+        onFCP(updateMetric as any);
+        onINP(updateMetric as any);
+        onLCP(updateMetric as any);
+        onTTFB(updateMetric as any);
       } catch (error) {
         console.warn('Web Vitals not available:', error);
       }
@@ -103,7 +103,7 @@ const PerformanceMonitor = () => {
         return value.toFixed(3);
       case 'FCP':
       case 'LCP':
-      case 'FID':
+      case 'INP':
       case 'TTFB':
         return `${Math.round(value)}ms`;
       default:

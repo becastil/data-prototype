@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { card, cardHover } from '../styles/components.css';
+import { card } from '../styles/components.css';
 import { vars } from '../styles';
 import { 
   useCardRevealAnimation, 
@@ -72,7 +72,7 @@ const AnimatedDashboardCard: React.FC<AnimatedDashboardCardProps> = ({
       transition: {
         duration: prefersReducedMotion ? 0.2 : 0.6,
         delay: prefersReducedMotion ? 0 : entranceDelay,
-        ease: [0.25, 0.46, 0.45, 0.94], // Custom bezier for premium feel
+        ease: 'easeInOut',
       }
     }
   };
@@ -86,7 +86,7 @@ const AnimatedDashboardCard: React.FC<AnimatedDashboardCardProps> = ({
       rotateY: 0,
       transition: {
         duration: 0.3,
-        ease: [0.4, 0, 0.2, 1]
+        ease: 'easeInOut'
       }
     },
     hover: {
@@ -96,14 +96,14 @@ const AnimatedDashboardCard: React.FC<AnimatedDashboardCardProps> = ({
       rotateY: prefersReducedMotion ? 0 : 0.5,
       transition: {
         duration: 0.25,
-        ease: [0.4, 0, 0.2, 1]
+        ease: 'easeInOut'
       }
     },
     tap: {
       scale: prefersReducedMotion ? 1 : 0.98,
       transition: {
         duration: 0.1,
-        ease: [0.4, 0, 0.2, 1]
+        ease: 'easeInOut'
       }
     }
   };
@@ -114,7 +114,7 @@ const AnimatedDashboardCard: React.FC<AnimatedDashboardCardProps> = ({
       boxShadow: vars.shadows.md,
       transition: {
         duration: 0.3,
-        ease: [0.4, 0, 0.2, 1]
+        ease: 'easeInOut'
       }
     },
     hover: {
@@ -139,7 +139,7 @@ const AnimatedDashboardCard: React.FC<AnimatedDashboardCardProps> = ({
   return (
     <motion.div
       ref={cardRef}
-      className={`${card({ variant: 'elevated' })} ${className}`}
+      className={`${card({ hover: true, padding: 'md' })} ${className}`}
       variants={entranceVariants}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
@@ -208,7 +208,7 @@ const AnimatedDashboardCard: React.FC<AnimatedDashboardCardProps> = ({
           }
           transition={{
             duration: 0.8,
-            ease: [0.4, 0, 0.2, 1],
+            ease: 'easeInOut',
           }}
           style={{
             position: 'absolute',

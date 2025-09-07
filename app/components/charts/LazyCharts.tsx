@@ -9,56 +9,49 @@ import { motion } from 'framer-motion';
 const EChartsEnterpriseChart = dynamic(
   () => import('./EChartsEnterpriseChart'),
   {
-    ssr: false, // ECharts requires client-side rendering
-    suspense: true
+    ssr: false // ECharts requires client-side rendering
   }
 );
 
 const ClaimsBreakdownChart = dynamic(
   () => import('./ClaimsBreakdownChart'),
   {
-    ssr: false,
-    suspense: true
+    ssr: false
   }
 );
 
 const MedicalClaimsBreakdownChart = dynamic(
   () => import('./MedicalClaimsBreakdownChart'),
   {
-    ssr: false,
-    suspense: true
+    ssr: false
   }
 );
 
 const CostBandScatterChart = dynamic(
   () => import('./CostBandScatterChart'),
   {
-    ssr: false,
-    suspense: true
+    ssr: false
   }
 );
 
 const MUIEnrollmentChart = dynamic(
   () => import('./MUIEnrollmentChart'),
   {
-    ssr: false,
-    suspense: true
+    ssr: false
   }
 );
 
 const DomesticVsNonDomesticChart = dynamic(
   () => import('./DomesticVsNonDomesticChart'),
   {
-    ssr: false,
-    suspense: true
+    ssr: false
   }
 );
 
 const HCCDataTable = dynamic(
   () => import('@components/data/HCCDataTable'),
   {
-    ssr: false,
-    suspense: true
+    ssr: false
   }
 );
 
