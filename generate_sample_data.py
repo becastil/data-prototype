@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""
-Healthcare Analytics Sample Data Generator
-Generates realistic fake data for healthcare insurance analytics dashboard
+"""Healthcare Analytics Sample Data Generator.
+
+Generates realistic fake data for healthcare insurance analytics dashboard.
 """
 
-import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
+import os
 import random
 import string
-from typing import List, Dict, Tuple
-import os
+from datetime import datetime, timedelta
+from typing import Dict, List, Tuple
+
+import numpy as np
+import pandas as pd
 
 # Set random seed for reproducibility
 np.random.seed(42)
@@ -114,33 +115,35 @@ DRUG_NAMES = [
     ("Apixaban", "Blood thinner", 400, 600)
 ]
 
-def generate_phone():
-    """Generate random phone number"""
-    return f"({random.randint(200,999)}) {random.randint(200,999)}-{random.randint(1000,9999)}"
+def generate_phone() -> str:
+    """Generate random phone number."""
+    return f"({random.randint(200, 999)}) {random.randint(200, 999)}-{random.randint(1000, 9999)}"
 
-def generate_email(first_name, last_name):
-    """Generate email from name"""
+def generate_email(first_name: str, last_name: str) -> str:
+    """Generate email from name."""
     domains = ["gmail.com", "yahoo.com", "outlook.com", "email.com", "mail.com"]
     return f"{first_name.lower()}.{last_name.lower()}@{random.choice(domains)}"
 
-def generate_address():
-    """Generate random street address"""
+def generate_address() -> str:
+    """Generate random street address."""
     street_nums = range(100, 9999)
-    street_names = ["Main", "Oak", "Maple", "First", "Second", "Third", "Park", "Pine", 
-                   "Elm", "Washington", "Lake", "Hill", "Forest", "River", "Sunset"]
+    street_names = [
+        "Main", "Oak", "Maple", "First", "Second", "Third", "Park", "Pine",
+        "Elm", "Washington", "Lake", "Hill", "Forest", "River", "Sunset"
+    ]
     street_types = ["St", "Ave", "Rd", "Blvd", "Dr", "Ln", "Way", "Ct"]
     
     return f"{random.choice(street_nums)} {random.choice(street_names)} {random.choice(street_types)}"
 
-def generate_date_range(start_date, end_date):
-    """Generate random date between start and end"""
+def generate_date_range(start_date: datetime, end_date: datetime) -> datetime:
+    """Generate random date between start and end."""
     time_between = end_date - start_date
     days_between = time_between.days
     random_days = random.randrange(days_between)
     return start_date + timedelta(days=random_days)
 
-def generate_reference_data():
-    """Generate reference/lookup tables"""
+def generate_reference_data() -> tuple[pd.DataFrame, ...]:
+    """Generate reference/lookup tables."""
     print("Generating reference data...")
     
     # Service Types

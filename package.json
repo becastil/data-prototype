@@ -18,7 +18,10 @@
     "win:build:analyze": "powershell -ExecutionPolicy Bypass -File ./scripts/build.ps1 -Analyze",
     "win:troubleshoot": "powershell -ExecutionPolicy Bypass -File ./scripts/troubleshoot.ps1",
     "win:cleanup": "powershell -ExecutionPolicy Bypass -File ./scripts/cleanup.ps1",
-    "win:help": "powershell -Command \"Get-Help ./scripts/install.ps1; Get-Help ./scripts/dev.ps1; Get-Help ./scripts/build.ps1\""
+    "win:help": "powershell -Command \"Get-Help ./scripts/install.ps1; Get-Help ./scripts/dev.ps1; Get-Help ./scripts/build.ps1\"",
+    "typecheck": "tsc --noEmit",
+    "prepare": "husky install",
+    "pre-commit": "lint-staged"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -66,6 +69,8 @@
     "critters": "^0.0.22",
     "cross-env": "^7.0.3",
     "esbuild-loader": "^4.3.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "xo": "^0.59.0"
@@ -82,6 +87,19 @@
       ".next/**",
       "node_modules/**",
       "docs/**"
+    ]
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "xo --fix",
+      "prettier --write"
+    ],
+    "*.{json,yaml,yml,md}": [
+      "prettier --write"
+    ],
+    "*.py": [
+      "ruff format",
+      "ruff check --fix"
     ]
   }
 }
