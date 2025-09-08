@@ -86,7 +86,8 @@ export const EnvironmentSchema = z.object({
   NEXT_PUBLIC_API_URL: z.string().url().optional(),
 });
 
-export const validateEnvironment = () => {
+// Renamed to avoid collision with security.validateEnvironment
+export const parseEnvironment = () => {
   try {
     return EnvironmentSchema.parse(process.env);
   } catch (error) {

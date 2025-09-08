@@ -477,7 +477,11 @@ def main():
     print("="*60)
     print("Healthcare Analytics Sample Data Generator")
     print("="*60)
-    
+
+    # Ensure output directories exist
+    os.makedirs('sample_data/main_data', exist_ok=True)
+    os.makedirs('sample_data/reference_data', exist_ok=True)
+
     # Generate reference data
     service_types_df, icd10_df, plan_types_df, regions_df, employer_df = generate_reference_data()
     
@@ -495,7 +499,7 @@ def main():
     
     # Save all files
     print("\nSaving CSV files...")
-    
+
     # Main data files
     budget_df.to_csv('sample_data/main_data/budget_data.csv', index=False)
     claims_df.to_csv('sample_data/main_data/claims_data.csv', index=False)
