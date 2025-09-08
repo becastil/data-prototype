@@ -9,7 +9,7 @@
     "build:amplify": "npm run install:legacy && npm run build",
     "build:analyze": "cross-env ANALYZE=true npm run build",
     "build:analyze:win": "powershell -Command \"$env:ANALYZE='true'; npm run build\"",
-    "start": "next start -p 3005",
+    "start": "next start -p $PORT",
     "lint": "xo",
     "lint:fix": "xo --fix",
     "win:install": "powershell -ExecutionPolicy Bypass -File ./scripts/install.ps1",

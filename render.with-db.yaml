@@ -1,0 +1,23 @@
+databases:
+  - name: healthcare-db
+    databaseName: healthcare_dashboard
+    plan: free
+
+services:
+  - type: web
+    name: healthcare-dashboard
+    env: node
+    plan: free
+    branch: main
+    rootDir: .
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: healthcare-db
+          property: connectionString
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
