@@ -167,13 +167,6 @@ const MUIEnrollmentChart: React.FC<MUIEnrollmentChartProps> = ({
                 direction: 'row',
                 position: { vertical: 'bottom', horizontal: 'middle' },
                 padding: 0,
-                itemMarkWidth: 12,
-                itemMarkHeight: 12,
-                markGap: 4,
-                itemGap: 10,
-                labelStyle: {
-                  fontSize: 12,
-                },
               },
             }}
           />

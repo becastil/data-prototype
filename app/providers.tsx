@@ -7,8 +7,8 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
   // Initialize Theatre Studio in development to provide project state
   useEffect(() => {
     let cancelled = false;
-    if (typeof window === 'undefined') return;
-    if (process.env.NODE_ENV === 'production') return;
+    if (typeof window === 'undefined') return undefined;
+    if (process.env.NODE_ENV === 'production') return undefined;
 
     (async () => {
       try {

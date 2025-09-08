@@ -55,8 +55,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={loading || (props as any).disabled}
         {...props}
       >
-        {!asChild && loading && <RiveLoader size="sm" />}
-        {children}
+        {asChild ? (
+          children
+        ) : (
+          <>
+            {loading && <RiveLoader size="sm" />}
+            {children}
+          </>
+        )}
       </Comp>
     );
   }

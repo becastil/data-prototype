@@ -32,7 +32,6 @@ import MotionButton from '@components/MotionButton';
 import MotionCard from '@components/MotionCard';
 import { Button } from '@components/ui/button';
 import SoftDropdown from '@components/ui/soft-dropdown';
-import AnimatedVariantsMenu from '@components/navigation/AnimatedVariantsMenu';
 import DateRangeDropdown from '@components/ui/date-range-dropdown';
 import { DateRangeSelection, filterRowsByRange } from '@/app/utils/dateRange';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs';
@@ -292,15 +291,15 @@ const Home: React.FC = () => {
       ) : (
         <Suspense fallback={<div className="p-8 text-gray-600">Loading analytics...</div>}>
           <AccessibleErrorBoundary>
-          <motion.div
-            key="dashboard"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="min-h-screen gradient-smooth p-6"
-          >
-          {/* Header */}
-          <div className="max-w-7xl mx-auto mb-6">
+            <motion.div
+              key="dashboard"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="min-h-screen gradient-smooth p-6"
+            >
+              {/* Header */}
+              <div className="max-w-7xl mx-auto mb-6">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-3">
                 <motion.div
@@ -540,16 +539,8 @@ const Home: React.FC = () => {
                 )}
               </AnimatePresence>
             </div>
-            {/* Motion playground (animated variants menu) */}
-            <div className="p-8 pt-0">
-              <div className="panel-elevated p-4">
-                <h2 className="text-lg font-semibold text-black font-heading mb-3">Animated Variants Menu</h2>
-                <p className="text-sm text-gray-600 mb-4">Experimental navigation demo integrated into the dashboard.</p>
-                <AnimatedVariantsMenu />
               </div>
-            </div>
-          </div>
-          </motion.div>
+            </motion.div>
           </AccessibleErrorBoundary>
         </Suspense>
       )}
