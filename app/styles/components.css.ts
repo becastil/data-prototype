@@ -1,5 +1,5 @@
 import { recipe, RecipeVariants } from '@vanilla-extract/recipes';
-import { style } from '@vanilla-extract/css';
+import { style, keyframes } from '@vanilla-extract/css';
 import { vars } from './theme.css';
 import { sprinkles } from './sprinkles.css';
 
@@ -272,20 +272,25 @@ export const badge = recipe({
 });
 
 // Loading state for micro-interactions
+const gpuPulse = keyframes({
+  '0%': {
+    opacity: 0.5,
+    transform: 'scale(1) translateZ(0)',
+  },
+  '50%': {
+    opacity: 1,
+    transform: 'scale(1.02) translateZ(0)',
+  },
+  '100%': {
+    opacity: 0.5,
+    transform: 'scale(1) translateZ(0)',
+  }
+});
+
 export const loadingPulse = style([
   gpuAccelerated,
   {
-    animation: 'gpu-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-    '@keyframes gpu-pulse': {
-      '0%, 100%': {
-        opacity: 0.5,
-        transform: 'scale(1) translateZ(0)',
-      },
-      '50%': {
-        opacity: 1,
-        transform: 'scale(1.02) translateZ(0)',
-      }
-    }
+    animation: `${gpuPulse} 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite`,
   }
 ]);
 
