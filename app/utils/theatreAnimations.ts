@@ -20,15 +20,22 @@ const createNoopProject = (): NoopProject => ({
   sheet: () => ({ object: () => ({}) }),
 });
 
+// Avoid calling getProject when @theatre/studio isn't present or during SSR/production.
+// This prevents the noisy "state is empty" runtime warning.
 let project: NoopProject | ReturnType<typeof getProject>;
-try {
-  // This throws in production when Studio isn't bundled and no state is provided.
-  project = getProject('HealthcareDashboard');
-} catch (err) {
-  console.warn(
-    '[theatre] Studio not loaded or project state missing. Falling back to no-op project.',
-    err
-  );
+const isBrowser = typeof window !== 'undefined';
+const isDev = process.env.NODE_ENV === 'development';
+if (isBrowser && isDev) {
+  try {
+    project = getProject('HealthcareDashboard');
+  } catch (err) {
+    console.warn(
+      '[theatre] Studio not loaded or project state missing. Falling back to no-op project.',
+      err
+    );
+    project = createNoopProject();
+  }
+} else {
   project = createNoopProject();
 }
 

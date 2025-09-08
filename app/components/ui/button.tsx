@@ -44,16 +44,18 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, loading = false, children, ...props }, ref) => {
+    // When using asChild (Radix Slot), ensure exactly one child element.
+    // Avoid adding loader as a sibling which would violate React.Children.only.
     const Comp = asChild ? Slot : "button";
-    
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        disabled={loading || props.disabled}
+        ref={ref as any}
+        disabled={loading || (props as any).disabled}
         {...props}
       >
-        {loading && <RiveLoader size="sm" />}
+        {!asChild && loading && <RiveLoader size="sm" />}
         {children}
       </Comp>
     );
