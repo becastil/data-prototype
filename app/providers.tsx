@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { KeyboardNavigationProvider, AccessibleErrorBoundary } from './components/accessibility/AccessibilityEnhancements';
 
 export function ClientProviders({ children }: { children: React.ReactNode }) {

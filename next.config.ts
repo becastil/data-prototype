@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import path from 'path';
+import { createVanillaExtractPlugin } from '@vanilla-extract/next-plugin';
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -41,5 +42,6 @@ const nextConfig: NextConfig = {
   }
 };
 
-// Simplified export without potentially problematic plugins
-export default nextConfig;
+// Re-enable vanilla-extract so .css.ts styles render in production
+const withVanillaExtract = createVanillaExtractPlugin();
+export default withVanillaExtract(nextConfig);

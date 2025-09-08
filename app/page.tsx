@@ -15,31 +15,27 @@ import {
   ClaimsBreakdownChart,
   MedicalClaimsBreakdownChart,
   CostBandScatterChart,
-  MUIEnrollmentChart,
   DomesticVsNonDomesticChart,
   HCCDataTable,
   LazyChartWrapper
 } from '@components/charts/LazyCharts';
+import PremiumEnrollmentChart from '@components/charts/PremiumEnrollmentChart';
 import FinancialDataTable from '@components/data/FinancialDataTable';
 import { Dashboard } from './components/ui/dashboard';
 import PerformanceMonitor from '@components/PerformanceMonitor';
 import EnterpriseDataExport from '@components/data/EnterpriseDataExport';
 import { ThemeToggle } from '@components/ui/theme-toggle';
-import GooeyFilter from '@components/loaders/GooeyFilter';
-import RiveLoader from '@components/loaders/RiveLoader';
-import RiveSuccess from '@components/loaders/RiveSuccess';
-import MotionButton from '@components/MotionButton';
-import MotionCard from '@components/MotionCard';
+import { GlassCard } from '@components/ui/glass-card';
+import { PremiumDashboardCard } from '@components/ui/premium-dashboard-card';
+import { AnimatedNumber } from '@components/ui/animated-number';
+import { LottieLoader } from '@components/ui/lottie-loader';
 import { Button } from '@components/ui/button';
-import SoftDropdown from '@components/ui/soft-dropdown';
-import DateRangeDropdown from '@components/ui/date-range-dropdown';
 import { DateRangeSelection, filterRowsByRange } from '@/app/utils/dateRange';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs';
-// Removed unused imports to reduce bundle size
 import { ParsedCSVData } from '@components/loaders/CSVLoader';
 import { secureHealthcareStorage } from '@/app/lib/SecureHealthcareStorage';
 import { useAutoAnimateCards } from '@/app/hooks/useAutoAnimate';
-import { RotateCcw, Table, BarChart3, Bell } from 'lucide-react';
+import { RotateCcw, Table, BarChart3, Bell, Users, DollarSign, TrendingUp, Activity } from 'lucide-react';
 import CommandPalette from '@components/navigation/CommandPalette';
 import KeyboardShortcuts from '@components/navigation/KeyboardShortcuts';
 import { AccessibleErrorBoundary } from '@components/accessibility/AccessibilityEnhancements';
@@ -243,37 +239,43 @@ const Home: React.FC = () => {
               onError={handleError}
             />
             
-            {/* Loading Animation */}
+            {/* Premium Loading Animation */}
             {isLoading && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+                className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center"
               >
-                <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-2xl">
-                  <RiveLoader size="lg" />
-                  <p className="text-center mt-4 text-gray-600 dark:text-gray-400 font-subheading">
-                    Processing your data...
+                <GlassCard variant="elevated" className="p-12 text-center max-w-md">
+                  <LottieLoader type="pulse" size="xl" />
+                  <h3 className="mt-6 text-xl font-semibold text-gray-800 dark:text-gray-200">
+                    Processing your data
+                  </h3>
+                  <p className="mt-2 text-gray-600 dark:text-gray-400">
+                    Applying premium analytics transformations...
                   </p>
-                </div>
+                </GlassCard>
               </motion.div>
             )}
             
-            {/* Success Animation */}
+            {/* Premium Success Animation */}
             {showSuccess && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+                className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center"
               >
-                <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-2xl">
-                  <RiveSuccess isVisible={true} size="lg" />
-                  <p className="text-center mt-4 text-gray-600 dark:text-gray-400 font-subheading">
-                    Data loaded successfully!
+                <GlassCard variant="vibrant" glow className="p-12 text-center max-w-md">
+                  <LottieLoader type="success" size="xl" />
+                  <h3 className="mt-6 text-xl font-semibold text-gray-800 dark:text-gray-200">
+                    Analytics Ready!
+                  </h3>
+                  <p className="mt-2 text-gray-600 dark:text-gray-400">
+                    Your premium dashboard is now live
                   </p>
-                </div>
+                </GlassCard>
               </motion.div>
             )}
             
@@ -296,7 +298,7 @@ const Home: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="min-h-screen gradient-smooth p-6"
+              className="min-h-screen bg-premium-healthcare p-6"
             >
               {/* Header */}
               <div className="max-w-7xl mx-auto mb-6">
@@ -427,16 +429,50 @@ const Home: React.FC = () => {
 
             {/* Main Content Area */}
             <div className="p-8">
-              {/* Dashboard Summary Tiles */}
-              <Dashboard.Root 
-                budgetData={filteredBudget} 
-                claimsData={filteredClaims}
-              >
-                <Dashboard.Budget />
-                <Dashboard.Claims />
-                <Dashboard.Enrollment />
-                <Dashboard.LossRatio />
-              </Dashboard.Root>
+              {/* Premium Dashboard Summary Tiles */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <PremiumDashboardCard
+                  title="Total Budget"
+                  value={filteredBudget?.reduce((sum, row) => sum + (parseFloat(row['Budget']) || 0), 0) || 0}
+                  format="currency"
+                  icon={DollarSign}
+                  variant="premium"
+                  trend="up"
+                  trendValue={8.2}
+                  subtitle="Monthly allocation"
+                />
+                <PremiumDashboardCard
+                  title="Active Members"
+                  value={filteredBudget?.reduce((sum, row) => sum + (parseInt(row['Employee Count']) || 0), 0) || 0}
+                  format="number"
+                  icon={Users}
+                  variant="success"
+                  trend="up"
+                  trendValue={3.1}
+                  subtitle="Current enrollment"
+                />
+                <PremiumDashboardCard
+                  title="Claims Processed"
+                  value={filteredClaims?.length || 0}
+                  format="compact"
+                  icon={Activity}
+                  variant="default"
+                  trend="up"
+                  trendValue={12.4}
+                  subtitle="This period"
+                />
+                <PremiumDashboardCard
+                  title="Loss Ratio"
+                  value={85.6}
+                  format="percentage"
+                  decimals={1}
+                  icon={TrendingUp}
+                  variant="warning"
+                  trend="down"
+                  trendValue={2.3}
+                  subtitle="Claims vs premium"
+                />
+              </div>
 
               {/* Page Content */}
               <AnimatePresence mode="wait">
@@ -503,12 +539,11 @@ const Home: React.FC = () => {
                   </LazyChartWrapper>
                 </MotionCard>
 
-                {/* Tile 5: Enrollment Line Chart with MUI */}
-                <MotionCard delay={0.5}>
-                  <LazyChartWrapper chartName="Enrollment Trends">
-                    <MUIEnrollmentChart data={filteredBudget} rollingMonths={filteredBudget.length} />
-                  </LazyChartWrapper>
-                </MotionCard>
+                {/* Tile 5: Premium Enrollment Chart */}
+                <PremiumEnrollmentChart 
+                  data={filteredBudget} 
+                  rollingMonths={filteredBudget.length}
+                />
 
                 {/* Tile 6: Domestic vs Non-Domestic Chart */}
                 <MotionCard delay={0.6}>
