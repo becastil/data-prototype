@@ -12,10 +12,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import DualCSVLoader from '@components/loaders/DualCSVLoader';
 import {
   EChartsEnterpriseChart,
-  ClaimsBreakdownChart,
-  MedicalClaimsBreakdownChart,
-  CostBandScatterChart,
-  DomesticVsNonDomesticChart,
   HCCDataTable,
   LazyChartWrapper
 } from '@components/charts/LazyCharts';
@@ -39,6 +35,7 @@ import { RotateCcw, Table, BarChart3, Bell, Users, DollarSign, TrendingUp, Activ
 import CommandPalette from '@components/navigation/CommandPalette';
 import KeyboardShortcuts from '@components/navigation/KeyboardShortcuts';
 import { AccessibleErrorBoundary } from '@components/accessibility/AccessibilityEnhancements';
+import GooeyFilter from '@components/loaders/GooeyFilter';
 
 const Home: React.FC = () => {
   const chartsGridRef = useAutoAnimateCards<HTMLDivElement>();
@@ -512,31 +509,31 @@ const Home: React.FC = () => {
                   </LazyChartWrapper>
                 </MotionCard>
 
-                {/* Tile 2: Claims Breakdown Chart */}
+                {/* Tile 2: Claims Analytics Preview */}
                 <MotionCard delay={0.2}>
-                  <LazyChartWrapper chartName="Claims Breakdown">
-                    <ClaimsBreakdownChart 
-                      budgetData={filteredBudget} 
-                      claimsData={filteredClaims}
-                    />
-                  </LazyChartWrapper>
+                  <GlassCard variant="elevated" className="p-6 h-[400px] flex flex-col justify-center text-center">
+                    <div className="text-6xl mb-4">📊</div>
+                    <h3 className="text-lg font-semibold mb-2">Claims Analytics</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Advanced claims breakdown analysis coming soon</p>
+                  </GlassCard>
                 </MotionCard>
 
-                {/* Tile 3: Medical Claims Breakdown Pie Chart */}
+                {/* Tile 3: Medical Claims Preview */}
                 <MotionCard delay={0.3}>
-                  <LazyChartWrapper chartName="Medical Claims Pie Chart">
-                    <MedicalClaimsBreakdownChart 
-                      budgetData={filteredBudget} 
-                      claimsData={filteredClaims}
-                    />
-                  </LazyChartWrapper>
+                  <GlassCard variant="elevated" className="p-6 h-[400px] flex flex-col justify-center text-center">
+                    <div className="text-6xl mb-4">🏥</div>
+                    <h3 className="text-lg font-semibold mb-2">Medical Claims</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Medical claims breakdown visualization coming soon</p>
+                  </GlassCard>
                 </MotionCard>
 
-                {/* Tile 4: Cost Band Scatter Chart */}
+                {/* Tile 4: Cost Analysis Preview */}
                 <MotionCard delay={0.4}>
-                  <LazyChartWrapper chartName="Cost Band Scatter Plot">
-                    <CostBandScatterChart data={filteredClaims} />
-                  </LazyChartWrapper>
+                  <GlassCard variant="elevated" className="p-6 h-[400px] flex flex-col justify-center text-center">
+                    <div className="text-6xl mb-4">💰</div>
+                    <h3 className="text-lg font-semibold mb-2">Cost Analysis</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Cost band scatter analysis coming soon</p>
+                  </GlassCard>
                 </MotionCard>
 
                 {/* Tile 5: Premium Enrollment Chart */}
@@ -545,14 +542,13 @@ const Home: React.FC = () => {
                   rollingMonths={filteredBudget.length}
                 />
 
-                {/* Tile 6: Domestic vs Non-Domestic Chart */}
+                {/* Tile 6: Geographic Analytics Preview */}
                 <MotionCard delay={0.6}>
-                  <LazyChartWrapper chartName="Domestic vs Non-Domestic">
-                    <DomesticVsNonDomesticChart 
-                      budgetData={filteredBudget} 
-                      claimsData={filteredClaims}
-                    />
-                  </LazyChartWrapper>
+                  <GlassCard variant="elevated" className="p-6 h-[400px] flex flex-col justify-center text-center">
+                    <div className="text-6xl mb-4">🌍</div>
+                    <h3 className="text-lg font-semibold mb-2">Geographic Analytics</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Domestic vs non-domestic analysis coming soon</p>
+                  </GlassCard>
                 </MotionCard>
 
                 {/* Tile 7: HCC Data Table */}

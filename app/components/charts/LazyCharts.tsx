@@ -13,41 +13,6 @@ const EChartsEnterpriseChart = dynamic(
   }
 );
 
-const ClaimsBreakdownChart = dynamic(
-  () => import('./ClaimsBreakdownChart'),
-  {
-    ssr: false
-  }
-);
-
-const MedicalClaimsBreakdownChart = dynamic(
-  () => import('./MedicalClaimsBreakdownChart'),
-  {
-    ssr: false
-  }
-);
-
-const CostBandScatterChart = dynamic(
-  () => import('./CostBandScatterChart'),
-  {
-    ssr: false
-  }
-);
-
-const MUIEnrollmentChart = dynamic(
-  () => import('./MUIEnrollmentChart'),
-  {
-    ssr: false
-  }
-);
-
-const DomesticVsNonDomesticChart = dynamic(
-  () => import('./DomesticVsNonDomesticChart'),
-  {
-    ssr: false
-  }
-);
-
 const HCCDataTable = dynamic(
   () => import('@components/data/HCCDataTable'),
   {
@@ -161,11 +126,6 @@ const LazyChartWrapper = ({
 // Export all lazy-loaded components
 export {
   EChartsEnterpriseChart,
-  ClaimsBreakdownChart,
-  MedicalClaimsBreakdownChart,
-  CostBandScatterChart,
-  MUIEnrollmentChart,
-  DomesticVsNonDomesticChart,
   HCCDataTable,
   LazyChartWrapper,
   ChartLoadingSkeleton
