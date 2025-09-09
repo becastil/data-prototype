@@ -38,6 +38,7 @@ import CommandPalette from '@components/navigation/CommandPalette';
 import KeyboardShortcuts from '@components/navigation/KeyboardShortcuts';
 import { AccessibleErrorBoundary } from '@components/accessibility/AccessibilityEnhancements';
 import GooeyFilter from '@components/loaders/GooeyFilter';
+import MotionCard from '@components/MotionCard';
 
 const Home: React.FC = () => {
   const chartsGridRef = useAutoAnimateCards<HTMLDivElement>();
