@@ -43,108 +43,222 @@
   font-display: swap;
 }
 
-/* Gallagher Theme Overrides */
+/* YouTube-Inspired Content-First Theme */
 :root {
-  /* Brand Palette */
-  --galla-white: #FFFFFF;
-  --galla-blue-primary: #6FACDE;  /* Primary Accent */
-  --galla-blue-dark: #00263E;     /* Text/Headers/Nav */
-  --galla-black: #000000;         /* Fallback for strongest contrast */
-  --galla-blue-light: #A4CBE1;    /* Borders/Hover/Secondary Accents */
-  --galla-link-hover: #2E4B66;    /* Lighter link hover */
-  --galla-border-soft: #E6EEF5;   /* Card/Table borders */
-  --galla-row-hover: #F4F8FC;     /* Row hover + secondary hover */
-  --galla-table-head: #F7FAFD;    /* Table header background */
-  --galla-placeholder: #6B7C8C;   /* Placeholder (80% opacity applied in rules) */
-
+  /* Brand Palette - Content First */
+  --brand-primary: #0032E1;       /* Dark blue brand color */
+  --brand-primary-hover: #0028BC; /* Darker hover state */
+  --brand-primary-light: #4A69E5; /* Light blue for hover accents */
+  
+  /* Light Mode Colors */
+  --background: #FFFFFF;          /* Pure white background */
+  --foreground: #0F0F0F;          /* Primary black text */
+  --text-primary: #0F0F0F;        /* Main text */
+  --text-secondary: #212121;      /* Secondary text hierarchy */
+  --text-muted: #606060;          /* Metadata, timestamps, labels */
+  
+  /* Neutral Grays */
+  --gray-100: #E0E0E0;           /* Lightest borders, dividers */
+  --gray-200: #CCCCCC;           /* Light gray */
+  --gray-300: #B0B0B0;           /* Medium light gray */
+  --gray-400: #909090;           /* Medium gray for icons */
+  --gray-500: #606060;           /* Muted text */
+  --gray-600: #404040;           /* Dark gray */
+  --gray-700: #212121;           /* Secondary text */
+  --gray-800: #181818;           /* Near black */
+  --gray-900: #0F0F0F;           /* Primary black */
+  
+  /* Utility Colors */
+  --border-light: #E0E0E0;       /* Light borders */
+  --border-medium: #CCCCCC;      /* Medium borders */
+  --hover-bg: #F5F5F5;          /* Light hover background */
+  --focus-ring: #4A69E5;         /* Focus indicator */
+  
   /* Map to existing variables used across the app */
-  --background: var(--galla-white);
-  --foreground: var(--galla-blue-dark);
-  --primary: var(--galla-blue-primary);
-  --primary-dark: var(--galla-blue-dark);
-  --primary-light: var(--galla-blue-light);
+  --primary: var(--brand-primary);
+  --primary-dark: var(--brand-primary-hover);
+  --primary-light: var(--brand-primary-light);
 }
 
 /* Global base */
 html, body {
-  background-color: var(--galla-white);
-  color: var(--galla-blue-dark);
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
-/* Links */
-a { color: var(--galla-blue-dark); text-decoration: none; }
-a:hover { text-decoration: underline; color: var(--galla-link-hover); }
-a:visited { color: var(--galla-blue-dark); }
+/* Links - Content First Style */
+a { 
+  color: var(--text-primary); 
+  text-decoration: none; 
+  transition: color 0.2s ease;
+}
+a:hover { 
+  color: var(--brand-primary-light); 
+  text-decoration: underline; 
+}
+a:visited { 
+  color: var(--text-primary); 
+}
 
 /* Header/Nav/Footer */
-header, nav, footer { background-color: var(--galla-white); border-bottom: 1px solid var(--galla-blue-light); }
-
-/* Buttons (utility classes for consistency) */
-.btn-primary {
-  background-color: var(--galla-blue-primary);
-  color: var(--galla-blue-dark);
+header, nav, footer { 
+  background-color: var(--background); 
+  border-bottom: 1px solid var(--border-light); 
 }
-.btn-primary:hover { filter: brightness(0.92); }
-.btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--galla-blue-light); }
+
+/* Buttons - YouTube Inspired Hierarchy */
+.btn-primary {
+  background-color: var(--brand-primary);
+  color: #FFFFFF;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+.btn-primary:hover { 
+  background-color: var(--brand-primary-hover); 
+}
+.btn-primary:focus-visible { 
+  outline: none; 
+  box-shadow: 0 0 0 2px var(--focus-ring); 
+}
 
 .btn-secondary {
   background-color: transparent;
-  color: var(--galla-blue-dark);
-  border: 1px solid var(--galla-blue-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-medium);
+  transition: all 0.2s ease;
 }
-.btn-secondary:hover { background-color: var(--galla-row-hover); }
-.btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--galla-blue-light); }
+.btn-secondary:hover { 
+  background-color: var(--hover-bg); 
+  border-color: var(--gray-400);
+}
+.btn-secondary:focus-visible { 
+  outline: none; 
+  box-shadow: 0 0 0 2px var(--focus-ring); 
+}
 
-.btn-link { color: var(--galla-blue-dark); }
-.btn-link:hover { color: var(--galla-link-hover); text-decoration: underline; }
+.btn-link { 
+  color: var(--text-primary);
+  background: none;
+  border: none;
+  transition: color 0.2s ease;
+}
+.btn-link:hover { 
+  color: var(--brand-primary-light); 
+  text-decoration: underline; 
+}
 
-/* Cards / Panels */
+/* Cards / Panels - Clean & Minimal */
 .panel-elevated {
-  background: var(--galla-white);
-  border: 1px solid var(--galla-border-soft);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  background: var(--background);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-/* Inputs */
+/* Inputs - Content First Style */
 input, select, textarea {
-  background-color: var(--galla-white);
-  border: 1px solid var(--galla-blue-light);
-  color: var(--galla-blue-dark);
+  background-color: var(--background);
+  border: 1px solid var(--border-medium);
+  color: var(--text-primary);
+  transition: border-color 0.2s ease;
 }
-input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--galla-placeholder) 80%, transparent); }
+input::placeholder, textarea::placeholder { 
+  color: var(--text-muted); 
+  opacity: 0.8;
+}
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: var(--galla-blue-primary);
-  box-shadow: 0 0 0 2px var(--galla-blue-light);
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 2px var(--focus-ring);
 }
 
-/* Tabs */
-.tabs-list { background: var(--galla-white); border-bottom: 1px solid var(--galla-blue-light); }
-.tabs-trigger { color: var(--galla-blue-dark); }
-.tabs-trigger[data-state="active"] { box-shadow: none; background: transparent; border-bottom: 2px solid var(--galla-blue-primary); color: var(--galla-blue-dark); }
-.tabs-trigger:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--galla-blue-light); }
+/* Tabs - Clean Style */
+.tabs-list { 
+  background: var(--background); 
+  border-bottom: 1px solid var(--border-light); 
+}
+.tabs-trigger { 
+  color: var(--text-primary); 
+  transition: color 0.2s ease;
+}
+.tabs-trigger[data-state="active"] { 
+  box-shadow: none; 
+  background: transparent; 
+  border-bottom: 2px solid var(--brand-primary); 
+  color: var(--brand-primary); 
+}
+.tabs-trigger:focus-visible { 
+  outline: none; 
+  box-shadow: 0 0 0 2px var(--focus-ring); 
+}
 
-/* Tables */
-table thead { background: var(--galla-table-head); color: var(--galla-blue-dark); }
-table th, table td { border-color: var(--galla-border-soft); }
-table tr:hover { background: var(--galla-row-hover); }
+/* Tables - Minimal Style */
+table thead { 
+  background: var(--hover-bg); 
+  color: var(--text-primary); 
+}
+table th, table td { 
+  border-color: var(--border-light); 
+}
+table tr:hover { 
+  background: var(--hover-bg); 
+}
 
-/* Alerts */
-.alert { border-left-width: 4px; border-radius: 12px; padding: 12px 16px; }
-.alert-info { border-left-color: var(--galla-blue-primary); background: var(--galla-row-hover); color: var(--galla-blue-dark); }
-.alert-success { border-left-color: #1E8E5A; background: #F1FAF5; color: #0C3B28; }
-.alert-warning { border-left-color: #C98A00; background: #FFF7E6; color: #4A3200; }
-.alert-error { border-left-color: #C23A3A; background: #FFF1F1; color: #4A1111; }
+/* Alerts - Content First Style */
+.alert { 
+  border-left-width: 4px; 
+  border-radius: 12px; 
+  padding: 12px 16px; 
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+.alert-info { 
+  border-left-color: var(--brand-primary); 
+  background: var(--hover-bg); 
+  color: var(--text-primary); 
+}
+.alert-success { 
+  border-left-color: #22C55E; 
+  background: var(--hover-bg); 
+  color: var(--text-primary); 
+}
+.alert-warning { 
+  border-left-color: #F59E0B; 
+  background: var(--hover-bg); 
+  color: var(--text-primary); 
+}
+.alert-error { 
+  border-left-color: #EF4444; 
+  background: var(--hover-bg); 
+  color: var(--text-primary); 
+}
 
-/* Badges/Chips */
-.chip { background: var(--galla-row-hover); border: 1px solid var(--galla-blue-light); color: var(--galla-blue-dark); border-radius: 9999px; padding: 2px 10px; font-size: 12px; }
+/* Badges/Chips - Clean Style */
+.chip { 
+  background: var(--hover-bg); 
+  border: 1px solid var(--border-light); 
+  color: var(--text-primary); 
+  border-radius: 9999px; 
+  padding: 2px 10px; 
+  font-size: 12px; 
+}
 
-/* Icons */
-.icon, svg { color: var(--galla-blue-dark); }
-.icon-muted { color: var(--galla-placeholder); }
+/* Icons - Neutral Gray System */
+.icon, svg { 
+  color: var(--gray-400); 
+  transition: color 0.2s ease;
+}
+.icon-muted { 
+  color: var(--text-muted); 
+}
+.icon:hover {
+  color: var(--gray-600);
+}
 
 /* Focus utility */
-.focus-ring { outline: none !important; box-shadow: 0 0 0 2px var(--galla-blue-light) !important; }
+.focus-ring { 
+  outline: none !important; 
+  box-shadow: 0 0 0 2px var(--focus-ring) !important; 
+}
 
 :root {
   --background: #FFFFFF;
@@ -245,31 +359,41 @@ table tr:hover { background: var(--galla-row-hover); }
   --font-mono: var(--font-data);
 }
 
-/* Dark Mode Variables */
+/* Dark Mode Variables - YouTube Content-First Style */
 [data-theme="dark"] {
-  --background: #1a1a1a;  /* Off-black background */
-  --foreground: #FAFAFA;  /* Off-white text */
+  /* Dark Mode Colors */
+  --background: #0F0F0F;           /* Near black background */
+  --foreground: #FFFFFF;           /* Pure white text */
+  --text-primary: #FFFFFF;         /* Main text */
+  --text-secondary: #AAAAAA;       /* Secondary text hierarchy */
+  --text-muted: #606060;           /* Metadata, timestamps, labels (consistent) */
   
-  /* Minimalist Dark Mode */
-  --primary: #FAFAFA;              /* White primary */
-  --primary-dark: #F5F5DC;         /* Cream */
-  --primary-light: #CCCCCC;        /* Light gray */
-  --primary-lighter: #999999;      /* Lighter gray */
-  --primary-lightest: #333333;     /* Charcoal */
+  /* Neutral Grays (consistent across themes) */
+  --gray-100: #E0E0E0;            /* Lightest borders, dividers */
+  --gray-200: #CCCCCC;            /* Light gray */
+  --gray-300: #B0B0B0;            /* Medium light gray */
+  --gray-400: #909090;            /* Medium gray for icons */
+  --gray-500: #606060;            /* Muted text */
+  --gray-600: #404040;            /* Dark gray */
+  --gray-700: #212121;            /* Secondary text */
+  --gray-800: #181818;            /* Near black */
+  --gray-900: #0F0F0F;            /* Primary black */
   
-  /* Semantic Status Colors - Dark Mode */
-  --status-success: #FAFAFA;       /* White with icon */
-  --status-success-light: #CCCCCC;
-  --status-success-bg: #333333;
-  --status-warning: #F5F5DC;       /* Cream with icon */
-  --status-warning-light: #999999;
-  --status-warning-bg: #2a2a2a;
-  --status-danger: #FFFFFF;        /* Pure white with icon */
-  --status-danger-light: #F0F0F0;
-  --status-danger-bg: #2a2a2a;
-  --status-info: #CCCCCC;          /* Light gray with icon */
-  --status-info-light: #999999;
-  --status-info-bg: #333333;
+  /* Utility Colors */
+  --border-light: #333333;        /* Dark borders */
+  --border-medium: #404040;       /* Medium dark borders */
+  --hover-bg: #1A1A1A;           /* Dark hover background */
+  --focus-ring: #4A69E5;          /* Focus indicator (consistent) */
+  
+  /* Brand Colors (consistent) */
+  --brand-primary: #0032E1;        /* Dark blue brand color */
+  --brand-primary-hover: #0028BC;  /* Darker hover state */
+  --brand-primary-light: #4A69E5;  /* Light blue for hover accents */
+  
+  /* Map to existing variables */
+  --primary: var(--brand-primary);
+  --primary-dark: var(--brand-primary-hover);
+  --primary-light: var(--brand-primary-light);
   
   /* Data Visualization - Dark Mode */
   --chart-primary: #FFFFFF;        /* White */

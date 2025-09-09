@@ -86,47 +86,47 @@ export const vars = createThemeContract({
   }
 });
 
-// Light theme - LCH-based perceptually consistent monochrome
+// Light theme - YouTube Content-First Style
 export const lightTheme = createTheme(vars, {
   colors: {
-    // Core monochrome palette (LCH-generated for perceptual consistency)
-    black: lchColors.monochrome.black,
-    offBlack: lchColors.monochrome.charcoal,
-    charcoal: lchColors.monochrome.darkGray,
-    gray: lchColors.monochrome.gray,
-    lightGray: lchColors.monochrome.lightGray,
-    paleGray: lchColors.monochrome.paleGray,
-    cream: lchColors.monochrome.cream,
-    offWhite: lchColors.monochrome.offWhite,
-    white: lchColors.monochrome.white,
+    // Core content-first palette
+    black: '#0F0F0F',
+    offBlack: '#212121',
+    charcoal: '#404040',
+    gray: '#606060',
+    lightGray: '#909090',
+    paleGray: '#CCCCCC',
+    cream: '#F5F5F5',
+    offWhite: '#FAFAFA',
+    white: '#FFFFFF',
     
-    // Semantic colors
+    // Semantic colors - Clean & Minimal
     background: '#FFFFFF',
-    foreground: '#000000',
-    text: '#1F2937',
-    textSecondary: '#6B7280',
-    border: '#E5E7EB',
+    foreground: '#0F0F0F',
+    text: '#0F0F0F',
+    textSecondary: '#212121',
+    border: '#E0E0E0',
     
-    // Status colors (monochrome with icon-based differentiation)
-    success: '#000000',
-    successBg: '#F5F5DC',
-    warning: '#333333',
-    warningBg: '#FAFAFA',
-    danger: '#000000',
-    dangerBg: '#F0F0F0',
-    info: '#333333',
-    infoBg: '#F5F5DC',
+    // Status colors (using dark blue brand + minimal approach)
+    success: '#22C55E',
+    successBg: '#F5F5F5',
+    warning: '#F59E0B',
+    warningBg: '#F5F5F5',
+    danger: '#EF4444',
+    dangerBg: '#F5F5F5',
+    info: '#0032E1',
+    infoBg: '#F5F5F5',
     
-    // Chart colors (sophisticated monochrome)
+    // Chart colors (neutral grays with brand accent)
     chart: {
-      primary: '#000000',
-      secondary: '#333333',
-      tertiary: '#666666',
-      quaternary: '#999999',
-      quinary: '#CCCCCC',
-      senary: '#1a1a1a',
-      septenary: '#4d4d4d',
-      octonary: '#808080',
+      primary: '#0032E1',
+      secondary: '#0F0F0F',
+      tertiary: '#404040',
+      quaternary: '#606060',
+      quinary: '#909090',
+      senary: '#CCCCCC',
+      septenary: '#E0E0E0',
+      octonary: '#F5F5F5',
     }
   },
   
@@ -171,47 +171,47 @@ export const lightTheme = createTheme(vars, {
   }
 });
 
-// Dark theme - Sophisticated dark monochrome
+// Dark theme - YouTube Content-First Dark Mode
 export const darkTheme = createTheme(vars, {
   colors: {
-    // Core monochrome palette (inverted)
+    // Core content-first dark palette
     black: '#FFFFFF',
-    offBlack: '#FAFAFA',
-    charcoal: '#CCCCCC',
-    gray: '#999999',
-    lightGray: '#666666',
+    offBlack: '#AAAAAA',
+    charcoal: '#909090',
+    gray: '#606060',
+    lightGray: '#404040',
     paleGray: '#333333',
-    cream: '#2a2a2a',
-    offWhite: '#1a1a1a',
-    white: '#000000',
+    cream: '#1A1A1A',
+    offWhite: '#181818',
+    white: '#0F0F0F',
     
     // Semantic colors (dark mode)
-    background: '#1a1a1a',
-    foreground: '#FAFAFA',
-    text: '#F1F5F9',
-    textSecondary: '#94A3B8',
-    border: '#334155',
+    background: '#0F0F0F',
+    foreground: '#FFFFFF',
+    text: '#FFFFFF',
+    textSecondary: '#AAAAAA',
+    border: '#333333',
     
-    // Status colors (dark mode monochrome)
-    success: '#FAFAFA',
-    successBg: '#333333',
-    warning: '#F5F5DC',
-    warningBg: '#2a2a2a',
-    danger: '#FFFFFF',
-    dangerBg: '#2a2a2a',
-    info: '#CCCCCC',
-    infoBg: '#333333',
+    // Status colors (dark mode with brand consistency)
+    success: '#22C55E',
+    successBg: '#1A1A1A',
+    warning: '#F59E0B',
+    warningBg: '#1A1A1A',
+    danger: '#EF4444',
+    dangerBg: '#1A1A1A',
+    info: '#0032E1',
+    infoBg: '#1A1A1A',
     
-    // Chart colors (dark monochrome)
+    // Chart colors (dark mode with brand accent)
     chart: {
-      primary: '#FFFFFF',
-      secondary: '#CCCCCC',
-      tertiary: '#999999',
-      quaternary: '#666666',
-      quinary: '#F5F5DC',
-      senary: '#FAFAFA',
-      septenary: '#808080',
-      octonary: '#B0B0B0',
+      primary: '#0032E1',
+      secondary: '#FFFFFF',
+      tertiary: '#AAAAAA',
+      quaternary: '#909090',
+      quinary: '#606060',
+      senary: '#404040',
+      septenary: '#333333',
+      octonary: '#1A1A1A',
     }
   },
   
