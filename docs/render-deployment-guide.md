@@ -477,8 +477,8 @@ Check these after deployment:
 - Monitor environment variable security
 
 #### Health Checks
-- A dedicated health endpoint is included: `GET /health`
-- Blueprints set `healthCheckPath: /health` for faster, more reliable checks
+- A dedicated health endpoint is included: `GET /api/health`
+- Blueprints set `healthCheckPath: /api/health` for faster, more reliable checks
 - Use this path for external uptime monitors (Pingdom, UptimeRobot, Better Uptime)
 
 #### Alerts
@@ -669,7 +669,7 @@ services:
     buildCommand: npm ci && npm run build
     startCommand: npm start
     autoDeploy: true
-    healthCheckPath: /
+    healthCheckPath: /api/health
     envVars:
       - key: NEXT_PUBLIC_API_URL
         sync: false
@@ -697,7 +697,7 @@ services:
     buildCommand: npm ci && npm run build
     startCommand: npm start
     autoDeploy: true
-    healthCheckPath: /
+    healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
         fromDatabase:

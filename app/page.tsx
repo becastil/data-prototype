@@ -28,6 +28,8 @@ import { LottieLoader } from '@components/ui/lottie-loader';
 import { Button } from '@components/ui/button';
 import { DateRangeSelection, filterRowsByRange } from '@/app/utils/dateRange';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs';
+import SoftDropdown from '@components/ui/soft-dropdown';
+import DateRangeDropdown from '@components/ui/date-range-dropdown';
 import { ParsedCSVData } from '@components/loaders/CSVLoader';
 import { secureHealthcareStorage } from '@/app/lib/SecureHealthcareStorage';
 import { useAutoAnimateCards } from '@/app/hooks/useAutoAnimate';

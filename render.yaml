@@ -8,7 +8,7 @@ services:
     buildCommand: npm ci && npm run build
     startCommand: npm start
     autoDeploy: true
-    healthCheckPath: /health
+    healthCheckPath: /api/health
     envVars:
       # Optional; set via Render Dashboard if used by your deployment
       - key: NEXT_PUBLIC_API_URL
