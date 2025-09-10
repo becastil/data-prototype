@@ -359,13 +359,13 @@ table tr:hover {
   --font-mono: var(--font-data);
 }
 
-/* Dark Mode Variables - YouTube Content-First Style */
+/* Light Mode Dark Theme Override - Content-First Style */
 [data-theme="dark"] {
-  /* Dark Mode Colors */
-  --background: #0F0F0F;           /* Near black background */
-  --foreground: #FFFFFF;           /* Pure white text */
-  --text-primary: #FFFFFF;         /* Main text */
-  --text-secondary: #AAAAAA;       /* Secondary text hierarchy */
+  /* Light Mode Colors (disable dark mode) */
+  --background: #F9F9F9;           /* Light cream background */
+  --foreground: #0F0F0F;           /* Primary black text */
+  --text-primary: #0F0F0F;         /* Main text */
+  --text-secondary: #212121;       /* Secondary text hierarchy */
   --text-muted: #606060;           /* Metadata, timestamps, labels (consistent) */
   
   /* Neutral Grays (consistent across themes) */
@@ -376,13 +376,13 @@ table tr:hover {
   --gray-500: #606060;            /* Muted text */
   --gray-600: #404040;            /* Dark gray */
   --gray-700: #212121;            /* Secondary text */
-  --gray-800: #181818;            /* Near black */
-  --gray-900: #0F0F0F;            /* Primary black */
+  --gray-800: #F5F5F5;            /* Light background */
+  --gray-900: #F9F9F9;            /* Light cream */
   
   /* Utility Colors */
-  --border-light: #333333;        /* Dark borders */
-  --border-medium: #404040;       /* Medium dark borders */
-  --hover-bg: #1A1A1A;           /* Dark hover background */
+  --border-light: #E0E0E0;        /* Light borders */
+  --border-medium: #CCCCCC;       /* Medium borders */
+  --hover-bg: #F5F5F5;           /* Light hover background */
   --focus-ring: #4A69E5;          /* Focus indicator (consistent) */
   
   /* Brand Colors (consistent) */
@@ -624,10 +624,10 @@ input, textarea, select {
 .gradient-smooth {
   background: linear-gradient(180deg,
     #FFFFFF 0%,      /* Pure white */
-    #FAFAFA 25%,     /* Off-white */
-    #F5F5DC 50%,     /* Cream */
-    #F0F0F0 75%,     /* Light gray */
-    #E8E8E8 100%     /* Pale gray */
+    #FEFEFE 25%,     /* Nearly white */
+    #FDFDFD 50%,     /* Off-white */
+    #FBFBFB 75%,     /* Very light */
+    #F9F9F9 100%     /* Light cream */
   );
   min-height: 100vh;
   position: relative;
@@ -844,11 +844,11 @@ input, textarea, select {
 /* Dark Mode Gradient - Minimalist */
 [data-theme="dark"] .gradient-smooth {
   background: linear-gradient(180deg,
-    #1a1a1a 0%,      /* Off-black */
-    #2a2a2a 25%,     /* Dark gray */
-    #333333 50%,     /* Charcoal */
-    #2a2a2a 75%,     /* Dark gray */
-    #1a1a1a 100%     /* Off-black */
+    #F8F8F8 0%,      /* Very light gray */
+    #F6F6F6 25%,     /* Light gray */
+    #F4F4F4 50%,     /* Cream */
+    #F2F2F2 75%,     /* Light cream */
+    #F0F0F0 100%     /* Pale cream */
   );
 }
 

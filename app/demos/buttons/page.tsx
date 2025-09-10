@@ -5,7 +5,7 @@ import { Button } from "@components/ui/button";
 
 export default function ButtonsDemoPage() {
   return (
-    <main className="min-h-screen gradient-smooth p-6">
+    <main className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto space-y-6">
         <header>
           <h1 className="text-3xl font-bold font-heading text-black">Buttons Demo</h1>
