@@ -39,6 +39,8 @@ import KeyboardShortcuts from '@components/navigation/KeyboardShortcuts';
 import { AccessibleErrorBoundary } from '@components/accessibility/AccessibilityEnhancements';
 import GooeyFilter from '@components/loaders/GooeyFilter';
 import MotionCard from '@components/MotionCard';
+import FeesConfigurator, { FeesConfig } from '@components/forms/FeesConfigurator';
+import { parseNumericValue } from '@utils/chartDataProcessors';
 
 const Home: React.FC = () => {
   const chartsGridRef = useAutoAnimateCards<HTMLDivElement>();
@@ -55,6 +57,8 @@ const Home: React.FC = () => {
   const [dateRange, setDateRange] = useState<DateRangeSelection>({ preset: '12M' });
   const [emergencyMode, setEmergencyMode] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
+  const [showFeesForm, setShowFeesForm] = useState(false);
+  const [feesConfig, setFeesConfig] = useState<FeesConfig | null>(null);
   
   // HIPAA-aligned hydration: use in-memory token reference (no PHI in localStorage)
   useEffect(() => {
@@ -145,8 +149,8 @@ const Home: React.FC = () => {
           
           timeoutRefs.current.successTimeout = setTimeout(() => {
             try {
-              devLog('[CSV FLOW] Transitioning to dashboard view...');
-              setShowDashboard(true);
+              devLog('[CSV FLOW] Transitioning to fees configuration view...');
+              setShowFeesForm(true);
               setShowSuccess(false);
               setError(''); // Clear any previous errors
               devLog('[CSV FLOW] Dashboard transition complete');
@@ -180,12 +184,24 @@ const Home: React.FC = () => {
 
   const handleReset = () => {
     setShowDashboard(false);
+    setShowFeesForm(false);
     setBudgetData(null);
     setClaimsData(null);
     setError('');
     try {
       secureHealthcareStorage.clear('dashboardData');
+      secureHealthcareStorage.clear('dashboardFees');
     } catch {}
+  };
+
+  // Handle fees form submit
+  const handleFeesSubmit = async (config: FeesConfig, computed: { monthlyFixed: number; monthlyBudget: number }) => {
+    setFeesConfig(config);
+    try {
+      await secureHealthcareStorage.storeTemporary('dashboardFees', { config, computed, savedAt: new Date().toISOString() });
+    } catch {}
+    setShowFeesForm(false);
+    setShowDashboard(true);
   };
 
   // Advanced component handlers
@@ -215,6 +231,31 @@ const Home: React.FC = () => {
 
   // Filtered datasets by selected range
   const filteredBudget = filterRowsByRange(budgetData?.rows || [], monthsTimeline, dateRange);
+
+  // Apply computed overrides from fees form when present
+  const effectiveBudget = React.useMemo(() => {
+    if (!feesConfig) return filteredBudget;
+    const employees = feesConfig.employees || 0;
+    const members = feesConfig.members || 0;
+    const monthlyFromBasis = (amount: number, basis: string) => {
+      switch (basis) {
+        case 'PMPM': return amount * Math.max(0, Math.floor(members));
+        case 'PEPM': return amount * Math.max(0, Math.floor(employees));
+        case 'Annual': return amount / 12;
+        case 'Monthly':
+        default: return amount;
+      }
+    };
+    const monthlyFixed = (feesConfig.fees || []).reduce((sum, f) => sum + monthlyFromBasis(f.amount || 0, f.basis), 0);
+    const monthlyBudget = feesConfig.budgetOverride ? monthlyFromBasis(feesConfig.budgetOverride.amount || 0, feesConfig.budgetOverride.basis) : 0;
+    const reimb = feesConfig.stopLossReimb || 0;
+    return (filteredBudget || []).map((row: any) => ({
+      ...row,
+      'Computed Fixed Cost': monthlyFixed,
+      'Computed Budget': monthlyBudget > 0 ? monthlyBudget : row['Budget'] || row['budget'] || 0,
+      'Computed Stop Loss Reimb': reimb,
+    }));
+  }, [filteredBudget, feesConfig]);
   const filteredClaims = filterRowsByRange(claimsData?.rows || [], monthsTimeline, dateRange);
 
   return (
@@ -234,10 +275,19 @@ const Home: React.FC = () => {
             exit={{ opacity: 0 }}
             className="relative"
           >
-            <DualCSVLoader
-              onBothFilesLoaded={handleBothFilesLoaded}
-              onError={handleError}
-            />
+            {!showFeesForm ? (
+              <DualCSVLoader
+                onBothFilesLoaded={handleBothFilesLoaded}
+                onError={handleError}
+              />
+            ) : (
+              <FeesConfigurator
+                defaultEmployees={parseNumericValue((budgetData?.rows || []).slice(-1)[0]?.['Employee Count'] as any) || 0}
+                defaultMembers={parseNumericValue((budgetData?.rows || []).slice(-1)[0]?.['Member Count'] as any) || parseNumericValue((budgetData?.rows || []).slice(-1)[0]?.['Enrollment'] as any) || 0}
+                defaultBudget={parseNumericValue((budgetData?.rows || []).slice(-1)[0]?.['Budget'] as any) || 0}
+                onSubmit={handleFeesSubmit}
+              />
+            )}
             
             {/* Premium Loading Animation */}
             {isLoading && (
@@ -433,7 +483,7 @@ const Home: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <PremiumDashboardCard
                   title="Total Budget"
-                  value={filteredBudget?.reduce((sum, row) => sum + (parseFloat(row['Budget']) || 0), 0) || 0}
+                  value={(effectiveBudget || []).reduce((sum: number, row: any) => sum + (parseNumericValue((row['Computed Budget'] as any) ?? (row['Budget'] as any)) || 0), 0) || 0}
                   format="currency"
                   icon={DollarSign}
                   variant="premium"
@@ -485,7 +535,7 @@ const Home: React.FC = () => {
                     transition={{ duration: 0.3 }}
                   >
                     <FinancialDataTable 
-                      budgetData={filteredBudget} 
+                      budgetData={effectiveBudget} 
                       claimsData={filteredClaims}
                     />
                   </motion.div>
@@ -503,8 +553,8 @@ const Home: React.FC = () => {
                 <MotionCard delay={0.1}>
                   <LazyChartWrapper chartName="Enterprise Budget vs Expenses">
                     <EChartsEnterpriseChart 
-                      data={filteredBudget} 
-                      rollingMonths={filteredBudget.length}
+                      data={effectiveBudget} 
+                      rollingMonths={effectiveBudget.length}
                       enableWebGL={true}
                       streamingData={true}
                       maxDataPoints={10000}
@@ -541,8 +591,8 @@ const Home: React.FC = () => {
 
                 {/* Tile 5: Premium Enrollment Chart */}
                 <PremiumEnrollmentChart 
-                  data={filteredBudget} 
-                  rollingMonths={filteredBudget.length}
+                  data={effectiveBudget} 
+                  rollingMonths={effectiveBudget.length}
                 />
 
                 {/* Tile 6: Geographic Analytics Preview */}

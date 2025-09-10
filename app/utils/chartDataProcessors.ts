@@ -42,6 +42,13 @@ export const parseNumericValue = (value: string | number | null | undefined): nu
 
 // Helper function to find and sum admin and stop loss fees
 const sumAdminAndStopLossFees = (row: RawDataRow): number => {
+  // Prefer explicit computed override if present
+  for (const key of Object.keys(row)) {
+    const k = key.toLowerCase();
+    if (k === 'computed fixed cost' || k === 'fixed cost (computed)') {
+      return parseNumericValue(row[key]);
+    }
+  }
   let total = 0;
   
   // Define explicit sets of column patterns to avoid false positives
@@ -111,14 +118,24 @@ export const processFinancialData = (
       return 0;
     };
     
+    // Allow overrides for budget and reimb via computed columns
+    const computedBudget = (() => {
+      const entry = Object.keys(row).find(k => k.toLowerCase() === 'computed budget');
+      return entry ? parseNumericValue(row[entry]) : undefined;
+    })();
+    const computedReimb = (() => {
+      const entry = Object.keys(row).find(k => k.toLowerCase().includes('computed stop loss reimb'));
+      return entry ? parseNumericValue(row[entry]) : undefined;
+    })();
+
     return {
       month: String(row.month || row.Month || row.period || row.Period || ''),
       totalFixedCost: sumAdminAndStopLossFees(row),
-      stopLossReimb: findColumn(['stop loss reimb', 'stop loss reimbursement', 'stoploss reimb']),
+      stopLossReimb: computedReimb ?? findColumn(['stop loss reimb', 'stop loss reimbursement', 'stoploss reimb']),
       rxRebates: findColumn(['rx rebate', 'pharmacy rebate', 'prescription rebate']),
       medicalClaims: findColumn(['medical claims', 'medical claim', 'claims medical']),
       rx: Math.max(0, findColumn(['rx total', 'pharmacy total', 'prescription total', 'rx', 'pharmacy']) - findColumn(['rx rebate', 'pharmacy rebate'])), // Ensure positive result
-      budget: findColumn(['budget', 'target', 'plan']),
+      budget: computedBudget ?? findColumn(['budget', 'target', 'plan']),
     };
   });
   
