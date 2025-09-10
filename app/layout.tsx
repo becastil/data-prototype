@@ -1,4 +1,3 @@
-import './wdyr';
 import type { Metadata } from "next";
 import "./globals.css";
 import { lightTheme, darkTheme } from './styles';
@@ -12,6 +11,7 @@ export const metadata: Metadata = {
 };
 
 import ClientProviders from './providers';
+import DevTools from './DevTools';
 
 export default function RootLayout({
   children,
@@ -32,6 +32,7 @@ export default function RootLayout({
         <meta name="color-scheme" content="light dark" />
       </head>
       <body className="antialiased">
+        {process.env.NODE_ENV === 'development' ? <DevTools /> : null}
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 bg-black text-white px-4 py-2 rounded font-medium transition-all duration-200"
