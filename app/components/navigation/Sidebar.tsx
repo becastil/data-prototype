@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import AccessibleIcon from './AccessibleIcon';
+import AccessibleIcon from '@/app/components/accessibility/AccessibleIcon';
 import {
   Home,
   BarChart3,

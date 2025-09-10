@@ -16,9 +16,9 @@ import {
 } from 'lucide-react';
 
 // Import existing chart components
-import { EChartsEnterpriseChart } from '@/app/components/charts/EChartsEnterpriseChart';
-import { PremiumEnrollmentChart } from '@/app/components/charts/PremiumEnrollmentChart';
-import { MorphingChart } from '@/app/components/charts/MorphingChart';
+import EChartsEnterpriseChart from '@/app/components/charts/EChartsEnterpriseChart';
+import PremiumEnrollmentChart from '@/app/components/charts/PremiumEnrollmentChart';
+import MorphingChart from '@/app/components/charts/MorphingChart';
 
 export interface ChartCardProps {
   card: CardType;

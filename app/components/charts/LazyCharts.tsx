@@ -12,7 +12,6 @@ const EChartsEnterpriseChart = dynamic(
   () => import('./EChartsEnterpriseChart'),
   {
     ssr: false, // ECharts requires client-side rendering
-    suspense: true,
   }
 );
 
@@ -21,7 +20,6 @@ const GiftedStackedBarChart = dynamic(
   () => import('./gifted/GiftedStackedBarChart'),
   {
     ssr: false,
-    suspense: true,
   }
 );
 
@@ -29,7 +27,6 @@ const HighCostClaimantBandChart = dynamic(
   () => import('./gifted/HighCostClaimantBandChart'),
   {
     ssr: false,
-    suspense: true,
   }
 );
 
@@ -37,7 +34,6 @@ const ClaimsBreakdownPieChart = dynamic(
   () => import('./gifted/ClaimsBreakdownPieChart'),
   {
     ssr: false,
-    suspense: true,
   }
 );
 
@@ -45,7 +41,6 @@ const GiftedEnrollmentChart = dynamic(
   () => import('./gifted/GiftedEnrollmentChart'),
   {
     ssr: false,
-    suspense: true,
   }
 );
 
@@ -54,7 +49,6 @@ const HCCDataTable = dynamic(
   () => import('@components/data/HCCDataTable'),
   {
     ssr: false,
-    suspense: true,
   }
 );
 

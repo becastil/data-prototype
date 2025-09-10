@@ -18,8 +18,8 @@ import {
 
 // Import existing table components
 import { ClaimsExpensesTable } from '@/app/components/data/ClaimsExpensesTable';
-import { FinancialDataTable } from '@/app/components/data/FinancialDataTable';
-import { HCCDataTable } from '@/app/components/data/HCCDataTable';
+import FinancialDataTable from '@/app/components/data/FinancialDataTable';
+import HCCDataTable from '@/app/components/data/HCCDataTable';
 
 export interface TableCardProps {
   card: CardType;
