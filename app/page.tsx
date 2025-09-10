@@ -11,7 +11,10 @@ const devWarn = (...args: any[]) => isDev && console.warn(...args);
 import { motion, AnimatePresence } from 'framer-motion';
 import DualCSVLoader from '@components/loaders/DualCSVLoader';
 import {
-  EChartsEnterpriseChart,
+  GiftedStackedBarChart,
+  HighCostClaimantBandChart,
+  ClaimsBreakdownPieChart,
+  GiftedEnrollmentChart,
   HCCDataTable,
   LazyChartWrapper
 } from '@components/charts/LazyCharts';
@@ -608,35 +611,32 @@ const Home: React.FC = () => {
                     ref={chartsGridRef}
                     className="grid grid-cols-1 lg:grid-cols-2 gap-6"
                   >
-                {/* Tile 1: Enterprise Budget vs Expenses Chart with ECharts WebGL */}
+                {/* Tile 1: Budget vs Expenses Stacked Bar Chart */}
                 <MotionCard delay={0.1}>
-                  <LazyChartWrapper chartName="Enterprise Budget vs Expenses">
-                    <EChartsEnterpriseChart 
+                  <LazyChartWrapper chartName="Budget vs Expenses">
+                    <GiftedStackedBarChart 
                       data={effectiveBudget} 
                       rollingMonths={effectiveBudget.length}
-                      enableWebGL={true}
-                      streamingData={true}
-                      maxDataPoints={10000}
                     />
                   </LazyChartWrapper>
                 </MotionCard>
 
-                {/* Tile 2: Claims Analytics Preview */}
+                {/* Tile 2: High Cost Claimant Distribution */}
                 <MotionCard delay={0.2}>
-                  <GlassCard variant="elevated" className="p-6 h-[400px] flex flex-col justify-center text-center">
-                    <div className="text-6xl mb-4">📊</div>
-                    <h3 className="text-lg font-semibold mb-2">Claims Analytics</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Advanced claims breakdown analysis coming soon</p>
-                  </GlassCard>
+                  <LazyChartWrapper chartName="High Cost Claimant Bands">
+                    <HighCostClaimantBandChart 
+                      data={filteredClaims}
+                    />
+                  </LazyChartWrapper>
                 </MotionCard>
 
-                {/* Tile 3: Medical Claims Preview */}
+                {/* Tile 3: Claims Breakdown by Type */}
                 <MotionCard delay={0.3}>
-                  <GlassCard variant="elevated" className="p-6 h-[400px] flex flex-col justify-center text-center">
-                    <div className="text-6xl mb-4">🏥</div>
-                    <h3 className="text-lg font-semibold mb-2">Medical Claims</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Medical claims breakdown visualization coming soon</p>
-                  </GlassCard>
+                  <LazyChartWrapper chartName="Claims Breakdown">
+                    <ClaimsBreakdownPieChart 
+                      data={effectiveBudget}
+                    />
+                  </LazyChartWrapper>
                 </MotionCard>
 
                 {/* Tile 4: Cost Analysis Preview */}
@@ -648,11 +648,15 @@ const Home: React.FC = () => {
                   </GlassCard>
                 </MotionCard>
 
-                {/* Tile 5: Premium Enrollment Chart */}
-                <PremiumEnrollmentChart 
-                  data={effectiveBudget} 
-                  rollingMonths={effectiveBudget.length}
-                />
+                {/* Tile 5: Enrollment Trends */}
+                <MotionCard delay={0.5}>
+                  <LazyChartWrapper chartName="Enrollment Trends">
+                    <GiftedEnrollmentChart 
+                      data={effectiveBudget} 
+                      rollingMonths={effectiveBudget.length}
+                    />
+                  </LazyChartWrapper>
+                </MotionCard>
 
                 {/* Tile 6: Geographic Analytics Preview */}
                 <MotionCard delay={0.6}>

@@ -6,6 +6,8 @@ import { Suspense } from 'react';
 import { motion } from 'framer-motion';
 
 // Dynamic imports for code splitting - reduces initial bundle size
+
+// Legacy ECharts components (will be removed)
 const EChartsEnterpriseChart = dynamic(
   () => import('./EChartsEnterpriseChart'),
   {
@@ -14,6 +16,40 @@ const EChartsEnterpriseChart = dynamic(
   }
 );
 
+// New Gifted Charts components
+const GiftedStackedBarChart = dynamic(
+  () => import('./gifted/GiftedStackedBarChart'),
+  {
+    ssr: false,
+    suspense: true,
+  }
+);
+
+const HighCostClaimantBandChart = dynamic(
+  () => import('./gifted/HighCostClaimantBandChart'),
+  {
+    ssr: false,
+    suspense: true,
+  }
+);
+
+const ClaimsBreakdownPieChart = dynamic(
+  () => import('./gifted/ClaimsBreakdownPieChart'),
+  {
+    ssr: false,
+    suspense: true,
+  }
+);
+
+const GiftedEnrollmentChart = dynamic(
+  () => import('./gifted/GiftedEnrollmentChart'),
+  {
+    ssr: false,
+    suspense: true,
+  }
+);
+
+// Data components
 const HCCDataTable = dynamic(
   () => import('@components/data/HCCDataTable'),
   {
@@ -127,8 +163,19 @@ const LazyChartWrapper = ({
 
 // Export all lazy-loaded components
 export {
+  // Legacy ECharts (will be removed)
   EChartsEnterpriseChart,
+  
+  // New Gifted Charts components
+  GiftedStackedBarChart,
+  HighCostClaimantBandChart,
+  ClaimsBreakdownPieChart,
+  GiftedEnrollmentChart,
+  
+  // Data components
   HCCDataTable,
+  
+  // Utility components
   LazyChartWrapper,
   ChartLoadingSkeleton
 };
