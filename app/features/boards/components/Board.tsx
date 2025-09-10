@@ -13,6 +13,7 @@ import BoardHeader from './BoardHeader';
 import BoardList from './List';
 import BoardCard from './Card';
 import { GlassCard } from '@/app/components/ui/glass-card';
+import HealthcareDataProvider from './analytics/HealthcareDataProvider';
 
 // Trello-inspired styling with healthcare optimizations
 const boardStyles = {
@@ -234,15 +235,16 @@ const Board: React.FC<BoardProps> = memo(({
   }
   
   return (
-    <div 
-      ref={containerRef}
-      className={cn(boardStyles.container, boardStyles.background, className)}
-      data-board-container
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
-      role="main"
-      aria-label={`Board: ${currentBoard.title}`}
-    >
+    <HealthcareDataProvider>
+      <div 
+        ref={containerRef}
+        className={cn(boardStyles.container, boardStyles.background, className)}
+        data-board-container
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        role="main"
+        aria-label={`Board: ${currentBoard.title}`}
+      >
       {/* HIPAA Compliance indicator */}
       {complianceMode && currentBoard.settings.hipaaMode && (
         <div className="absolute top-0 left-0 right-0 bg-blue-600 text-white text-xs text-center py-1 z-50">
@@ -365,7 +367,8 @@ const Board: React.FC<BoardProps> = memo(({
           Performance Mode Active
         </div>
       )}
-    </div>
+      </div>
+    </HealthcareDataProvider>
   );
 });
 

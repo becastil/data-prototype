@@ -800,6 +800,136 @@ input, textarea, select {
   border: 1px solid var(--status-warning-light);
 }
 
+/* --- Form Input Overrides (High-Contrast, Always White) ---
+   Enforces white backgrounds, dark text, and light gray borders
+   across inputs, selects, and textareas with hover/focus states.
+   Uses !important to override any existing dark styling. */
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form input[type="search"],
+form input[type="tel"],
+form input[type="url"],
+form input[type="number"],
+form input[type="date"],
+form input[type="time"],
+form input[type="month"],
+form input[type="week"],
+form input[type="datetime-local"],
+form input:not([type]),
+form textarea,
+form select {
+  background-color: #FFFFFF !important; /* White background */
+  color: #172B4D !important;            /* Dark navy text */
+  border: 1px solid #DFE1E6 !important; /* Light gray border */
+  border-radius: 6px;
+  padding: 10px 12px;
+  line-height: 1.4;
+  background-image: none !important;    /* Remove gradients */
+  box-shadow: none !important;          /* Reset theme glows */
+  outline: none !important;             /* Custom focus ring below */
+  transition: border-color .15s ease,
+              box-shadow .15s ease,
+              background-color .15s ease,
+              color .15s ease;
+  background-clip: padding-box;
+}
+
+/* Placeholder color */
+form input::placeholder,
+form textarea::placeholder {
+  color: #6B778C !important;
+  opacity: 1; /* Firefox */
+}
+
+/* Hover state */
+form input[type="text"]:hover,
+form input[type="email"]:hover,
+form input[type="password"]:hover,
+form input[type="search"]:hover,
+form input[type="tel"]:hover,
+form input[type="url"]:hover,
+form input[type="number"]:hover,
+form input[type="date"]:hover,
+form input[type="time"]:hover,
+form input[type="month"]:hover,
+form input[type="week"]:hover,
+form input[type="datetime-local"]:hover,
+form input:not([type]):hover,
+form textarea:hover,
+form select:hover {
+  border-color: #C1C7D0 !important; /* Slightly darker on hover */
+}
+
+/* Focus state */
+form input[type="text"]:focus,
+form input[type="email"]:focus,
+form input[type="password"]:focus,
+form input[type="search"]:focus,
+form input[type="tel"]:focus,
+form input[type="url"]:focus,
+form input[type="number"]:focus,
+form input[type="date"]:focus,
+form input[type="time"]:focus,
+form input[type="month"]:focus,
+form input[type="week"]:focus,
+form input[type="datetime-local"]:focus,
+form input:not([type]):focus,
+form textarea:focus,
+form select:focus,
+form input[type="text"]:focus-visible,
+form input[type="email"]:focus-visible,
+form input[type="password"]:focus-visible,
+form input[type="search"]:focus-visible,
+form input[type="tel"]:focus-visible,
+form input[type="url"]:focus-visible,
+form input[type="number"]:focus-visible,
+form input[type="date"]:focus-visible,
+form input[type="time"]:focus-visible,
+form input[type="month"]:focus-visible,
+form input[type="week"]:focus-visible,
+form input[type="datetime-local"]:focus-visible,
+form input:not([type]):focus-visible,
+form textarea:focus-visible,
+form select:focus-visible {
+  border-color: #0079BF !important; /* Blue border */
+  box-shadow: 0 0 0 3px rgba(0, 121, 191, 0.20) !important; /* Accessible focus ring */
+}
+
+/* Disabled / Readonly */
+form input:disabled,
+form textarea:disabled,
+form select:disabled,
+form input[readonly],
+form textarea[readonly] {
+  background-color: #F4F5F7 !important;
+  color: #A5ADBA !important;
+  border-color: #DFE1E6 !important;
+  cursor: not-allowed;
+}
+
+/* Chrome/Safari autofill */
+form input:-webkit-autofill,
+form textarea:-webkit-autofill,
+form select:-webkit-autofill {
+  -webkit-text-fill-color: #172B4D !important;
+  caret-color: #172B4D !important;
+  box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+  border: 1px solid #DFE1E6 !important;
+}
+form input:-webkit-autofill:focus,
+form textarea:-webkit-autofill:focus,
+form select:-webkit-autofill:focus {
+  border-color: #0079BF !important;
+  box-shadow:
+    0 0 0 1000px #FFFFFF inset !important,
+    0 0 0 3px rgba(0, 121, 191, 0.20) !important;
+  -webkit-box-shadow:
+    0 0 0 1000px #FFFFFF inset !important,
+    0 0 0 3px rgba(0, 121, 191, 0.20) !important;
+}
+
 .badge-danger {
   background: var(--status-danger-bg);
   color: var(--status-danger);
