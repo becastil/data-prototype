@@ -11,3 +11,4 @@ Error: listen EADDRINUSE: address already in use :::3005
  GET / 200 in 137696ms
  ✓ Compiled in 6.9s (1482 modules)
  GET / 200 in 624ms
+ ✓ Compiled in 15.5s (1482 modules)

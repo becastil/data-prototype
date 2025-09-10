@@ -93,7 +93,7 @@ export default function FeesConfigurator({
   const canContinue = fees.every(f => Number.isFinite(f.amount)) && Number.isFinite(budgetAmount);
 
   return (
-    <div className="min-h-screen bg-[#f5f7fa] p-6">
+    <div className="min-h-screen bg-[#f5f7fa] p-6 fees-configurator">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold mb-2">Configure Fees & Budget</h2>
         <details className="mb-4">
@@ -138,7 +138,7 @@ export default function FeesConfigurator({
                 <div className="col-span-4">
                   <label className="block text-sm text-gray-600 mb-1">Label</label>
                   <Input 
-                    className="h-10 text-base border-[#e0e0e0] placeholder:text-gray-400 focus:border-[#6FACDE] focus:ring-[#A4CBE1]"
+                    className="h-10 text-base"
                     value={f.label} 
                     placeholder="e.g. Admin Fee"
                     onChange={(e) => updateFee(i, { label: e.target.value })} 
@@ -148,7 +148,7 @@ export default function FeesConfigurator({
                   <label className="block text-sm text-gray-600 mb-1">Amount</label>
                   <Input 
                     type="number"
-                    className="h-10 text-base border-[#e0e0e0] placeholder:text-gray-400 focus:border-[#6FACDE] focus:ring-[#A4CBE1]"
+                    className="h-10 text-base"
                     value={f.amount}
                     onChange={(e) => updateFee(i, { amount: toNumber(e.target.value) })}
                     placeholder="e.g. 25" 
@@ -157,7 +157,7 @@ export default function FeesConfigurator({
                 <div className="col-span-3">
                   <label className="block text-sm text-gray-600 mb-1">Basis</label>
                   <select 
-                    className="w-full h-10 border border-[#e0e0e0] rounded-md px-3 py-2 text-base bg-white focus:outline-none focus:border-[#6FACDE] focus:ring-2 focus:ring-[#A4CBE1] transition-colors"
+                    className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-base bg-white text-black focus:outline-none focus:border-black transition-colors"
                     value={f.basis}
                     onChange={(e) => updateFee(i, { basis: e.target.value as RateBasis })}
                   >
@@ -194,7 +194,7 @@ export default function FeesConfigurator({
               <label className="block text-sm text-gray-600 mb-1">Budget Amount</label>
               <Input 
                 type="number" 
-                className="h-10 text-base border-[#e0e0e0] placeholder:text-gray-400 focus:border-[#6FACDE] focus:ring-[#A4CBE1]"
+                className="h-10 text-base"
                 value={budgetAmount}
                 onChange={(e) => setBudgetAmount(toNumber(e.target.value))}
                 placeholder="e.g. 250000" 
@@ -203,7 +203,7 @@ export default function FeesConfigurator({
             <div>
               <label className="block text-sm text-gray-600 mb-1">Budget Basis</label>
               <select 
-                className="w-full h-10 border border-[#e0e0e0] rounded-md px-3 py-2 text-base bg-white focus:outline-none focus:border-[#6FACDE] focus:ring-2 focus:ring-[#A4CBE1] transition-colors"
+                className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-base bg-white text-black focus:outline-none focus:border-black transition-colors"
                 value={budgetBasis}
                 onChange={(e) => setBudgetBasis(e.target.value as RateBasis)}
               >
@@ -217,7 +217,7 @@ export default function FeesConfigurator({
               <label className="block text-sm text-gray-600 mb-1">Stop Loss Reimbursements (month)</label>
               <Input 
                 type="number" 
-                className="h-10 text-base border-[#e0e0e0] placeholder:text-gray-400 focus:border-[#6FACDE] focus:ring-[#A4CBE1]"
+                className="h-10 text-base"
                 value={stopLossReimb}
                 onChange={(e) => setStopLossReimb(toNumber(e.target.value))}
                 placeholder="e.g. 50000" 
