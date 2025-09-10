@@ -298,7 +298,7 @@ const Home: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="min-h-screen bg-premium-healthcare p-6"
+              className="min-h-screen bg-white dark:bg-gray-900 p-6"
             >
               {/* Header */}
               <div className="max-w-7xl mx-auto mb-6">

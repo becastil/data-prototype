@@ -129,8 +129,8 @@ const LottieLoader: React.FC<LottieLoaderProps> = ({
             sizes[size],
             className
           )}>
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-spin opacity-20" />
-            <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 rounded-full w-6 h-6">
+            <div className="absolute inset-0 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full animate-spin opacity-20" />
+            <div className="relative bg-gradient-to-r from-gray-500 to-gray-600 rounded-full w-6 h-6">
               <div className="absolute inset-1 bg-white rounded-full animate-pulse" />
             </div>
           </div>

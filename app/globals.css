@@ -633,15 +633,12 @@ input, textarea, select {
   position: relative;
 }
 
-/* CEO Dashboard Gradient - Vibrant */
+/* Clean Header Gradients */
 .gradient-ceo-vibrant {
   background: linear-gradient(135deg,
-    #FF6B6B 0%,      /* Coral/Pink */
-    #FF6B9D 20%,     /* Pink */
-    #C44BC2 40%,     /* Purple */
-    #8B5CF6 60%,     /* Violet */
-    #7C3AED 80%,     /* Purple-Blue */
-    #3B82F6 100%     /* Blue */
+    #0032E1 0%,      /* Dark blue brand */
+    #4A69E5 50%,     /* Light blue */
+    #0032E1 100%     /* Dark blue brand */
   );
   min-height: 120px;
   position: relative;
@@ -649,14 +646,9 @@ input, textarea, select {
 
 .gradient-ceo-header {
   background: linear-gradient(90deg,
-    #FF6B6B 0%,      /* Coral */
-    #FF6B9D 15%,     /* Pink */
-    #C44BC2 30%,     /* Purple */
-    #8B5CF6 45%,     /* Violet */
-    #7C3AED 60%,     /* Purple-Blue */
-    #6366F1 75%,     /* Indigo */
-    #3B82F6 90%,     /* Blue */
-    #06B6D4 100%     /* Cyan */
+    #0032E1 0%,      /* Dark blue brand */
+    #4A69E5 50%,     /* Light blue */
+    #0032E1 100%     /* Dark blue brand */
   );
   position: relative;
 }
@@ -1458,11 +1450,11 @@ button,
   --glass-border: rgba(255, 255, 255, 0.3);
   --glass-border-dark: rgba(0, 0, 0, 0.1);
   
-  /* Premium Gradients */
-  --gradient-medical: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-health: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --gradient-analytics: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  --gradient-premium: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  /* Clean Gradients - Content First */
+  --gradient-medical: linear-gradient(135deg, #0032E1 0%, #0028BC 100%);
+  --gradient-health: linear-gradient(135deg, #F5F5F5 0%, #E0E0E0 100%);
+  --gradient-analytics: linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%);
+  --gradient-premium: linear-gradient(135deg, #0032E1 0%, #4A69E5 100%);
   --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
 }
 
@@ -1783,7 +1775,7 @@ button,
 }
 
 .bg-premium-healthcare {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+  background: linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 50%, #FFFFFF 100%);
   background-size: 400% 400%;
   animation: gradient-float 8s ease infinite;
   min-height: 100vh;

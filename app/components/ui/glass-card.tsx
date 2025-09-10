@@ -16,7 +16,7 @@ const glassVariants = {
   default: "bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10",
   elevated: "bg-white/15 dark:bg-white/8 border-white/30 dark:border-white/15",
   subtle: "bg-white/5 dark:bg-white/3 border-white/10 dark:border-white/5",
-  vibrant: "bg-gradient-to-br from-blue-500/10 to-purple-500/10 dark:from-blue-400/8 dark:to-purple-400/8 border-white/20 dark:border-white/10"
+  vibrant: "bg-gradient-to-br from-gray-100/10 to-gray-200/10 dark:from-gray-600/8 dark:to-gray-700/8 border-white/20 dark:border-white/10"
 };
 
 const blurLevels = {
@@ -113,7 +113,7 @@ const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(({
       
       {/* Optional glow border */}
       {glow && (
-        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-400/20 to-purple-400/20 blur-sm -z-10" />
+        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-gray-300/20 to-gray-400/20 blur-sm -z-10" />
       )}
     </motion.div>
   );
