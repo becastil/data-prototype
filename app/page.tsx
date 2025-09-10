@@ -11,10 +11,7 @@ const devWarn = (...args: any[]) => isDev && console.warn(...args);
 import { motion, AnimatePresence } from 'framer-motion';
 import DualCSVLoader from '@components/loaders/DualCSVLoader';
 import {
-  GiftedStackedBarChart,
-  HighCostClaimantBandChart,
-  ClaimsBreakdownPieChart,
-  GiftedEnrollmentChart,
+  EChartsEnterpriseChart,
   HCCDataTable,
   LazyChartWrapper
 } from '@components/charts/LazyCharts';
@@ -611,31 +608,10 @@ const Home: React.FC = () => {
                     ref={chartsGridRef}
                     className="grid grid-cols-1 lg:grid-cols-2 gap-6"
                   >
-                {/* Tile 1: Budget vs Expenses Stacked Bar Chart */}
+                {/* Tile 1: Budget vs Expenses (ECharts) */}
                 <MotionCard delay={0.1}>
                   <LazyChartWrapper chartName="Budget vs Expenses">
-                    <GiftedStackedBarChart 
-                      data={effectiveBudget} 
-                      rollingMonths={effectiveBudget.length}
-                    />
-                  </LazyChartWrapper>
-                </MotionCard>
-
-                {/* Tile 2: High Cost Claimant Distribution */}
-                <MotionCard delay={0.2}>
-                  <LazyChartWrapper chartName="High Cost Claimant Bands">
-                    <HighCostClaimantBandChart 
-                      data={filteredClaims}
-                    />
-                  </LazyChartWrapper>
-                </MotionCard>
-
-                {/* Tile 3: Claims Breakdown by Type */}
-                <MotionCard delay={0.3}>
-                  <LazyChartWrapper chartName="Claims Breakdown">
-                    <ClaimsBreakdownPieChart 
-                      data={effectiveBudget}
-                    />
+                    <EChartsEnterpriseChart data={effectiveBudget} rollingMonths={effectiveBudget.length} />
                   </LazyChartWrapper>
                 </MotionCard>
 
@@ -648,13 +624,10 @@ const Home: React.FC = () => {
                   </GlassCard>
                 </MotionCard>
 
-                {/* Tile 5: Enrollment Trends */}
+                {/* Tile 5: Enrollment Trends (ECharts) */}
                 <MotionCard delay={0.5}>
                   <LazyChartWrapper chartName="Enrollment Trends">
-                    <GiftedEnrollmentChart 
-                      data={effectiveBudget} 
-                      rollingMonths={effectiveBudget.length}
-                    />
+                    <PremiumEnrollmentChart data={effectiveBudget} rollingMonths={effectiveBudget.length} />
                   </LazyChartWrapper>
                 </MotionCard>
 

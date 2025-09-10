@@ -15,34 +15,7 @@ const EChartsEnterpriseChart = dynamic(
   }
 );
 
-// New Gifted Charts components
-const GiftedStackedBarChart = dynamic(
-  () => import('./gifted/GiftedStackedBarChart'),
-  {
-    ssr: false,
-  }
-);
-
-const HighCostClaimantBandChart = dynamic(
-  () => import('./gifted/HighCostClaimantBandChart'),
-  {
-    ssr: false,
-  }
-);
-
-const ClaimsBreakdownPieChart = dynamic(
-  () => import('./gifted/ClaimsBreakdownPieChart'),
-  {
-    ssr: false,
-  }
-);
-
-const GiftedEnrollmentChart = dynamic(
-  () => import('./gifted/GiftedEnrollmentChart'),
-  {
-    ssr: false,
-  }
-);
+// Note: Gifted Charts temporarily removed due to peer dependency conflicts
 
 // Data components
 const HCCDataTable = dynamic(
@@ -159,12 +132,6 @@ const LazyChartWrapper = ({
 export {
   // Legacy ECharts (will be removed)
   EChartsEnterpriseChart,
-  
-  // New Gifted Charts components
-  GiftedStackedBarChart,
-  HighCostClaimantBandChart,
-  ClaimsBreakdownPieChart,
-  GiftedEnrollmentChart,
   
   // Data components
   HCCDataTable,
