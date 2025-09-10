@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
+import { Plus, X } from 'lucide-react';
 import { GlassCard } from '@/app/components/ui/glass-card';
 
 export type RateBasis = 'PMPM' | 'PEPM' | 'Monthly' | 'Annual';
@@ -92,13 +93,18 @@ export default function FeesConfigurator({
   const canContinue = fees.every(f => Number.isFinite(f.amount)) && Number.isFinite(budgetAmount);
 
   return (
-    <div className="min-h-screen bg-[#FFFDF5] p-6">
+    <div className="min-h-screen bg-[#f5f7fa] p-6">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold mb-4">Configure Fees & Budget</h2>
-        <p className="text-gray-700 mb-6">Enter your fees and basis. Enrollment and employees are read from your CSV per month automatically.</p>
+        <h2 className="text-2xl font-bold mb-2">Configure Fees & Budget</h2>
+        <details className="mb-4">
+          <summary className="text-sm text-[#00263E] cursor-pointer">What is this?</summary>
+          <div className="mt-2 text-sm text-gray-600">
+            Enter fees with a basis (PMPM/PEPM/Monthly/Annual). We compute monthly totals per month using your CSV’s enrollment data.
+          </div>
+        </details>
 
         {/* Data Source Preview (non-editable) */}
-        <GlassCard variant="subtle" className="p-6 mb-6 bg-white">
+        <GlassCard variant="subtle" className="p-6 mb-6 bg-white shadow-sm rounded-lg">
           <h3 className="text-lg font-semibold mb-2">Using CSV Enrollment</h3>
           <p className="text-sm text-gray-600">We’ll compute PMPM/PEPM values per month from your CSV. Latest known values:</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
@@ -118,44 +124,62 @@ export default function FeesConfigurator({
         </GlassCard>
 
         {/* Fees */}
-        <GlassCard variant="elevated" className="p-6 mb-6 bg-white">
+        <GlassCard variant="elevated" className="p-6 mb-6 bg-white shadow-sm rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Fees</h3>
-            <Button variant="secondary" onClick={addFee}>Add Fee</Button>
+            <Button variant="default" onClick={addFee} className="gap-2">
+              <Plus className="w-4 h-4" /> Add Fee
+            </Button>
           </div>
 
           <div className="space-y-3">
             {fees.map((f, i) => (
-              <div key={f.id} className="grid grid-cols-12 gap-3 items-end">
+              <div key={f.id} className="grid grid-cols-12 gap-3 items-end bg-white/80 p-3 rounded-md border border-[#e0e0e0]">
                 <div className="col-span-4">
                   <label className="block text-sm text-gray-600 mb-1">Label</label>
-                  <Input value={f.label} onChange={(e) => updateFee(i, { label: e.target.value })} />
+                  <Input 
+                    className="h-10 text-base border-[#e0e0e0] placeholder:text-gray-400 focus:border-[#6FACDE] focus:ring-[#A4CBE1]"
+                    value={f.label} 
+                    placeholder="e.g. Admin Fee"
+                    onChange={(e) => updateFee(i, { label: e.target.value })} 
+                  />
                 </div>
                 <div className="col-span-3">
                   <label className="block text-sm text-gray-600 mb-1">Amount</label>
-                  <Input type="number" value={f.amount}
-                         onChange={(e) => updateFee(i, { amount: toNumber(e.target.value) })}
-                         placeholder="e.g. 25" />
+                  <Input 
+                    type="number"
+                    className="h-10 text-base border-[#e0e0e0] placeholder:text-gray-400 focus:border-[#6FACDE] focus:ring-[#A4CBE1]"
+                    value={f.amount}
+                    onChange={(e) => updateFee(i, { amount: toNumber(e.target.value) })}
+                    placeholder="e.g. 25" 
+                  />
                 </div>
                 <div className="col-span-3">
                   <label className="block text-sm text-gray-600 mb-1">Basis</label>
-                  <select className="w-full border rounded-md px-3 py-2"
-                          value={f.basis}
-                          onChange={(e) => updateFee(i, { basis: e.target.value as RateBasis })}>
+                  <select 
+                    className="w-full h-10 border border-[#e0e0e0] rounded-md px-3 py-2 text-base bg-white focus:outline-none focus:border-[#6FACDE] focus:ring-2 focus:ring-[#A4CBE1] transition-colors"
+                    value={f.basis}
+                    onChange={(e) => updateFee(i, { basis: e.target.value as RateBasis })}
+                  >
                     <option value="PMPM">Per Member Per Month (PMPM)</option>
                     <option value="PEPM">Per Employee Per Month (PEPM)</option>
                     <option value="Monthly">Monthly</option>
                     <option value="Annual">Annual</option>
                   </select>
                 </div>
-                <div className="col-span-2 text-right">
+                <div className="col-span-1">
                   <label className="block text-sm text-gray-600 mb-1">Monthly</label>
-                  <div className="text-sm font-mono">
-                    ${(monthlyFromBasis(f.amount, f.basis, employees, members) || 0).toLocaleString()}
-                  </div>
+                  <div className="text-sm font-mono">${(monthlyFromBasis(f.amount, f.basis, employees, members) || 0).toLocaleString()}</div>
                 </div>
-                <div className="col-span-12 text-right">
-                  <Button variant="ghost" onClick={() => removeFee(i)}>Remove</Button>
+                <div className="col-span-1 flex justify-end pb-2">
+                  <button
+                    type="button"
+                    onClick={() => removeFee(i)}
+                    className="text-gray-500 hover:text-red-600 transition-colors"
+                    aria-label={`Remove ${f.label}`}
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
               </div>
             ))}
@@ -163,20 +187,26 @@ export default function FeesConfigurator({
         </GlassCard>
 
         {/* Budget & Stop Loss */}
-        <GlassCard variant="elevated" className="p-6 mb-6 bg-white">
+        <GlassCard variant="elevated" className="p-6 mb-6 bg-white shadow-sm rounded-lg">
           <h3 className="text-lg font-semibold mb-4">Budget & Stop Loss</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div>
               <label className="block text-sm text-gray-600 mb-1">Budget Amount</label>
-              <Input type="number" value={budgetAmount}
-                     onChange={(e) => setBudgetAmount(toNumber(e.target.value))}
-                     placeholder="e.g. 250000" />
+              <Input 
+                type="number" 
+                className="h-10 text-base border-[#e0e0e0] placeholder:text-gray-400 focus:border-[#6FACDE] focus:ring-[#A4CBE1]"
+                value={budgetAmount}
+                onChange={(e) => setBudgetAmount(toNumber(e.target.value))}
+                placeholder="e.g. 250000" 
+              />
             </div>
             <div>
               <label className="block text-sm text-gray-600 mb-1">Budget Basis</label>
-              <select className="w-full border rounded-md px-3 py-2"
-                      value={budgetBasis}
-                      onChange={(e) => setBudgetBasis(e.target.value as RateBasis)}>
+              <select 
+                className="w-full h-10 border border-[#e0e0e0] rounded-md px-3 py-2 text-base bg-white focus:outline-none focus:border-[#6FACDE] focus:ring-2 focus:ring-[#A4CBE1] transition-colors"
+                value={budgetBasis}
+                onChange={(e) => setBudgetBasis(e.target.value as RateBasis)}
+              >
                 <option value="Monthly">Monthly</option>
                 <option value="Annual">Annual</option>
                 <option value="PMPM">PMPM</option>
@@ -185,15 +215,19 @@ export default function FeesConfigurator({
             </div>
             <div>
               <label className="block text-sm text-gray-600 mb-1">Stop Loss Reimbursements (month)</label>
-              <Input type="number" value={stopLossReimb}
-                     onChange={(e) => setStopLossReimb(toNumber(e.target.value))}
-                     placeholder="e.g. 50000" />
+              <Input 
+                type="number" 
+                className="h-10 text-base border-[#e0e0e0] placeholder:text-gray-400 focus:border-[#6FACDE] focus:ring-[#A4CBE1]"
+                value={stopLossReimb}
+                onChange={(e) => setStopLossReimb(toNumber(e.target.value))}
+                placeholder="e.g. 50000" 
+              />
             </div>
           </div>
         </GlassCard>
 
         {/* Summary */}
-        <GlassCard variant="elevated" className="p-6 mb-6 bg-white">
+        <GlassCard variant="elevated" className="p-6 mb-6 bg-white shadow-sm rounded-lg">
           <h3 className="text-lg font-semibold mb-4">Summary</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 rounded-lg bg-gray-100">
