@@ -19,6 +19,7 @@ export interface FeesConfig {
   fees: FeeItem[];
   budgetOverride?: { amount: number; basis: RateBasis };
   stopLossReimb?: number; // reimbursements received for the month
+  rebates?: number; // monthly rebates received
 }
 
 function toNumber(val: string | number): number {
@@ -65,6 +66,7 @@ export default function FeesConfigurator({
   const [budgetAmount, setBudgetAmount] = useState<number>(defaultBudget || 0);
   const [budgetBasis, setBudgetBasis] = useState<RateBasis>('Monthly');
   const [stopLossReimb, setStopLossReimb] = useState<number>(0);
+  const [rebates, setRebates] = useState<number>(0);
 
   const monthlyFixed = useMemo(() => {
     return fees.reduce((sum, f) => sum + monthlyFromBasis(f.amount, f.basis, employees, members), 0);
@@ -186,10 +188,10 @@ export default function FeesConfigurator({
           </div>
         </GlassCard>
 
-        {/* Budget & Stop Loss */}
+        {/* Budget, Stop Loss & Rebates */}
         <GlassCard variant="elevated" className="p-6 mb-6 bg-white shadow-sm rounded-lg">
-          <h3 className="text-lg font-semibold mb-4 text-black">Budget & Stop Loss</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+          <h3 className="text-lg font-semibold mb-4 text-black">Budget, Stop Loss & Rebates</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
             <div>
               <label className="block text-sm text-black font-medium mb-1">Budget Amount</label>
               <Input 
@@ -223,13 +225,23 @@ export default function FeesConfigurator({
                 placeholder="e.g. 50000" 
               />
             </div>
+            <div>
+              <label className="block text-sm text-black font-medium mb-1">Rebates (month)</label>
+              <Input 
+                type="number" 
+                className="h-10 text-base"
+                value={rebates}
+                onChange={(e) => setRebates(toNumber(e.target.value))}
+                placeholder="e.g. 25000" 
+              />
+            </div>
           </div>
         </GlassCard>
 
         {/* Summary */}
         <GlassCard variant="elevated" className="p-6 mb-6 bg-white shadow-sm rounded-lg">
           <h3 className="text-lg font-semibold mb-4 text-black">Summary</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="p-4 rounded-lg bg-gray-100">
               <div className="text-xs text-black font-medium">Monthly Fixed Costs</div>
               <div className="text-xl font-bold text-black">${monthlyFixed.toLocaleString()}</div>
@@ -242,6 +254,10 @@ export default function FeesConfigurator({
               <div className="text-xs text-black font-medium">Stop Loss Reimb.</div>
               <div className="text-xl font-bold text-black">${(stopLossReimb || 0).toLocaleString()}</div>
             </div>
+            <div className="p-4 rounded-lg bg-gray-100">
+              <div className="text-xs text-black font-medium">Rebates</div>
+              <div className="text-xl font-bold text-black">${(rebates || 0).toLocaleString()}</div>
+            </div>
           </div>
         </GlassCard>
 
@@ -252,6 +268,7 @@ export default function FeesConfigurator({
                 fees,
                 budgetOverride: { amount: budgetAmount, basis: budgetBasis },
                 stopLossReimb,
+                rebates,
               },
               { monthlyFixed, monthlyBudget }
             )}
