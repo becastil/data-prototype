@@ -4,7 +4,8 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import Papa from 'papaparse';
 import { sanitizeCSVData } from '@utils/phi';
-import { Upload, FileSpreadsheet, AlertCircle, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { Upload, FileSpreadsheet, AlertCircle, CheckCircle, XCircle, Loader2, FileUp } from 'lucide-react';
+import { Button } from '@/app/components/ui/button';
 
 export interface ParsedCSVData {
   headers: string[];
@@ -27,13 +28,13 @@ type DragState = 'idle' | 'hover' | 'active';
 const dropZoneVariants: Variants = {
   idle: {
     scale: 1,
-    borderColor: 'rgb(209, 213, 219)',
-    backgroundColor: 'rgba(249, 250, 251, 0)',
+    borderColor: 'rgb(224, 224, 224)',
+    backgroundColor: 'rgba(245, 247, 250, 0.3)',
   },
   hover: {
     scale: 1.02,
-    borderColor: 'rgb(0, 0, 0)',
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    borderColor: 'rgb(111, 172, 222)',
+    backgroundColor: 'rgba(111, 172, 222, 0.08)',
     transition: {
       duration: 0.2,
       ease: 'easeInOut'
@@ -41,21 +42,21 @@ const dropZoneVariants: Variants = {
   },
   active: {
     scale: 0.98,
-    borderColor: 'rgb(51, 51, 51)',
-    backgroundColor: 'rgba(51, 51, 51, 0.1)',
+    borderColor: 'rgb(46, 75, 102)',
+    backgroundColor: 'rgba(111, 172, 222, 0.12)',
     transition: {
       duration: 0.1
     }
   },
   success: {
     scale: 1,
-    borderColor: 'rgb(0, 0, 0)',
-    backgroundColor: 'rgba(245, 245, 220, 0.3)',
+    borderColor: 'rgb(34, 197, 94)',
+    backgroundColor: 'rgba(34, 197, 94, 0.08)',
   },
   error: {
     scale: 1,
-    borderColor: 'rgb(102, 102, 102)',
-    backgroundColor: 'rgba(102, 102, 102, 0.05)',
+    borderColor: 'rgb(244, 63, 94)',
+    backgroundColor: 'rgba(244, 63, 94, 0.05)',
     x: [0, -5, 5, -5, 5, 0],
     transition: {
       x: {
@@ -241,7 +242,9 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
           rows: sanitized.rows,
           rawData: '',
           fileName: file.name,
-          rowCount: sanitized.rows.length
+          rowCount: sanitized.rows.length,
+          fileSize: file.size,
+          lastModified: file.lastModified
         };
 
         setPreviewData(parsedData);
@@ -354,13 +357,13 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
   const getIcon = () => {
     switch (loadingState) {
       case 'loading':
-        return <Loader2 className="w-12 h-12 text-gray-600" />;
+        return <Loader2 className="w-12 h-12 text-[#2E4B66]" />;
       case 'success':
-        return <CheckCircle className="w-12 h-12 text-black" />;
+        return <CheckCircle className="w-12 h-12 text-green-600" />;
       case 'error':
-        return <XCircle className="w-12 h-12 text-gray-800" />;
+        return <XCircle className="w-12 h-12 text-rose-600" />;
       default:
-        return <FileSpreadsheet className="w-12 h-12 text-gray-500" />;
+        return <FileSpreadsheet className="w-12 h-12 text-[#6B7C8C]" />;
     }
   };
 
@@ -382,7 +385,7 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
         />
         
         <motion.div
-          className="border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-colors"
+          className="border-2 border-dashed rounded-lg p-10 text-center cursor-pointer transition-colors bg-white shadow-sm"
           onDrop={handleDrop}
           onDragEnter={handleDragEnter}
           onDragOver={handleDragOver}
@@ -408,9 +411,13 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
                 {loadingState === 'idle' && 'Drop CSV file here or click to upload'}
               </p>
               
-              <p className="text-sm text-gray-500">
-                Supports .csv files up to {Math.round(maxFileSize / 1024 / 1024)}MB
-              </p>
+              <div className="text-sm text-gray-600 flex items-center justify-center gap-2">
+                <span className="inline-flex items-center gap-1 bg-[#F4F8FC] text-[#2E4B66] px-2 py-0.5 rounded border border-[#A4CBE1]">
+                  <FileUp className="w-4 h-4" /> .csv only
+                </span>
+                <span>•</span>
+                <span>Max {Math.round(maxFileSize / 1024 / 1024)}MB</span>
+              </div>
             </div>
 
             {loadingState === 'loading' && (
@@ -421,12 +428,20 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
                 transition={{ duration: 0.3 }}
               >
                 <motion.div
-                  className="h-full bg-black"
+                  className="h-full bg-[#6FACDE]"
                   initial={{ width: 0 }}
                   animate={{ width: `${uploadProgress}%` }}
                   transition={{ duration: 0.2 }}
                 />
               </motion.div>
+            )}
+
+            {loadingState !== 'loading' && (
+              <div className="pt-2">
+                <Button variant="outline" type="button" onClick={handleClick} className="rounded-md">
+                  Browse Files
+                </Button>
+              </div>
             )}
           </motion.div>
         </motion.div>
@@ -488,9 +503,19 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
               <h3 className="text-lg font-semibold text-gray-800">
                 Data Preview (First 5 rows)
               </h3>
-              <p className="text-sm text-gray-600 mt-1">
-                Total rows: {previewData.rowCount} | Columns: {previewData.headers.length}
-              </p>
+              <div className="text-sm text-gray-600 mt-1 flex flex-wrap gap-3">
+                <span>Total rows: {previewData.rowCount}</span>
+                <span>• Columns: {previewData.headers.length}</span>
+                {previewData.fileName && (
+                  <span>• File: {previewData.fileName}</span>
+                )}
+                {typeof previewData.fileSize === 'number' && (
+                  <span>• Size: {Math.round((previewData.fileSize / 1024) * 10) / 10} KB</span>
+                )}
+                {typeof previewData.lastModified === 'number' && (
+                  <span>• Modified: {new Date(previewData.lastModified).toLocaleDateString()}</span>
+                )}
+              </div>
             </div>
 
             <div className="overflow-x-auto">
@@ -548,12 +573,9 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
               <p className="text-sm text-gray-600">
                 Showing {Math.min(5, previewData.rows.length)} of {previewData.rowCount} rows
               </p>
-              <button
-                onClick={resetState}
-                className="text-sm text-black hover:text-gray-700 font-medium transition-colors"
-              >
-                Upload Another File
-              </button>
+              <Button variant="ghost" onClick={resetState} className="text-[#2E4B66] hover:text-[#00263E]">
+                Replace File
+              </Button>
             </motion.div>
           </motion.div>
         )}

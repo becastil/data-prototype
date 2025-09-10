@@ -8,6 +8,8 @@ const isDev = process.env.NODE_ENV === 'development';
 const devLog = (...args: any[]) => isDev && console.log(...args);
 const devError = (...args: any[]) => isDev && console.error(...args);
 import CSVLoader, { ParsedCSVData } from './CSVLoader';
+import { CheckCircle, Download } from 'lucide-react';
+import Link from 'next/link';
 import { validateBudgetData, validateClaimsData } from '@/app/utils/schemas';
 import { analyzeHeaders, type HeaderRequirement } from '@/app/utils/headers';
 
@@ -180,17 +182,22 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
             transition={{ delay: 0.3 }}
             className="relative"
           >
-            <div className="absolute -top-6 left-4 bg-black text-white px-4 py-1 rounded-full text-sm font-semibold z-10">
+            <div className="absolute -top-6 left-4 bg-[#6FACDE] text-[#00263E] px-4 py-1 rounded-md text-sm font-semibold z-10 shadow-sm">
               Budget & Expenses Data
             </div>
-            <div className="bg-white rounded-xl shadow-lg p-6 pt-8 border-2 border-gray-200">
+            <div className="bg-white rounded-xl shadow-lg p-6 pt-10 border border-[#e0e0e0] min-h-[480px] flex flex-col">
               <div className="mb-4">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Required Columns:</h3>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• month (for time series)</li>
-                  <li>• budget, medicalClaims, rxClaims, etc.</li>
-                  <li>• Any numeric expense columns</li>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Required Columns</h3>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>month</strong> (or <em>period</em>)</span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>budget</strong>, <strong>medical</strong>, <strong>rx</strong>, etc.</span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span>Any numeric expense columns</span></li>
                 </ul>
+                <div className="mt-3">
+                  <Link href="/sample-budget.csv" className="inline-flex items-center gap-1 text-[#2E4B66] hover:text-[#00263E] text-sm">
+                    <Download className="w-4 h-4" /> Download template
+                  </Link>
+                </div>
               </div>
               <CSVLoader
                 onDataLoaded={handleBudgetLoaded}
@@ -201,12 +208,10 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="mt-4 flex items-center justify-center text-black"
+                  className="mt-4 flex items-center justify-center text-green-700"
                 >
-                  <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="font-semibold">Budget data loaded successfully!</span>
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  <span className="font-semibold">Budget data loaded</span>
                 </motion.div>
               )}
             </div>
@@ -218,18 +223,23 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
             transition={{ delay: 0.4 }}
             className="relative"
           >
-            <div className="absolute -top-6 left-4 bg-gray-800 text-white px-4 py-1 rounded-full text-sm font-semibold z-10">
+            <div className="absolute -top-6 left-4 bg-[#2E4B66] text-white px-4 py-1 rounded-md text-sm font-semibold z-10 shadow-sm">
               Claims & HCC Data
             </div>
-            <div className="bg-white rounded-xl shadow-lg p-6 pt-8 border-2 border-gray-300">
+            <div className="bg-white rounded-xl shadow-lg p-6 pt-10 border border-[#e0e0e0] min-h-[480px] flex flex-col">
               <div className="mb-4">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Required Columns:</h3>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• Claimant Number</li>
-                  <li>• Service Type, ICD-10-CM Code</li>
-                  <li>• Medical, Rx, Total (costs)</li>
-                  <li>• Medical Description, Layman's Term</li>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Required Columns</h3>
+                <ul className="text-sm text-gray-700 space-y-1">
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Claimant Number</strong></span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Service Type</strong>, <strong>ICD-10-CM Code</strong></span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Medical</strong>, <strong>Rx</strong>, <strong>Total</strong> (costs)</span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Medical Description</strong>, <strong>Layman's Term</strong></span></li>
                 </ul>
+                <div className="mt-3">
+                  <Link href="/sample-claims.csv" className="inline-flex items-center gap-1 text-[#2E4B66] hover:text-[#00263E] text-sm">
+                    <Download className="w-4 h-4" /> Download template
+                  </Link>
+                </div>
               </div>
               <CSVLoader
                 onDataLoaded={handleClaimsLoaded}
@@ -240,12 +250,10 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="mt-4 flex items-center justify-center text-black"
+                  className="mt-4 flex items-center justify-center text-green-700"
                 >
-                  <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="font-semibold">Claims data loaded successfully!</span>
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  <span className="font-semibold">Claims data loaded</span>
                 </motion.div>
               )}
             </div>
@@ -259,7 +267,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
             className="mt-8 text-center text-gray-600"
           >
             <div className="inline-flex items-center space-x-2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#2E4B66]"></div>
               <span>Waiting for {budgetData ? 'claims' : 'budget'} data...</span>
             </div>
           </motion.div>
