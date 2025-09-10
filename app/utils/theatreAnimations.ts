@@ -1,17 +1,13 @@
 'use client';
 
 /**
- * Theatre.js Animation System - Million-Dollar UI Implementation
- * 
- * Creates frame-perfect micro-interactions that elevate the perceived value
- * of the healthcare analytics dashboard. Following Linear and Stripe patterns
- * for sophisticated, subtle animations that enhance rather than distract.
+ * Animation utilities (no-op Theatre replacement)
+ *
+ * To ensure production stability, we avoid importing @theatre/core at runtime.
+ * The exported API matches what callers expect but performs no heavy work.
  */
 
-import { getProject, types } from '@theatre/core';
-
-// Safely obtain a Theatre project; fallback to a no-op implementation
-// when @theatre/studio isn't present or state isn't provided.
+// Minimal no-op project API to satisfy callers
 type NoopProject = {
   sheet: (name: string) => { object: (id: string, _def?: any) => any };
 };
@@ -20,24 +16,13 @@ const createNoopProject = (): NoopProject => ({
   sheet: () => ({ object: () => ({}) }),
 });
 
-// Avoid calling getProject when @theatre/studio isn't present or during SSR/production.
-// This prevents the noisy "state is empty" runtime warning.
-let project: NoopProject | ReturnType<typeof getProject>;
-const isBrowser = typeof window !== 'undefined';
-const isDev = process.env.NODE_ENV === 'development';
-if (isBrowser && isDev) {
-  try {
-    project = getProject('HealthcareDashboard');
-  } catch (err) {
-    console.warn(
-      '[theatre] Studio not loaded or project state missing. Falling back to no-op project.',
-      err
-    );
-    project = createNoopProject();
-  }
-} else {
-  project = createNoopProject();
-}
+// Always use no-op project to avoid prod crashes from external libs
+const project: NoopProject = createNoopProject();
+
+// Lightweight replacement for Theatre's `types`
+const types = {
+  number: (val: number, _opts?: { range?: [number, number] }) => val,
+};
 
 /**
  * Animation Sequences - Signature micro-interactions

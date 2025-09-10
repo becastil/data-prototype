@@ -9,14 +9,16 @@ import { motion } from 'framer-motion';
 const EChartsEnterpriseChart = dynamic(
   () => import('./EChartsEnterpriseChart'),
   {
-    ssr: false // ECharts requires client-side rendering
+    ssr: false, // ECharts requires client-side rendering
+    suspense: true,
   }
 );
 
 const HCCDataTable = dynamic(
   () => import('@components/data/HCCDataTable'),
   {
-    ssr: false
+    ssr: false,
+    suspense: true,
   }
 );
 
