@@ -1,0 +1,13 @@
+
+> nextjs@0.1.0 dev
+> next dev -p 3005
+
+ ⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3005
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3005)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno:  ✓ Compiled / in 127.6s (3153 modules)
+ GET / 200 in 137696ms
+ ✓ Compiled in 6.9s (1482 modules)
+ GET / 200 in 624ms
