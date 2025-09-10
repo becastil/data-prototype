@@ -335,16 +335,16 @@ export function useDragAndDrop(config: DragAndDropConfig = {}) {
       
       switch (direction) {
         case 'up':
-          scrollContainer.scrollTop -= speed;
+          (scrollContainer as HTMLElement).scrollTop -= speed;
           break;
         case 'down':
-          scrollContainer.scrollTop += speed;
+          (scrollContainer as HTMLElement).scrollTop += speed;
           break;
         case 'left':
-          scrollContainer.scrollLeft -= speed;
+          (scrollContainer as HTMLElement).scrollLeft -= speed;
           break;
         case 'right':
-          scrollContainer.scrollLeft += speed;
+          (scrollContainer as HTMLElement).scrollLeft += speed;
           break;
       }
     }, 16); // 60fps
@@ -396,3 +396,4 @@ export function useSortableContext(items: { id: string }[], strategy: 'vertical'
     items: sortableItems,
   };
 }
+
