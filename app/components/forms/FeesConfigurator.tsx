@@ -15,8 +15,6 @@ export interface FeeItem {
 }
 
 export interface FeesConfig {
-  employees: number;
-  members: number;
   fees: FeeItem[];
   budgetOverride?: { amount: number; basis: RateBasis };
   stopLossReimb?: number; // reimbursements received for the month
@@ -50,13 +48,14 @@ export default function FeesConfigurator({
   defaultBudget = 0,
   onSubmit,
 }: {
-  defaultEmployees?: number;
-  defaultMembers?: number;
+  defaultEmployees?: number; // preview only, calculated from CSV
+  defaultMembers?: number;   // preview only, calculated from CSV
   defaultBudget?: number;
   onSubmit: (config: FeesConfig, computed: { monthlyFixed: number; monthlyBudget: number }) => void;
 }) {
-  const [employees, setEmployees] = useState<number>(defaultEmployees || 0);
-  const [members, setMembers] = useState<number>(defaultMembers || 0);
+  // Note: employees/members are not editable; we compute per-month from CSV later
+  const employees = defaultEmployees || 0;
+  const members = defaultMembers || 0;
   const [fees, setFees] = useState<FeeItem[]>([
     { id: 'admin', label: 'Admin Fee', amount: 0, basis: 'PEPM' },
     { id: 'tpa', label: 'TPA Fee', amount: 0, basis: 'PEPM' },
@@ -90,35 +89,36 @@ export default function FeesConfigurator({
     setFees(prev => prev.filter((_, i) => i !== index));
   };
 
-  const canContinue = employees >= 0 && members >= 0 && fees.every(f => Number.isFinite(f.amount)) && Number.isFinite(budgetAmount);
+  const canContinue = fees.every(f => Number.isFinite(f.amount)) && Number.isFinite(budgetAmount);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-[#FFFDF5] p-6">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold mb-4">Configure Fees & Budget</h2>
-        <p className="text-gray-600 mb-6">Enter your fees and basis. We’ll auto-calculate monthly totals and apply them to your dashboard.</p>
+        <p className="text-gray-700 mb-6">Enter your fees and basis. Enrollment and employees are read from your CSV per month automatically.</p>
 
-        {/* Exposure */}
-        <GlassCard variant="elevated" className="p-6 mb-6">
-          <h3 className="text-lg font-semibold mb-4">Exposure</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm text-gray-600 mb-1">Employees (EEs)</label>
-              <Input type="number" value={employees}
-                     onChange={(e) => setEmployees(toNumber(e.target.value))}
-                     placeholder="e.g. 500" />
+        {/* Data Source Preview (non-editable) */}
+        <GlassCard variant="subtle" className="p-6 mb-6 bg-white">
+          <h3 className="text-lg font-semibold mb-2">Using CSV Enrollment</h3>
+          <p className="text-sm text-gray-600">We’ll compute PMPM/PEPM values per month from your CSV. Latest known values:</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            <div className="p-3 rounded-lg bg-[#FFFBEB]">
+              <div className="text-xs text-gray-600">Employees (preview)</div>
+              <div className="text-lg font-semibold">{employees.toLocaleString()}</div>
             </div>
-            <div>
-              <label className="block text-sm text-gray-600 mb-1">Members (Lives)</label>
-              <Input type="number" value={members}
-                     onChange={(e) => setMembers(toNumber(e.target.value))}
-                     placeholder="e.g. 1200" />
+            <div className="p-3 rounded-lg bg-[#FFFBEB]">
+              <div className="text-xs text-gray-600">Members (preview)</div>
+              <div className="text-lg font-semibold">{members.toLocaleString()}</div>
+            </div>
+            <div className="p-3 rounded-lg bg-[#FFFBEB]">
+              <div className="text-xs text-gray-600">Budget (preview)</div>
+              <div className="text-lg font-semibold">${defaultBudget.toLocaleString()}</div>
             </div>
           </div>
         </GlassCard>
 
         {/* Fees */}
-        <GlassCard variant="elevated" className="p-6 mb-6">
+        <GlassCard variant="elevated" className="p-6 mb-6 bg-white">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Fees</h3>
             <Button variant="secondary" onClick={addFee}>Add Fee</Button>
@@ -163,7 +163,7 @@ export default function FeesConfigurator({
         </GlassCard>
 
         {/* Budget & Stop Loss */}
-        <GlassCard variant="elevated" className="p-6 mb-6">
+        <GlassCard variant="elevated" className="p-6 mb-6 bg-white">
           <h3 className="text-lg font-semibold mb-4">Budget & Stop Loss</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div>
@@ -193,7 +193,7 @@ export default function FeesConfigurator({
         </GlassCard>
 
         {/* Summary */}
-        <GlassCard variant="elevated" className="p-6 mb-6">
+        <GlassCard variant="elevated" className="p-6 mb-6 bg-white">
           <h3 className="text-lg font-semibold mb-4">Summary</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 rounded-lg bg-gray-100">
@@ -215,8 +215,6 @@ export default function FeesConfigurator({
           <Button
             onClick={() => onSubmit(
               {
-                employees,
-                members,
                 fees,
                 budgetOverride: { amount: budgetAmount, basis: budgetBasis },
                 stopLossReimb,
@@ -232,4 +230,3 @@ export default function FeesConfigurator({
     </div>
   );
 }
-

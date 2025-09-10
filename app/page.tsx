@@ -235,26 +235,29 @@ const Home: React.FC = () => {
   // Apply computed overrides from fees form when present
   const effectiveBudget = React.useMemo(() => {
     if (!feesConfig) return filteredBudget;
-    const employees = feesConfig.employees || 0;
-    const members = feesConfig.members || 0;
-    const monthlyFromBasis = (amount: number, basis: string) => {
+    const monthlyFromBasis = (amount: number, basis: string, rowEmployees: number, rowMembers: number) => {
       switch (basis) {
-        case 'PMPM': return amount * Math.max(0, Math.floor(members));
-        case 'PEPM': return amount * Math.max(0, Math.floor(employees));
+        case 'PMPM': return amount * Math.max(0, Math.floor(rowMembers));
+        case 'PEPM': return amount * Math.max(0, Math.floor(rowEmployees));
         case 'Annual': return amount / 12;
         case 'Monthly':
         default: return amount;
       }
     };
-    const monthlyFixed = (feesConfig.fees || []).reduce((sum, f) => sum + monthlyFromBasis(f.amount || 0, f.basis), 0);
-    const monthlyBudget = feesConfig.budgetOverride ? monthlyFromBasis(feesConfig.budgetOverride.amount || 0, feesConfig.budgetOverride.basis) : 0;
-    const reimb = feesConfig.stopLossReimb || 0;
-    return (filteredBudget || []).map((row: any) => ({
-      ...row,
-      'Computed Fixed Cost': monthlyFixed,
-      'Computed Budget': monthlyBudget > 0 ? monthlyBudget : row['Budget'] || row['budget'] || 0,
-      'Computed Stop Loss Reimb': reimb,
-    }));
+    const rows = (filteredBudget || []) as any[];
+    return rows.map((row) => {
+      const rowEmployees = parseNumericValue(row['Employee Count'] as any) || parseNumericValue(row['Employees'] as any) || 0;
+      const rowMembers = parseNumericValue(row['Member Count'] as any) || parseNumericValue(row['Enrollment'] as any) || parseNumericValue(row['Total Enrollment'] as any) || 0;
+      const fixed = (feesConfig.fees || []).reduce((sum, f) => sum + monthlyFromBasis(f.amount || 0, f.basis as any, rowEmployees, rowMembers), 0);
+      const budgetOverride = feesConfig.budgetOverride ? monthlyFromBasis(feesConfig.budgetOverride.amount || 0, feesConfig.budgetOverride.basis, rowEmployees, rowMembers) : 0;
+      const reimb = feesConfig.stopLossReimb || 0;
+      return {
+        ...row,
+        'Computed Fixed Cost': fixed,
+        'Computed Budget': budgetOverride > 0 ? budgetOverride : (parseNumericValue((row['Budget'] as any) ?? (row['budget'] as any)) || 0),
+        'Computed Stop Loss Reimb': reimb,
+      };
+    });
   }, [filteredBudget, feesConfig]);
   const filteredClaims = filterRowsByRange(claimsData?.rows || [], monthsTimeline, dateRange);
 
