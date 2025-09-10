@@ -407,7 +407,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
               placeholder="Search line items..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-3 py-2 w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+              className="pl-9 pr-3 py-2 w-full border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-black focus:border-black text-black placeholder-gray-500"
             />
           </div>
         </div>
