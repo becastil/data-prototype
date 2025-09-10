@@ -101,14 +101,20 @@ export default function FeesConfigurator({
         <details className="mb-4">
           <summary className="text-sm text-black cursor-pointer font-medium">What is this?</summary>
           <div className="mt-2 text-sm text-black">
-            Enter fees with a basis (PMPM/PEPM/Monthly/Annual). We compute monthly totals per month using your CSV’s enrollment data.
+            <p>Configure your budget parameters and fixed costs here. All financial data (budget, fees, reimbursements) comes from this form - your CSV only needs claims and enrollment data.</p>
+            <ul className="mt-2 space-y-1 text-xs">
+              <li><strong>PMPM:</strong> Per Member Per Month (multiplied by member count)</li>
+              <li><strong>PEPM:</strong> Per Employee Per Month (multiplied by employee count)</li>
+              <li><strong>Monthly:</strong> Fixed amount per month</li>
+              <li><strong>Annual:</strong> Yearly amount (divided by 12 for monthly)</li>
+            </ul>
           </div>
         </details>
 
         {/* Data Source Preview (non-editable) */}
         <GlassCard variant="subtle" className="p-6 mb-6 bg-white shadow-sm rounded-lg">
-          <h3 className="text-lg font-semibold mb-2 text-black">Using CSV Enrollment</h3>
-          <p className="text-sm text-black">We'll compute PMPM/PEPM values per month from your CSV. Latest known values:</p>
+          <h3 className="text-lg font-semibold mb-2 text-black">Enrollment Data from CSV</h3>
+          <p className="text-sm text-black">PMPM/PEPM calculations will use these enrollment counts per month. Preview from latest CSV data:</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             <div className="p-3 rounded-lg bg-[#FFFBEB]">
               <div className="text-xs text-black font-medium">Employees (preview)</div>
@@ -119,7 +125,7 @@ export default function FeesConfigurator({
               <div className="text-lg font-semibold text-black">{members.toLocaleString()}</div>
             </div>
             <div className="p-3 rounded-lg bg-[#FFFBEB]">
-              <div className="text-xs text-black font-medium">Budget (preview)</div>
+              <div className="text-xs text-black font-medium">Budget (override below)</div>
               <div className="text-lg font-semibold text-black">${defaultBudget.toLocaleString()}</div>
             </div>
           </div>
@@ -193,7 +199,10 @@ export default function FeesConfigurator({
           <h3 className="text-lg font-semibold mb-4 text-black">Budget, Stop Loss & Rebates</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
             <div>
-              <label className="block text-sm text-black font-medium mb-1">Budget Amount</label>
+              <label className="block text-sm text-black font-medium mb-1">
+                Budget Amount
+                <span className="text-xs text-gray-600 font-normal ml-1">(overrides CSV)</span>
+              </label>
               <Input 
                 type="number" 
                 className="h-10 text-base"
@@ -216,7 +225,10 @@ export default function FeesConfigurator({
               </select>
             </div>
             <div>
-              <label className="block text-sm text-black font-medium mb-1">Stop Loss Reimbursements (month)</label>
+              <label className="block text-sm text-black font-medium mb-1">
+                Stop Loss Reimbursements
+                <span className="text-xs text-gray-600 font-normal ml-1">(monthly)</span>
+              </label>
               <Input 
                 type="number" 
                 className="h-10 text-base"
@@ -226,7 +238,10 @@ export default function FeesConfigurator({
               />
             </div>
             <div>
-              <label className="block text-sm text-black font-medium mb-1">Rebates (month)</label>
+              <label className="block text-sm text-black font-medium mb-1">
+                Rebates Received
+                <span className="text-xs text-gray-600 font-normal ml-1">(monthly)</span>
+              </label>
               <Input 
                 type="number" 
                 className="h-10 text-base"

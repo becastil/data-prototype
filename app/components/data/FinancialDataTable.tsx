@@ -54,8 +54,9 @@ const LINE_ITEMS: LineItem[] = [
   
   // Fixed Costs Section
   { key: 'fixed_costs', label: 'Fixed Costs', category: 'expense', isExpandable: true, 
-    children: ['admin_fees', 'stop_loss_premium', 'wellness_programs'] },
+    children: ['admin_fees', 'tpa_fees', 'stop_loss_premium', 'wellness_programs'] },
   { key: 'admin_fees', label: '  Admin Fees', category: 'expense' },
+  { key: 'tpa_fees', label: '  TPA Fees', category: 'expense' },
   { key: 'stop_loss_premium', label: '  Stop Loss Premium', category: 'expense' },
   { key: 'wellness_programs', label: '  Wellness Programs', category: 'expense' },
   
@@ -189,21 +190,26 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
           matrix['non_domestic_pharmacy'][month] = totalPharmacy * 0.10;
         }
 
-        // Fixed Costs with wellness programs
+        // Fixed Costs - prioritize computed values from fees config
         const adminFees = parseValue(row['Admin Fees'] || row['admin_fees'] || 0);
+        const tpaFees = parseValue(row['TPA Fee'] || row['tpa_fee'] || 0);
         const stopLossPremium = parseValue(row['Stop Loss Premium'] || row['stop_loss_premium'] || 0);
         const wellnessPrograms = parseValue(row['Wellness Programs'] || row['wellness_programs'] || 0);
+        const fixedCosts = parseValue(row['Fixed Costs'] || row['fixed_costs'] || (adminFees + tpaFees + stopLossPremium + wellnessPrograms));
+        
         matrix['admin_fees'][month] = adminFees;
+        matrix['tpa_fees'] = matrix['tpa_fees'] || {};
+        matrix['tpa_fees'][month] = tpaFees;
         matrix['stop_loss_premium'][month] = stopLossPremium;
         matrix['wellness_programs'][month] = wellnessPrograms;
-        matrix['fixed_costs'][month] = adminFees + stopLossPremium + wellnessPrograms;
+        matrix['fixed_costs'][month] = fixedCosts;
 
-        // Revenues
+        // Revenues - prioritize computed values from fees config
         matrix['stop_loss_reimb'][month] = parseValue(row['Stop Loss Reimbursements'] || row['stop_loss_reimb'] || 0);
         matrix['pharmacy_rebates'][month] = parseValue(row['Rx Rebates'] || row['pharmacy_rebates'] || 0);
         matrix['other_credits'][month] = parseValue(row['Other Credits'] || row['other_credits'] || 0);
 
-        // Budget
+        // Budget - use computed value from fees config
         matrix['budget'][month] = parseValue(row['Budget'] || row['budget'] || 0);
         
         // Geographic totals
@@ -211,18 +217,18 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
         matrix['total_non_domestic'][month] = matrix['non_domestic_medical'][month] + matrix['non_domestic_pharmacy'][month];
         matrix['geographic_breakdown'][month] = matrix['total_domestic'][month] + matrix['total_non_domestic'][month];
 
-        // Calculate totals
-        const totalExpenses = matrix['medical_plans'][month] + matrix['pharmacy_claims'][month] + matrix['fixed_costs'][month];
-        const totalRevenues = matrix['stop_loss_reimb'][month] + matrix['pharmacy_rebates'][month] + matrix['other_credits'][month];
-        const netCost = totalExpenses - totalRevenues;
+        // Calculate totals - use computed values when available
+        const totalExpenses = parseValue(row['Total Expenses']) || (matrix['medical_plans'][month] + matrix['pharmacy_claims'][month] + matrix['fixed_costs'][month]);
+        const totalRevenues = parseValue(row['Total Revenues']) || (matrix['stop_loss_reimb'][month] + matrix['pharmacy_rebates'][month] + matrix['other_credits'][month]);
+        const netCost = parseValue(row['Net Cost']) || (totalExpenses - totalRevenues);
         
         matrix['total_expenses'][month] = totalExpenses;
         matrix['total_revenues'][month] = totalRevenues;
         matrix['net_cost'][month] = netCost;
-        matrix['variance'][month] = matrix['budget'][month] - netCost;
-        matrix['variance_percent'][month] = matrix['budget'][month] > 0 
+        matrix['variance'][month] = parseValue(row['Variance']) || (matrix['budget'][month] - netCost);
+        matrix['variance_percent'][month] = parseValue(row['Variance %']) || (matrix['budget'][month] > 0 
           ? ((matrix['budget'][month] - netCost) / matrix['budget'][month]) * 100 
-          : 0;
+          : 0);
         
         // Calculate Loss Ratio (Claims / Premium)
         // Loss Ratio = (Medical Claims + Pharmacy Claims) / (Net Cost) * 100

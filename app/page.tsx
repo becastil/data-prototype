@@ -246,16 +246,58 @@ const Home: React.FC = () => {
     };
     const rows = (filteredBudget || []) as any[];
     return rows.map((row) => {
+      // Get enrollment from CSV
       const rowEmployees = parseNumericValue(row['Employee Count'] as any) || parseNumericValue(row['Employees'] as any) || 0;
       const rowMembers = parseNumericValue(row['Member Count'] as any) || parseNumericValue(row['Enrollment'] as any) || parseNumericValue(row['Total Enrollment'] as any) || 0;
+      
+      // Calculate ALL financial parameters from fees config
       const fixed = (feesConfig.fees || []).reduce((sum, f) => sum + monthlyFromBasis(f.amount || 0, f.basis as any, rowEmployees, rowMembers), 0);
-      const budgetOverride = feesConfig.budgetOverride ? monthlyFromBasis(feesConfig.budgetOverride.amount || 0, feesConfig.budgetOverride.basis, rowEmployees, rowMembers) : 0;
-      const reimb = feesConfig.stopLossReimb || 0;
+      const budget = feesConfig.budgetOverride ? monthlyFromBasis(feesConfig.budgetOverride.amount || 0, feesConfig.budgetOverride.basis, rowEmployees, rowMembers) : 0;
+      const stopLossReimb = feesConfig.stopLossReimb || 0;
+      const rebates = feesConfig.rebates || 0;
+      
+      // Keep claims data from CSV
+      const medicalClaims = parseNumericValue(row['Medical Claims'] as any) || parseNumericValue(row['medical_claims'] as any) || 0;
+      const pharmacyClaims = parseNumericValue(row['Pharmacy Claims'] as any) || parseNumericValue(row['pharmacy_claims'] as any) || parseNumericValue(row['Rx Claims'] as any) || 0;
+      
+      // Calculate individual fee components for display
+      const adminFees = (feesConfig.fees || []).find(f => f.label.toLowerCase().includes('admin'))?.amount || 0;
+      const tpaFees = (feesConfig.fees || []).find(f => f.label.toLowerCase().includes('tpa'))?.amount || 0;
+      const stopLossPremium = (feesConfig.fees || []).find(f => f.label.toLowerCase().includes('stop loss'))?.amount || 0;
+      
+      // Calculate totals
+      const totalExpenses = medicalClaims + pharmacyClaims + fixed;
+      const totalRevenues = stopLossReimb + rebates;
+      const netCost = totalExpenses - totalRevenues;
+      const variance = budget - netCost;
+      const variancePercent = budget > 0 ? (variance / budget) * 100 : 0;
+      
       return {
         ...row,
+        // Override ALL financial fields with computed values
+        'Fixed Costs': fixed,
+        'Admin Fees': monthlyFromBasis(adminFees, feesConfig.fees.find(f => f.label.toLowerCase().includes('admin'))?.basis || 'Monthly', rowEmployees, rowMembers),
+        'TPA Fee': monthlyFromBasis(tpaFees, feesConfig.fees.find(f => f.label.toLowerCase().includes('tpa'))?.basis || 'Monthly', rowEmployees, rowMembers),
+        'Stop Loss Premium': monthlyFromBasis(stopLossPremium, feesConfig.fees.find(f => f.label.toLowerCase().includes('stop loss'))?.basis || 'Monthly', rowEmployees, rowMembers),
+        'Budget': budget,
+        'Stop Loss Reimbursements': stopLossReimb,
+        'Rx Rebates': rebates,
+        'pharmacy_rebates': rebates,
+        'Total Expenses': totalExpenses,
+        'Total Revenues': totalRevenues,
+        'Net Cost': netCost,
+        'Variance': variance,
+        'Variance %': variancePercent,
+        // Keep claims data from CSV as-is but ensure consistent naming
+        'Medical Claims': medicalClaims,
+        'Pharmacy Claims': pharmacyClaims,
+        'medical_claims': medicalClaims,
+        'pharmacy_claims': pharmacyClaims,
+        // Legacy field names for backward compatibility
         'Computed Fixed Cost': fixed,
-        'Computed Budget': budgetOverride > 0 ? budgetOverride : (parseNumericValue((row['Budget'] as any) ?? (row['budget'] as any)) || 0),
-        'Computed Stop Loss Reimb': reimb,
+        'Computed Budget': budget,
+        'Computed Stop Loss Reimb': stopLossReimb,
+        'Computed Rebates': rebates,
       };
     });
   }, [filteredBudget, feesConfig]);

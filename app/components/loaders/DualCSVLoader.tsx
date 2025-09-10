@@ -171,7 +171,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
             Healthcare Data Dashboard
           </h1>
           <p className="text-lg text-gray-600">
-            Upload both CSV files to view your analytics dashboard
+            Upload claims & enrollment data - budget parameters will be configured next
           </p>
         </motion.div>
 
@@ -183,16 +183,20 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
             className="relative"
           >
             <div className="absolute -top-6 left-4 bg-[#6FACDE] text-[#00263E] px-4 py-1 rounded-md text-sm font-semibold z-10 shadow-sm">
-              Budget & Expenses Data
+              Claims & Enrollment Data
             </div>
             <div className="bg-white rounded-xl shadow-lg p-6 pt-10 border border-[#e0e0e0] min-h-[480px] flex flex-col">
               <div className="mb-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">Required Columns</h3>
                 <ul className="text-sm text-gray-700 space-y-1">
                   <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>month</strong> (or <em>period</em>)</span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>budget</strong>, <strong>medical</strong>, <strong>rx</strong>, etc.</span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span>Any numeric expense columns</span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Employee Count</strong>, <strong>Member Count</strong></span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Medical Claims</strong>, <strong>Pharmacy Claims</strong></span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span>Optional: Detailed claims breakdown</span></li>
                 </ul>
+                <p className="text-xs text-gray-600 mt-2 p-2 bg-blue-50 rounded">
+                  💡 <strong>Note:</strong> Budget, fixed costs, and reimbursements will be configured in the next step - only upload actual claims experience data here.
+                </p>
                 <div className="mt-3">
                   <Link href="/sample-budget.csv" className="inline-flex items-center gap-1 text-[#2E4B66] hover:text-[#00263E] text-sm">
                     <Download className="w-4 h-4" /> Download template
@@ -224,17 +228,20 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
             className="relative"
           >
             <div className="absolute -top-6 left-4 bg-[#2E4B66] text-white px-4 py-1 rounded-md text-sm font-semibold z-10 shadow-sm">
-              Claims & HCC Data
+              Detailed Claims Data (Optional)
             </div>
             <div className="bg-white rounded-xl shadow-lg p-6 pt-10 border border-[#e0e0e0] min-h-[480px] flex flex-col">
               <div className="mb-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Required Columns</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Optional Detailed Breakdown</h3>
                 <ul className="text-sm text-gray-700 space-y-1">
                   <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Claimant Number</strong></span></li>
                   <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Service Type</strong>, <strong>ICD-10-CM Code</strong></span></li>
                   <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Medical</strong>, <strong>Rx</strong>, <strong>Total</strong> (costs)</span></li>
                   <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Medical Description</strong>, <strong>Layman's Term</strong></span></li>
                 </ul>
+                <p className="text-xs text-gray-600 mt-2 p-2 bg-amber-50 rounded">
+                  ⚠️ <strong>Optional:</strong> This provides detailed claims breakdown for advanced analytics. If not needed, you can skip this file.
+                </p>
                 <div className="mt-3">
                   <Link href="/sample-claims.csv" className="inline-flex items-center gap-1 text-[#2E4B66] hover:text-[#00263E] text-sm">
                     <Download className="w-4 h-4" /> Download template
