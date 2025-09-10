@@ -95,30 +95,30 @@ export default function FeesConfigurator({
   return (
     <div className="min-h-screen bg-[#f5f7fa] p-6 fees-configurator">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold mb-2">Configure Fees & Budget</h2>
+        <h2 className="text-2xl font-bold mb-2 text-black">Configure Fees & Budget</h2>
         <details className="mb-4">
-          <summary className="text-sm text-[#00263E] cursor-pointer">What is this?</summary>
-          <div className="mt-2 text-sm text-gray-600">
+          <summary className="text-sm text-black cursor-pointer font-medium">What is this?</summary>
+          <div className="mt-2 text-sm text-black">
             Enter fees with a basis (PMPM/PEPM/Monthly/Annual). We compute monthly totals per month using your CSV’s enrollment data.
           </div>
         </details>
 
         {/* Data Source Preview (non-editable) */}
         <GlassCard variant="subtle" className="p-6 mb-6 bg-white shadow-sm rounded-lg">
-          <h3 className="text-lg font-semibold mb-2">Using CSV Enrollment</h3>
-          <p className="text-sm text-gray-600">We’ll compute PMPM/PEPM values per month from your CSV. Latest known values:</p>
+          <h3 className="text-lg font-semibold mb-2 text-black">Using CSV Enrollment</h3>
+          <p className="text-sm text-black">We'll compute PMPM/PEPM values per month from your CSV. Latest known values:</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             <div className="p-3 rounded-lg bg-[#FFFBEB]">
-              <div className="text-xs text-gray-600">Employees (preview)</div>
-              <div className="text-lg font-semibold">{employees.toLocaleString()}</div>
+              <div className="text-xs text-black font-medium">Employees (preview)</div>
+              <div className="text-lg font-semibold text-black">{employees.toLocaleString()}</div>
             </div>
             <div className="p-3 rounded-lg bg-[#FFFBEB]">
-              <div className="text-xs text-gray-600">Members (preview)</div>
-              <div className="text-lg font-semibold">{members.toLocaleString()}</div>
+              <div className="text-xs text-black font-medium">Members (preview)</div>
+              <div className="text-lg font-semibold text-black">{members.toLocaleString()}</div>
             </div>
             <div className="p-3 rounded-lg bg-[#FFFBEB]">
-              <div className="text-xs text-gray-600">Budget (preview)</div>
-              <div className="text-lg font-semibold">${defaultBudget.toLocaleString()}</div>
+              <div className="text-xs text-black font-medium">Budget (preview)</div>
+              <div className="text-lg font-semibold text-black">${defaultBudget.toLocaleString()}</div>
             </div>
           </div>
         </GlassCard>
@@ -126,7 +126,7 @@ export default function FeesConfigurator({
         {/* Fees */}
         <GlassCard variant="elevated" className="p-6 mb-6 bg-white shadow-sm rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Fees</h3>
+            <h3 className="text-lg font-semibold text-black">Fees</h3>
             <Button variant="default" onClick={addFee} className="gap-2">
               <Plus className="w-4 h-4" /> Add Fee
             </Button>
@@ -136,7 +136,7 @@ export default function FeesConfigurator({
             {fees.map((f, i) => (
               <div key={f.id} className="grid grid-cols-12 gap-3 items-end bg-white/80 p-3 rounded-md border border-[#e0e0e0]">
                 <div className="col-span-4">
-                  <label className="block text-sm text-gray-600 mb-1">Label</label>
+                  <label className="block text-sm text-black font-medium mb-1">Label</label>
                   <Input 
                     className="h-10 text-base"
                     value={f.label} 
@@ -145,7 +145,7 @@ export default function FeesConfigurator({
                   />
                 </div>
                 <div className="col-span-3">
-                  <label className="block text-sm text-gray-600 mb-1">Amount</label>
+                  <label className="block text-sm text-black font-medium mb-1">Amount</label>
                   <Input 
                     type="number"
                     className="h-10 text-base"
@@ -155,7 +155,7 @@ export default function FeesConfigurator({
                   />
                 </div>
                 <div className="col-span-3">
-                  <label className="block text-sm text-gray-600 mb-1">Basis</label>
+                  <label className="block text-sm text-black font-medium mb-1">Basis</label>
                   <select 
                     className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-base bg-white text-black focus:outline-none focus:border-black transition-colors"
                     value={f.basis}
@@ -168,8 +168,8 @@ export default function FeesConfigurator({
                   </select>
                 </div>
                 <div className="col-span-1">
-                  <label className="block text-sm text-gray-600 mb-1">Monthly</label>
-                  <div className="text-sm font-mono">${(monthlyFromBasis(f.amount, f.basis, employees, members) || 0).toLocaleString()}</div>
+                  <label className="block text-sm text-black font-medium mb-1">Monthly</label>
+                  <div className="text-sm font-mono text-black">${(monthlyFromBasis(f.amount, f.basis, employees, members) || 0).toLocaleString()}</div>
                 </div>
                 <div className="col-span-1 flex justify-end pb-2">
                   <button
@@ -188,10 +188,10 @@ export default function FeesConfigurator({
 
         {/* Budget & Stop Loss */}
         <GlassCard variant="elevated" className="p-6 mb-6 bg-white shadow-sm rounded-lg">
-          <h3 className="text-lg font-semibold mb-4">Budget & Stop Loss</h3>
+          <h3 className="text-lg font-semibold mb-4 text-black">Budget & Stop Loss</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div>
-              <label className="block text-sm text-gray-600 mb-1">Budget Amount</label>
+              <label className="block text-sm text-black font-medium mb-1">Budget Amount</label>
               <Input 
                 type="number" 
                 className="h-10 text-base"
@@ -201,7 +201,7 @@ export default function FeesConfigurator({
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-600 mb-1">Budget Basis</label>
+              <label className="block text-sm text-black font-medium mb-1">Budget Basis</label>
               <select 
                 className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-base bg-white text-black focus:outline-none focus:border-black transition-colors"
                 value={budgetBasis}
@@ -214,7 +214,7 @@ export default function FeesConfigurator({
               </select>
             </div>
             <div>
-              <label className="block text-sm text-gray-600 mb-1">Stop Loss Reimbursements (month)</label>
+              <label className="block text-sm text-black font-medium mb-1">Stop Loss Reimbursements (month)</label>
               <Input 
                 type="number" 
                 className="h-10 text-base"
@@ -228,19 +228,19 @@ export default function FeesConfigurator({
 
         {/* Summary */}
         <GlassCard variant="elevated" className="p-6 mb-6 bg-white shadow-sm rounded-lg">
-          <h3 className="text-lg font-semibold mb-4">Summary</h3>
+          <h3 className="text-lg font-semibold mb-4 text-black">Summary</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 rounded-lg bg-gray-100">
-              <div className="text-xs text-gray-600">Monthly Fixed Costs</div>
-              <div className="text-xl font-bold">${monthlyFixed.toLocaleString()}</div>
+              <div className="text-xs text-black font-medium">Monthly Fixed Costs</div>
+              <div className="text-xl font-bold text-black">${monthlyFixed.toLocaleString()}</div>
             </div>
             <div className="p-4 rounded-lg bg-gray-100">
-              <div className="text-xs text-gray-600">Monthly Budget</div>
-              <div className="text-xl font-bold">${monthlyBudget.toLocaleString()}</div>
+              <div className="text-xs text-black font-medium">Monthly Budget</div>
+              <div className="text-xl font-bold text-black">${monthlyBudget.toLocaleString()}</div>
             </div>
             <div className="p-4 rounded-lg bg-gray-100">
-              <div className="text-xs text-gray-600">Stop Loss Reimb.</div>
-              <div className="text-xl font-bold">${(stopLossReimb || 0).toLocaleString()}</div>
+              <div className="text-xs text-black font-medium">Stop Loss Reimb.</div>
+              <div className="text-xl font-bold text-black">${(stopLossReimb || 0).toLocaleString()}</div>
             </div>
           </div>
         </GlassCard>

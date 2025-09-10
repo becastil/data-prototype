@@ -1377,6 +1377,28 @@ a:focus-visible {
   color: #666666 !important;
 }
 
+/* Ensure all text is visible */
+.fees-configurator h1,
+.fees-configurator h2,
+.fees-configurator h3,
+.fees-configurator h4,
+.fees-configurator h5,
+.fees-configurator h6 {
+  color: #000000 !important;
+}
+
+.fees-configurator label,
+.fees-configurator p,
+.fees-configurator div,
+.fees-configurator span {
+  color: #000000 !important;
+}
+
+.fees-configurator summary {
+  color: #000000 !important;
+  font-weight: 500 !important;
+}
+
 /* High Contrast Mode Support */
 @media (prefers-contrast: high) {
   *:focus-visible {
