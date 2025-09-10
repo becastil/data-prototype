@@ -125,7 +125,8 @@ const HCCDataTable: React.FC<HCCDataTableProps> = ({ data }) => {
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm w-full sm:w-48"
+              className="pl-9 pr-3 py-2 border border-gray-300 bg-white text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-black text-sm w-full sm:w-48"
+              style={{ backgroundColor: '#FFFFFF !important', color: '#000000 !important' }}
             />
           </div>
           <button
