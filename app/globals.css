@@ -173,18 +173,19 @@ input:focus, select:focus, textarea:focus {
 
 /* Tabs - Clean Style */
 .tabs-list { 
-  background: var(--background); 
-  border-bottom: 1px solid var(--border-light); 
+  background: #FFFFFF !important; 
+  border: 1px solid #CCCCCC !important;
+  border-radius: 8px !important;
 }
 .tabs-trigger { 
-  color: var(--text-primary); 
-  transition: color 0.2s ease;
+  color: #000000 !important; 
+  background: #FFFFFF !important;
+  transition: all 0.2s ease;
 }
 .tabs-trigger[data-state="active"] { 
   box-shadow: none; 
-  background: transparent; 
-  border-bottom: 2px solid var(--brand-primary); 
-  color: var(--brand-primary); 
+  background: #000000 !important;
+  color: #FFFFFF !important; 
 }
 .tabs-trigger:focus-visible { 
   outline: none; 
@@ -1397,6 +1398,13 @@ a:focus-visible {
 .fees-configurator summary {
   color: #000000 !important;
   font-weight: 500 !important;
+}
+
+/* Search bar override for financial data table */
+input[placeholder*="Search line items"] {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  border: 1px solid #CCCCCC !important;
 }
 
 /* High Contrast Mode Support */

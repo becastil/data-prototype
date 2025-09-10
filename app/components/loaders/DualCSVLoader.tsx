@@ -190,8 +190,9 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">Required Columns</h3>
                 <ul className="text-sm text-gray-700 space-y-1">
                   <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>month</strong> (or <em>period</em>)</span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Employee Count</strong>, <strong>Member Count</strong></span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Medical Claims</strong>, <strong>Pharmacy Claims</strong></span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Employee Count</strong>, <strong>Member Count</strong> (or <em>Enrollment</em>)</span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Medical Claims</strong> (or <em>medical_claims</em>)</span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Pharmacy Claims</strong> (or <em>pharmacy_claims, Rx Claims</em>)</span></li>
                   <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span>Optional: Detailed claims breakdown</span></li>
                 </ul>
                 <p className="text-xs text-gray-600 mt-2 p-2 bg-blue-50 rounded">

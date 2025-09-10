@@ -245,6 +245,8 @@ const Home: React.FC = () => {
       }
     };
     const rows = (filteredBudget || []) as any[];
+    devLog('[EFFECTIVE BUDGET] Processing rows with feesConfig:', feesConfig);
+    devLog('[EFFECTIVE BUDGET] First row field names:', Object.keys(rows[0] || {}));
     return rows.map((row) => {
       // Get enrollment from CSV
       const rowEmployees = parseNumericValue(row['Employee Count'] as any) || parseNumericValue(row['Employees'] as any) || 0;
@@ -256,9 +258,21 @@ const Home: React.FC = () => {
       const stopLossReimb = feesConfig.stopLossReimb || 0;
       const rebates = feesConfig.rebates || 0;
       
-      // Keep claims data from CSV
-      const medicalClaims = parseNumericValue(row['Medical Claims'] as any) || parseNumericValue(row['medical_claims'] as any) || 0;
-      const pharmacyClaims = parseNumericValue(row['Pharmacy Claims'] as any) || parseNumericValue(row['pharmacy_claims'] as any) || parseNumericValue(row['Rx Claims'] as any) || 0;
+      // Keep claims data from CSV - try multiple field name variations
+      const medicalClaims = parseNumericValue(row['Medical Claims'] as any) || 
+                          parseNumericValue(row['medical_claims'] as any) || 
+                          parseNumericValue(row['Medical'] as any) || 
+                          parseNumericValue(row['medical'] as any) || 
+                          parseNumericValue(row['Med Claims'] as any) || 0;
+      const pharmacyClaims = parseNumericValue(row['Pharmacy Claims'] as any) || 
+                           parseNumericValue(row['pharmacy_claims'] as any) || 
+                           parseNumericValue(row['Rx Claims'] as any) || 
+                           parseNumericValue(row['Pharmacy'] as any) || 
+                           parseNumericValue(row['pharmacy'] as any) || 
+                           parseNumericValue(row['Rx'] as any) || 
+                           parseNumericValue(row['rx'] as any) || 0;
+      
+      devLog('[CLAIMS DATA]', row.month || row.Month, 'Medical:', medicalClaims, 'Pharmacy:', pharmacyClaims);
       
       // Calculate individual fee components for display
       const adminFees = (feesConfig.fees || []).find(f => f.label.toLowerCase().includes('admin'))?.amount || 0;
