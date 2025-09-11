@@ -12,10 +12,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import DualCSVLoader from '@components/loaders/DualCSVLoader';
 import {
   EChartsEnterpriseChart,
+  GiftedStackedBarChart,
+  GiftedEnrollmentChart,
+  ClaimsBreakdownPieChart,
+  HighCostClaimantBandChart,
   HCCDataTable,
   LazyChartWrapper
 } from '@components/charts/LazyCharts';
-import PremiumEnrollmentChart from '@components/charts/PremiumEnrollmentChart';
 import FinancialDataTable from '@components/data/FinancialDataTable';
 import { Dashboard } from './components/ui/dashboard';
 import PerformanceMonitor from '@components/PerformanceMonitor';
@@ -23,6 +26,7 @@ import EnterpriseDataExport from '@components/data/EnterpriseDataExport';
 import { ThemeToggle } from '@components/ui/theme-toggle';
 import { GlassCard } from '@components/ui/glass-card';
 import { PremiumDashboardCard } from '@components/ui/premium-dashboard-card';
+import PlanPerformanceTiles from '@components/dashboard/PlanPerformanceTiles';
 import { AnimatedNumber } from '@components/ui/animated-number';
 import { LottieLoader } from '@components/ui/lottie-loader';
 import { Button } from '@components/ui/button';
@@ -259,12 +263,14 @@ const Home: React.FC = () => {
       const rebates = feesConfig.rebates || 0;
       
       // Keep claims data from CSV - try multiple field name variations
-      const medicalClaims = parseNumericValue(row['Medical Claims'] as any) || 
+      const medicalClaims = parseNumericValue(row['medicalClaims'] as any) ||  // Add exact field name from CSV
+                          parseNumericValue(row['Medical Claims'] as any) || 
                           parseNumericValue(row['medical_claims'] as any) || 
                           parseNumericValue(row['Medical'] as any) || 
                           parseNumericValue(row['medical'] as any) || 
                           parseNumericValue(row['Med Claims'] as any) || 0;
-      const pharmacyClaims = parseNumericValue(row['Pharmacy Claims'] as any) || 
+      const pharmacyClaims = parseNumericValue(row['rxClaims'] as any) ||  // Add exact field name from CSV
+                           parseNumericValue(row['Pharmacy Claims'] as any) || 
                            parseNumericValue(row['pharmacy_claims'] as any) || 
                            parseNumericValue(row['Rx Claims'] as any) || 
                            parseNumericValue(row['Pharmacy'] as any) || 
@@ -538,49 +544,9 @@ const Home: React.FC = () => {
 
             {/* Main Content Area */}
             <div className="p-8">
-              {/* Premium Dashboard Summary Tiles */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <PremiumDashboardCard
-                  title="Total Budget"
-                  value={(effectiveBudget || []).reduce((sum: number, row: any) => sum + (parseNumericValue((row['Computed Budget'] as any) ?? (row['Budget'] as any)) || 0), 0) || 0}
-                  format="currency"
-                  icon={DollarSign}
-                  variant="premium"
-                  trend="up"
-                  trendValue={8.2}
-                  subtitle="Monthly allocation"
-                />
-                <PremiumDashboardCard
-                  title="Active Members"
-                  value={filteredBudget?.reduce((sum, row) => sum + (parseInt(row['Employee Count']) || 0), 0) || 0}
-                  format="number"
-                  icon={Users}
-                  variant="success"
-                  trend="up"
-                  trendValue={3.1}
-                  subtitle="Current enrollment"
-                />
-                <PremiumDashboardCard
-                  title="Claims Processed"
-                  value={filteredClaims?.length || 0}
-                  format="compact"
-                  icon={Activity}
-                  variant="default"
-                  trend="up"
-                  trendValue={12.4}
-                  subtitle="This period"
-                />
-                <PremiumDashboardCard
-                  title="Loss Ratio"
-                  value={85.6}
-                  format="percentage"
-                  decimals={1}
-                  icon={TrendingUp}
-                  variant="warning"
-                  trend="down"
-                  trendValue={2.3}
-                  subtitle="Claims vs premium"
-                />
+              {/* Plan Performance Tiles (Gauge + Rolling Graph + Summary + Pie + Commentary) */}
+              <div className="max-w-7xl mx-auto">
+                <PlanPerformanceTiles data={effectiveBudget} commentaryTitle="Plan" />
               </div>
 
               {/* Page Content */}
@@ -608,36 +574,32 @@ const Home: React.FC = () => {
                     ref={chartsGridRef}
                     className="grid grid-cols-1 lg:grid-cols-2 gap-6"
                   >
-                {/* Tile 1: Budget vs Expenses (ECharts) */}
+                {/* Tile 1: Budget vs Expenses (Gifted Charts) */}
                 <MotionCard delay={0.1}>
                   <LazyChartWrapper chartName="Budget vs Expenses">
-                    <EChartsEnterpriseChart data={effectiveBudget} rollingMonths={effectiveBudget.length} />
+                    <GiftedStackedBarChart data={effectiveBudget} rollingMonths={effectiveBudget.length} />
                   </LazyChartWrapper>
                 </MotionCard>
 
-                {/* Tile 4: Cost Analysis Preview */}
-                <MotionCard delay={0.4}>
-                  <GlassCard variant="elevated" className="p-6 h-[400px] flex flex-col justify-center text-center">
-                    <div className="text-6xl mb-4">💰</div>
-                    <h3 className="text-lg font-semibold mb-2">Cost Analysis</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Cost band scatter analysis coming soon</p>
-                  </GlassCard>
+                {/* Tile 2: Claims Breakdown (Pie Chart) */}
+                <MotionCard delay={0.2}>
+                  <LazyChartWrapper chartName="Claims Breakdown">
+                    <ClaimsBreakdownPieChart data={effectiveBudget} rollingMonths={effectiveBudget.length} />
+                  </LazyChartWrapper>
                 </MotionCard>
 
-                {/* Tile 5: Enrollment Trends (ECharts) */}
-                <MotionCard delay={0.5}>
+                {/* Tile 3: Enrollment Trends (Gifted Charts) */}
+                <MotionCard delay={0.3}>
                   <LazyChartWrapper chartName="Enrollment Trends">
-                    <PremiumEnrollmentChart data={effectiveBudget} rollingMonths={effectiveBudget.length} />
+                    <GiftedEnrollmentChart data={effectiveBudget} rollingMonths={effectiveBudget.length} />
                   </LazyChartWrapper>
                 </MotionCard>
 
-                {/* Tile 6: Geographic Analytics Preview */}
-                <MotionCard delay={0.6}>
-                  <GlassCard variant="elevated" className="p-6 h-[400px] flex flex-col justify-center text-center">
-                    <div className="text-6xl mb-4">🌍</div>
-                    <h3 className="text-lg font-semibold mb-2">Geographic Analytics</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Domestic vs non-domestic analysis coming soon</p>
-                  </GlassCard>
+                {/* Tile 4: High Cost Claimant Distribution */}
+                <MotionCard delay={0.4}>
+                  <LazyChartWrapper chartName="High Cost Claimants">
+                    <HighCostClaimantBandChart data={effectiveBudget} rollingMonths={effectiveBudget.length} />
+                  </LazyChartWrapper>
                 </MotionCard>
 
                 {/* Tile 7: HCC Data Table */}
