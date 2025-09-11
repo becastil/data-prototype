@@ -345,7 +345,7 @@ export class AccessibleErrorBoundary extends React.Component<
     this.state = { hasError: false, error: null };
   }
 
-  override static getDerivedStateFromError(error: Error) {
+  static override getDerivedStateFromError(error: Error) {
     return { hasError: true, error };
   }
 
