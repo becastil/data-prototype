@@ -103,6 +103,8 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
     if (!chartData.length) return null;
 
     const latestData = chartData[chartData.length - 1];
+    if (!latestData) return null;
+    
     const latestNetClaims = Math.max(0, (latestData.medicalClaims + latestData.rx) - (latestData.rxRebates + latestData.stopLossReimb));
     const totalExpenses = latestData.totalFixedCost + latestNetClaims;
     
@@ -116,15 +118,17 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
     const trends = [];
     if (chartData.length > 1) {
       const previousData = chartData[chartData.length - 2];
-      const previousNetClaims = Math.max(0, (previousData.medicalClaims + previousData.rx) - (previousData.rxRebates + previousData.stopLossReimb));
-      const previousExpenses = previousData.totalFixedCost + previousNetClaims;
-      
-      if (totalExpenses > previousExpenses) {
-        trends.push(`Expenses increased from previous month by ${formatCurrency(totalExpenses - previousExpenses)}`);
-      } else if (totalExpenses < previousExpenses) {
-        trends.push(`Expenses decreased from previous month by ${formatCurrency(previousExpenses - totalExpenses)}`);
-      } else {
-        trends.push('Expenses remained stable from previous month');
+      if (previousData) {
+        const previousNetClaims = Math.max(0, (previousData.medicalClaims + previousData.rx) - (previousData.rxRebates + previousData.stopLossReimb));
+        const previousExpenses = previousData.totalFixedCost + previousNetClaims;
+        
+        if (totalExpenses > previousExpenses) {
+          trends.push(`Expenses increased from previous month by ${formatCurrency(totalExpenses - previousExpenses)}`);
+        } else if (totalExpenses < previousExpenses) {
+          trends.push(`Expenses decreased from previous month by ${formatCurrency(previousExpenses - totalExpenses)}`);
+        } else {
+          trends.push('Expenses remained stable from previous month');
+        }
       }
     }
 
@@ -281,7 +285,7 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
           name: 'Claims (Net)',
           type: 'bar',
           stack: 'expenses',
-          data: echartsData.series[0].data,
+          data: echartsData.series[0]?.data || [],
           itemStyle: {
             color: new (echarts as any).graphic.LinearGradient(0, 0, 0, 1, [
               { offset: 0, color: hexToRgba(colors.medicalClaims, 0.85) },
@@ -296,7 +300,7 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
           name: 'Admin',
           type: 'bar',
           stack: 'expenses',
-          data: echartsData.series[1].data,
+          data: echartsData.series[1]?.data || [],
           itemStyle: {
             color: new (echarts as any).graphic.LinearGradient(0, 0, 0, 1, [
               { offset: 0, color: hexToRgba(colors.totalFixedCost, 0.85) },
@@ -311,7 +315,7 @@ const EChartsEnterpriseChart: React.FC<EChartsEnterpriseChartProps> = ({
         {
           name: 'Budget',
           type: 'line',
-          data: echartsData.series[2].data,
+          data: echartsData.series[2]?.data || [],
           lineStyle: {
             color: colors.budget,
             width: 3,

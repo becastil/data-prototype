@@ -79,6 +79,8 @@ export const Immersive3DContainer: React.FC<Immersive3DContainerProps> = ({
         container.removeEventListener('mouseleave', handleMouseLeave);
       };
     }
+    
+    return () => {}; // Ensure all code paths return a cleanup function
   }, [mouseX, mouseY, prefersReducedMotion]);
 
   return (
@@ -87,14 +89,14 @@ export const Immersive3DContainer: React.FC<Immersive3DContainerProps> = ({
       className={className}
       style={{
         ...style,
-        ...createGPUOptimizedStyle(),
+        ...(createGPUOptimizedStyle() as any),
         transformStyle: 'preserve-3d',
         perspective: 1000,
-      }}
+      } as any}
       animate={prefersReducedMotion ? {} : {
-        rotateX,
-        rotateY,
-      }}
+        rotateX: rotateX.get(),
+        rotateY: rotateY.get(),
+      } as any}
     >
       {children}
     </motion.div>
@@ -355,8 +357,8 @@ export const Spatial3DGrid: React.FC<Spatial3DGridProps> = ({
             inset: 0,
             background: `linear-gradient(180deg, 
               transparent 0%, 
-              rgba(${vars.colors.background === '#FFFFFF' ? '255, 255, 255' : '0, 0, 0'}, 0.8) 70%,
-              rgba(${vars.colors.background === '#FFFFFF' ? '255, 255, 255' : '0, 0, 0'}, 1) 100%)`,
+              rgba(${String(vars.colors.background) === '#FFFFFF' ? '255, 255, 255' : '0, 0, 0'}, 0.8) 70%,
+              rgba(${String(vars.colors.background) === '#FFFFFF' ? '255, 255, 255' : '0, 0, 0'}, 1) 100%)`,
             transform: 'translateZ(10px)',
           }}
         />
@@ -464,7 +466,7 @@ export const Depth3DNavigation: React.FC<Depth3DNavigationProps> = ({
         <Depth3DCard
           key={item.id}
           depth={item.active ? 3 : 1}
-          onClick={item.onClick}
+          onClick={item.onClick || undefined}
           className="transition-all duration-200"
         >
           <motion.div

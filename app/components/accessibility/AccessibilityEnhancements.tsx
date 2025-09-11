@@ -194,8 +194,8 @@ export const checkColorContrast = (foreground: string, background: string) => {
 
   if (!fg || !bg) return { ratio: 0, level: 'fail' };
 
-  const fgLum = getLuminance(fg.r, fg.g, fg.b);
-  const bgLum = getLuminance(bg.r, bg.g, bg.b);
+  const fgLum = getLuminance(fg.r!, fg.g!, fg.b!);
+  const bgLum = getLuminance(bg.r!, bg.g!, bg.b!);
 
   const ratio = (Math.max(fgLum, bgLum) + 0.05) / (Math.min(fgLum, bgLum) + 0.05);
 
@@ -270,6 +270,7 @@ export const LoadingAnnouncement = ({
   useEffect(() => {
     if (isLoading) {
       setAnnouncement(loadingText);
+      return () => {}; // No cleanup needed for loading state
     } else {
       // Announce completion after a brief delay
       const timer = setTimeout(() => {
@@ -344,11 +345,11 @@ export class AccessibleErrorBoundary extends React.Component<
     this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(error: Error) {
+  override static getDerivedStateFromError(error: Error) {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Accessible Error Boundary caught an error:', error, errorInfo);
     console.error('Component Stack:', errorInfo.componentStack);
     console.error('Error Stack:', error.stack);

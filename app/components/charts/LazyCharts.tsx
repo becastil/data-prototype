@@ -68,11 +68,11 @@ class ChartErrorBoundary extends React.Component<
     this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(error: Error) {
+  override static getDerivedStateFromError(error: Error) {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error(`Chart Error Boundary (${this.props.chartName || 'Unknown Chart'}):`, error, errorInfo);
     console.group(`Chart Rendering Error - ${this.props.chartName || 'Unknown Chart'}`);
     console.error('Error:', error.message);
@@ -121,7 +121,7 @@ const LazyChartWrapper = ({
   fallback?: React.ReactNode;
   chartName?: string;
 }) => (
-  <ChartErrorBoundary chartName={chartName}>
+  <ChartErrorBoundary chartName={chartName || undefined}>
     <Suspense fallback={fallback || <ChartLoadingSkeleton title={`Loading ${chartName || 'Chart'}...`} />}>
       {children}
     </Suspense>

@@ -542,7 +542,9 @@ const Home: React.FC = () => {
             <div className="p-8">
               {/* Plan Performance Tiles (Gauge + Rolling Graph + Summary + Pie + Commentary) */}
               <div className="max-w-7xl mx-auto">
-                <PlanPerformanceTiles data={effectiveBudget} commentaryTitle="Plan" />
+                <AccessibleErrorBoundary>
+                  <PlanPerformanceTiles data={effectiveBudget} commentaryTitle="Plan" />
+                </AccessibleErrorBoundary>
               </div>
 
               {/* Page Content */}

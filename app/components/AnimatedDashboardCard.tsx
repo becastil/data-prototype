@@ -72,7 +72,7 @@ const AnimatedDashboardCard: React.FC<AnimatedDashboardCardProps> = ({
       transition: {
         duration: prefersReducedMotion ? 0.2 : 0.6,
         delay: prefersReducedMotion ? 0 : entranceDelay,
-        ease: 'easeInOut',
+        ease: "easeOut" as any,
       }
     }
   };
@@ -86,7 +86,7 @@ const AnimatedDashboardCard: React.FC<AnimatedDashboardCardProps> = ({
       rotateY: 0,
       transition: {
         duration: 0.3,
-        ease: 'easeInOut'
+        ease: [0.4, 0, 0.6, 1]
       }
     },
     hover: {
@@ -96,14 +96,14 @@ const AnimatedDashboardCard: React.FC<AnimatedDashboardCardProps> = ({
       rotateY: prefersReducedMotion ? 0 : 0.5,
       transition: {
         duration: 0.25,
-        ease: 'easeInOut'
+        ease: [0.4, 0, 0.6, 1]
       }
     },
     tap: {
       scale: prefersReducedMotion ? 1 : 0.98,
       transition: {
         duration: 0.1,
-        ease: 'easeInOut'
+        ease: [0.4, 0, 0.6, 1]
       }
     }
   };
@@ -114,7 +114,7 @@ const AnimatedDashboardCard: React.FC<AnimatedDashboardCardProps> = ({
       boxShadow: vars.shadows.md,
       transition: {
         duration: 0.3,
-        ease: 'easeInOut'
+        ease: [0.4, 0, 0.6, 1]
       }
     },
     hover: {
@@ -208,7 +208,7 @@ const AnimatedDashboardCard: React.FC<AnimatedDashboardCardProps> = ({
           }
           transition={{
             duration: 0.8,
-            ease: 'easeInOut',
+            ease: "easeOut" as any,
           }}
           style={{
             position: 'absolute',
@@ -268,7 +268,7 @@ export const StaggeredCardGrid: React.FC<StaggeredCardGridProps> = ({
         <AnimatedDashboardCard
           key={index}
           index={index}
-          delay={staggeredConfig[index]?.delay}
+          delay={staggeredConfig[index]?.delay ?? 0}
         >
           {child}
         </AnimatedDashboardCard>
@@ -305,7 +305,7 @@ export const AnimatedMetricCard: React.FC<AnimatedMetricCardProps> = ({
       
       frames.forEach((frame, index) => {
         setTimeout(() => {
-          setDisplayValue(frame[0]);
+          setDisplayValue(frame[0] ?? value);
         }, index * 16); // 60fps timing
       });
     } else {
@@ -372,11 +372,11 @@ export const AnimatedChartCard: React.FC<AnimatedDashboardCardProps & {
         
         {isLoading ? (
           <motion.div
-            animate={loadingPulse.keyframes}
+            animate={loadingPulse.keyframes as any}
             transition={{
               duration: loadingPulse.duration,
               repeat: Infinity,
-              ease: loadingPulse.easing,
+              ease: loadingPulse.easing as any,
             }}
             style={{
               background: `linear-gradient(90deg, ${vars.colors.paleGray}, ${vars.colors.lightGray}, ${vars.colors.paleGray})`,

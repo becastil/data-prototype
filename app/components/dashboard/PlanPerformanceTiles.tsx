@@ -148,108 +148,156 @@ export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commenta
   // Gauge chart
   useEffect(() => {
     if (!gaugeRef.current) return;
-    const chart = echarts.init(gaugeRef.current);
-    const option: echarts.EChartsOption = {
-      series: [
-        {
-          type: 'gauge',
-          startAngle: 180,
-          endAngle: 0,
-          center: ['50%', '70%'],
-          radius: '90%',
-          min: 0,
-          max: 140,
-          splitNumber: 7,
-          axisLine: {
-            lineStyle: {
-              width: 22,
-              color: [
-                [0.95, '#22c55e'], // green <95%
-                [1.05, '#f59e0b'], // yellow 95-105
-                [1.4, '#ef4444'], // red >105
-              ],
+    let chart: echarts.ECharts | null = null;
+    let resizeHandler: (() => void) | null = null;
+    
+    try {
+      chart = echarts.init(gaugeRef.current);
+      const option: echarts.EChartsOption = {
+        series: [
+          {
+            type: 'gauge',
+            startAngle: 180,
+            endAngle: 0,
+            center: ['50%', '70%'],
+            radius: '90%',
+            min: 0,
+            max: 140,
+            splitNumber: 7,
+            axisLine: {
+              lineStyle: {
+                width: 22,
+                color: [
+                  [0.95, '#22c55e'], // green <95%
+                  [1.05, '#f59e0b'], // yellow 95-105
+                  [1.4, '#ef4444'], // red >105
+                ],
+              },
             },
+            pointer: { show: true, length: '60%', itemStyle: { color: '#111827' } },
+            title: { show: true, offsetCenter: [0, '-55%'], color: '#111827', fontWeight: 'bold', fontSize: 12 },
+            detail: {
+              formatter: '{value}%',
+              fontSize: 26,
+              color: '#0f0f0f',
+              offsetCenter: [0, '-8%'],
+              valueAnimation: true,
+            },
+            axisTick: { show: false },
+            splitLine: { show: false },
+            axisLabel: { show: false },
+            data: [{ value: gaugePercent, name: 'Budget Utilization' }],
           },
-          pointer: { show: true, length: '60%', itemStyle: { color: '#111827' } },
-          title: { show: true, offsetCenter: [0, '-55%'], color: '#111827', fontWeight: 'bold', fontSize: 12 },
-          detail: {
-            formatter: '{value}%',
-            fontSize: 26,
-            color: '#0f0f0f',
-            offsetCenter: [0, '-8%'],
-            valueAnimation: true,
-          },
-          axisTick: { show: false },
-          splitLine: { show: false },
-          axisLabel: { show: false },
-          data: [{ value: gaugePercent, name: 'Budget Utilization' }],
-        },
-      ],
-    };
-    chart.setOption(option);
-    const onResize = () => chart.resize();
-    window.addEventListener('resize', onResize);
+        ],
+      };
+      chart.setOption(option);
+      resizeHandler = () => chart?.resize();
+      window.addEventListener('resize', resizeHandler);
+    } catch (e) {
+      console.error('Failed to initialize gauge chart:', e);
+    }
+    
     return () => {
-      window.removeEventListener('resize', onResize);
-      chart.dispose();
+      if (resizeHandler) {
+        window.removeEventListener('resize', resizeHandler);
+      }
+      if (chart) {
+        try {
+          chart.dispose();
+        } catch (e) {
+          console.error('Failed to dispose gauge chart:', e);
+        }
+      }
     };
   }, [gaugePercent]);
 
   // Stacked bar + line
   useEffect(() => {
     if (!stackedRef.current) return;
-    const chart = echarts.init(stackedRef.current);
-    const option: echarts.EChartsOption = {
-      tooltip: { trigger: 'axis' },
-      legend: {
-        data: ['Admin Fees', 'Stop Loss Fees', 'Reimbursements', 'Net Medical & Pharmacy', 'Budgeted Premium'],
-      },
-      grid: { left: 30, right: 30, top: 30, bottom: 30 },
-      xAxis: { type: 'category', data: monthly.months },
-      yAxis: { type: 'value' },
-      series: [
-        { name: 'Admin Fees', type: 'bar', stack: 'total', data: monthly.admin, itemStyle: { color: '#9CA3AF' } },
-        { name: 'Stop Loss Fees', type: 'bar', stack: 'total', data: monthly.slFees, itemStyle: { color: '#6B7280' } },
-        { name: 'Net Medical & Pharmacy', type: 'bar', stack: 'total', data: monthly.netMedPharm, itemStyle: { color: '#1F2937' } },
-        { name: 'Reimbursements', type: 'bar', stack: 'total', data: monthly.reimb, itemStyle: { color: '#60A5FA', opacity: 0.6 } },
-        { name: 'Budgeted Premium', type: 'line', data: monthly.budget, smooth: true, symbol: 'circle', itemStyle: { color: '#000000' } },
-      ],
-    };
-    chart.setOption(option);
-    const onResize = () => chart.resize();
-    window.addEventListener('resize', onResize);
+    let chart: echarts.ECharts | null = null;
+    let resizeHandler: (() => void) | null = null;
+    
+    try {
+      chart = echarts.init(stackedRef.current);
+      const option: echarts.EChartsOption = {
+        tooltip: { trigger: 'axis' },
+        legend: {
+          data: ['Admin Fees', 'Stop Loss Fees', 'Reimbursements', 'Net Medical & Pharmacy', 'Budgeted Premium'],
+        },
+        grid: { left: 30, right: 30, top: 30, bottom: 30 },
+        xAxis: { type: 'category', data: monthly.months },
+        yAxis: { type: 'value' },
+        series: [
+          { name: 'Admin Fees', type: 'bar', stack: 'total', data: monthly.admin, itemStyle: { color: '#9CA3AF' } },
+          { name: 'Stop Loss Fees', type: 'bar', stack: 'total', data: monthly.slFees, itemStyle: { color: '#6B7280' } },
+          { name: 'Net Medical & Pharmacy', type: 'bar', stack: 'total', data: monthly.netMedPharm, itemStyle: { color: '#1F2937' } },
+          { name: 'Reimbursements', type: 'bar', stack: 'total', data: monthly.reimb, itemStyle: { color: '#60A5FA', opacity: 0.6 } },
+          { name: 'Budgeted Premium', type: 'line', data: monthly.budget, smooth: true, symbol: 'circle', itemStyle: { color: '#000000' } },
+        ],
+      };
+      chart.setOption(option);
+      resizeHandler = () => chart?.resize();
+      window.addEventListener('resize', resizeHandler);
+    } catch (e) {
+      console.error('Failed to initialize stacked chart:', e);
+    }
+    
     return () => {
-      window.removeEventListener('resize', onResize);
-      chart.dispose();
+      if (resizeHandler) {
+        window.removeEventListener('resize', resizeHandler);
+      }
+      if (chart) {
+        try {
+          chart.dispose();
+        } catch (e) {
+          console.error('Failed to dispose stacked chart:', e);
+        }
+      }
     };
   }, [monthly]);
 
   // Pie chart
   useEffect(() => {
     if (!pieRef.current) return;
-    const chart = echarts.init(pieRef.current);
-    const option: echarts.EChartsOption = {
-      tooltip: { trigger: 'item' },
-      legend: { bottom: 0, textStyle: { color: '#111827', fontSize: 12 } },
-      series: [
-        {
-          type: 'pie',
-          radius: ['45%', '70%'],
-          avoidLabelOverlap: true,
-          label: { formatter: '{b}: {d}%', color: '#111827', fontSize: 12 },
-          data: [
-            { value: Math.round(totals.medical), name: 'Medical Claims' },
-            { value: Math.round(totals.pharmacy), name: 'Pharmacy Claims' },
-          ],
-        },
-      ],
-    };
-    chart.setOption(option);
-    const onResize = () => chart.resize();
-    window.addEventListener('resize', onResize);
+    let chart: echarts.ECharts | null = null;
+    let resizeHandler: (() => void) | null = null;
+    
+    try {
+      chart = echarts.init(pieRef.current);
+      const option: echarts.EChartsOption = {
+        tooltip: { trigger: 'item' },
+        legend: { bottom: 0, textStyle: { color: '#111827', fontSize: 12 } },
+        series: [
+          {
+            type: 'pie',
+            radius: ['45%', '70%'],
+            avoidLabelOverlap: true,
+            label: { formatter: '{b}: {d}%', color: '#111827', fontSize: 12 },
+            data: [
+              { value: Math.round(totals.medical), name: 'Medical Claims' },
+              { value: Math.round(totals.pharmacy), name: 'Pharmacy Claims' },
+            ],
+          },
+        ],
+      };
+      chart.setOption(option);
+      resizeHandler = () => chart?.resize();
+      window.addEventListener('resize', resizeHandler);
+    } catch (e) {
+      console.error('Failed to initialize pie chart:', e);
+    }
+    
     return () => {
-      window.removeEventListener('resize', onResize);
-      chart.dispose();
+      if (resizeHandler) {
+        window.removeEventListener('resize', resizeHandler);
+      }
+      if (chart) {
+        try {
+          chart.dispose();
+        } catch (e) {
+          console.error('Failed to dispose pie chart:', e);
+        }
+      }
     };
   }, [totals.medical, totals.pharmacy]);
 

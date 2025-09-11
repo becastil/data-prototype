@@ -36,10 +36,8 @@ async function generateSecureToken(byteLength = 32): Promise<string> {
     window.crypto.getRandomValues(buf);
     return base64Url(buf);
   }
-  // Fallback (non-crypto): not expected on client, but provide a minimal fallback
-  const buf = new Uint8Array(byteLength);
-  for (let i = 0; i < byteLength; i++) buf[i] = Math.floor(Math.random() * 256);
-  return base64Url(buf);
+  // Security: Require crypto API for secure token generation
+  throw new Error('Crypto API not available - cannot generate secure tokens');
 }
 
 export class SecureHealthcareStorage {
@@ -104,7 +102,14 @@ export class SecureHealthcareStorage {
     if (!isBrowser()) return null;
     this.initCleanup(); // Ensure cleanup is initialized
     const ttlMs = opts?.ttlMs ?? 60 * 60 * 1000; // default 1 hour
-    const token = await generateSecureToken();
+    
+    let token: string;
+    try {
+      token = await generateSecureToken();
+    } catch (e) {
+      devError('[SecureHealthcareStorage] Failed to generate secure token:', e);
+      return null;
+    }
 
     // In-memory cache (contains PHI)
     const expiresAt = ttlMs > 0 ? now() + ttlMs : null;
