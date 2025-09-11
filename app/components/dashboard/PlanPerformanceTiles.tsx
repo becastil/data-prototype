@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as echarts from 'echarts';
 import { GlassCard } from '@/app/components/ui/glass-card';
+import { Textarea } from '@/app/components/ui/textarea';
+import { secureHealthcareStorage } from '@/app/lib/SecureHealthcareStorage';
 
 type Row = Record<string, any>;
 
@@ -109,6 +111,40 @@ export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commenta
   const stackedRef = useRef<HTMLDivElement>(null);
   const pieRef = useRef<HTMLDivElement>(null);
 
+  // Commentary (editable) with secure persistence (non-PHI text)
+  const defaultCommentary = useMemo(() => {
+    const rollingPct = Math.round((totals.totalPlanCost / Math.max(1, totals.budget)) * 1000) / 10;
+    const currentPct = rollingPct;
+    return [
+      `${commentaryTitle} is running at ${rollingPct.toFixed(1)}% of budget in the rolling 12 month period.`,
+      `In the current plan year, ${commentaryTitle} is running at ${currentPct.toFixed(1)}% of budget.`,
+      'No large claims identified above the stop loss level in the selected period.'
+    ].join('\n\n');
+  }, [commentaryTitle, totals.totalPlanCost, totals.budget]);
+
+  const [commentary, setCommentary] = useState<string>(defaultCommentary);
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+
+  useEffect(() => {
+    try {
+      const saved = secureHealthcareStorage.retrieve<{ text: string }>('planCommentary');
+      if (saved?.text) setCommentary(saved.text);
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleSave = async () => {
+    try {
+      setSaveState('saving');
+      await secureHealthcareStorage.storeTemporary('planCommentary', { text: commentary, savedAt: new Date().toISOString() }, { ttlMs: 7 * 24 * 60 * 60 * 1000 });
+      setSaveState('saved');
+      setTimeout(() => setSaveState('idle'), 1500);
+    } catch {
+      setSaveState('error');
+      setTimeout(() => setSaveState('idle'), 2000);
+    }
+  };
+
   // Gauge chart
   useEffect(() => {
     if (!gaugeRef.current) return;
@@ -120,13 +156,13 @@ export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commenta
           startAngle: 180,
           endAngle: 0,
           center: ['50%', '70%'],
-          radius: '100%',
+          radius: '90%',
           min: 0,
           max: 140,
           splitNumber: 7,
           axisLine: {
             lineStyle: {
-              width: 20,
+              width: 22,
               color: [
                 [0.95, '#22c55e'], // green <95%
                 [1.05, '#f59e0b'], // yellow 95-105
@@ -134,18 +170,19 @@ export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commenta
               ],
             },
           },
-          pointer: { show: true, length: '55%' },
-          title: { show: false },
+          pointer: { show: true, length: '60%', itemStyle: { color: '#111827' } },
+          title: { show: true, offsetCenter: [0, '-55%'], color: '#111827', fontWeight: 'bold', fontSize: 12 },
           detail: {
             formatter: '{value}%',
-            fontSize: 18,
-            color: '#111827',
-            offsetCenter: [0, '-5%'],
+            fontSize: 26,
+            color: '#0f0f0f',
+            offsetCenter: [0, '-8%'],
+            valueAnimation: true,
           },
           axisTick: { show: false },
           splitLine: { show: false },
           axisLabel: { show: false },
-          data: [{ value: gaugePercent }],
+          data: [{ value: gaugePercent, name: 'Budget Utilization' }],
         },
       ],
     };
@@ -191,16 +228,15 @@ export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commenta
   useEffect(() => {
     if (!pieRef.current) return;
     const chart = echarts.init(pieRef.current);
-    const medPct = totals.medical / Math.max(1, totals.medical + totals.pharmacy);
     const option: echarts.EChartsOption = {
       tooltip: { trigger: 'item' },
-      legend: { bottom: 0 },
+      legend: { bottom: 0, textStyle: { color: '#111827', fontSize: 12 } },
       series: [
         {
           type: 'pie',
           radius: ['45%', '70%'],
           avoidLabelOverlap: true,
-          label: { formatter: '{b}: {d}%' },
+          label: { formatter: '{b}: {d}%', color: '#111827', fontSize: 12 },
           data: [
             { value: Math.round(totals.medical), name: 'Medical Claims' },
             { value: Math.round(totals.pharmacy), name: 'Pharmacy Claims' },
@@ -217,45 +253,36 @@ export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commenta
     };
   }, [totals.medical, totals.pharmacy]);
 
-  // Commentary text
-  const commentary = useMemo(() => {
-    const rollingPct = Math.round((totals.totalPlanCost / Math.max(1, totals.budget)) * 1000) / 10;
-    const currentPct = rollingPct; // Placeholder: without YTD split, use rolling
-    const largeClaimants = 0; // If claims dataset is provided elsewhere, can compute
-    return [
-      `${commentaryTitle} is running at ${rollingPct.toFixed(1)}% of budget in the rolling 12 month period.`,
-      `In the current plan year, ${commentaryTitle} is running at ${currentPct.toFixed(1)}% of budget.`,
-      largeClaimants > 0
-        ? `There are ${largeClaimants} large claimants exceeding the stop loss level.`
-        : 'No large claims identified above the stop loss level in the selected period.'
-    ];
-  }, [commentaryTitle, totals.totalPlanCost, totals.budget]);
+  // Responsive heights for charts
+  const gaugeHeight = { height: 'clamp(180px, 28vw, 260px)' } as React.CSSProperties;
+  const barsHeight = { height: 'clamp(220px, 32vw, 320px)' } as React.CSSProperties;
+  const pieHeight = { height: 'clamp(200px, 28vw, 260px)' } as React.CSSProperties;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
       {/* Left: Gauge + legend */}
       <GlassCard variant="elevated" className="p-4">
-        <h3 className="text-sm font-semibold mb-2">Fuel Gauge - Plan Performance</h3>
+        <h3 className="text-base font-semibold text-gray-900 mb-2">Fuel Gauge - Plan Performance</h3>
         <div className="grid grid-cols-1 gap-3">
-          <div ref={gaugeRef} style={{ width: '100%', height: 180 }} />
-          <div className="text-xs bg-gray-50 border rounded p-2">
-            <div>Green — &lt; 95% of Budget</div>
-            <div>Yellow — 95% to 105% of Budget</div>
-            <div>Red — &gt; 105% of Budget</div>
+          <div ref={gaugeRef} style={{ width: '100%', ...gaugeHeight }} />
+          <div className="text-sm text-gray-800 bg-gray-50 border rounded p-2">
+            <div><span className="inline-block w-3 h-3 bg-[#22c55e] mr-2 align-middle rounded-sm" />Green — &lt; 95% of Budget</div>
+            <div><span className="inline-block w-3 h-3 bg-[#f59e0b] mr-2 align-middle rounded-sm" />Yellow — 95% to 105% of Budget</div>
+            <div><span className="inline-block w-3 h-3 bg-[#ef4444] mr-2 align-middle rounded-sm" />Red — &gt; 105% of Budget</div>
           </div>
         </div>
       </GlassCard>
 
       {/* Middle: Rolling 12 Month Graph */}
       <GlassCard variant="elevated" className="p-4 lg:col-span-2">
-        <h3 className="text-sm font-semibold mb-2">Rolling 12 Month Graph</h3>
-        <div ref={stackedRef} style={{ width: '100%', height: 260 }} />
+        <h3 className="text-base font-semibold text-gray-900 mb-2">Rolling 12 Month Graph</h3>
+        <div ref={stackedRef} style={{ width: '100%', ...barsHeight }} />
       </GlassCard>
 
       {/* Bottom left: Rolling 12 Month Summary */}
       <GlassCard variant="elevated" className="p-4">
-        <h3 className="text-sm font-semibold mb-2">Rolling 12 Month Summary</h3>
-        <div className="text-xs">
+        <h3 className="text-base font-semibold text-gray-900 mb-2">Rolling 12 Month Summary</h3>
+        <div className="text-sm text-gray-800">
           <div className="flex justify-between py-1"><span>Total Budgeted Premium</span><span>{fmtCurrency(totals.budget)}</span></div>
           <div className="flex justify-between py-1"><span>Medical Paid Claims</span><span>{fmtCurrency(totals.medical)}</span></div>
           <div className="flex justify-between py-1"><span>Pharmacy Paid Claims</span><span>{fmtCurrency(totals.pharmacy)}</span></div>
@@ -274,20 +301,31 @@ export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commenta
 
       {/* Bottom middle: Pie */}
       <GlassCard variant="elevated" className="p-4">
-        <h3 className="text-sm font-semibold mb-2">Medical vs Pharmacy Distribution</h3>
-        <div ref={pieRef} style={{ width: '100%', height: 220 }} />
+        <h3 className="text-base font-semibold text-gray-900 mb-2">Medical vs Pharmacy Distribution</h3>
+        <div ref={pieRef} style={{ width: '100%', ...pieHeight }} />
       </GlassCard>
 
-      {/* Bottom right: Commentary */}
+      {/* Bottom right: Commentary (editable) */}
       <GlassCard variant="elevated" className="p-4">
-        <h3 className="text-sm font-semibold mb-2">Commentary</h3>
-        <div className="text-xs text-gray-700 space-y-3">
-          {commentary.map((line, i) => (
-            <p key={i}>{line}</p>
-          ))}
+        <h3 className="text-base font-semibold text-gray-900 mb-2">Commentary</h3>
+        <Textarea
+          value={commentary}
+          onChange={(e) => setCommentary(e.target.value)}
+          className="min-h-[160px] text-sm bg-white text-black border-gray-300 placeholder:text-gray-500"
+          placeholder="Enter commentary..."
+        />
+        <div className="flex items-center gap-3 mt-3">
+          <button
+            onClick={handleSave}
+            className="px-3 py-2 text-sm rounded-md bg-black text-white hover:brightness-95"
+          >
+            {saveState === 'saving' ? 'Saving...' : saveState === 'saved' ? 'Saved' : 'Save'}
+          </button>
+          {saveState === 'error' && (
+            <span className="text-sm text-red-600">Could not save. Try again.</span>
+          )}
         </div>
       </GlassCard>
     </div>
   );
 }
-
