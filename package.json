@@ -64,7 +64,6 @@
     "papaparse": "^5.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-gifted-charts": "^0.0.12",
     "react-window": "^2.1.0",
     "react-window-infinite-loader": "^1.0.10",
     "socket.io-client": "^4.8.1",
