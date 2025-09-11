@@ -23,6 +23,15 @@ import { ThemeToggle } from '@components/ui/theme-toggle';
 import { GlassCard } from '@components/ui/glass-card';
 import { PremiumDashboardCard } from '@components/ui/premium-dashboard-card';
 import PlanPerformanceTiles from '@components/dashboard/PlanPerformanceTiles';
+import KPITiles from '@components/dashboard/KPITiles';
+
+// Helper function for numeric parsing
+const num = (val: unknown): number => {
+  if (typeof val === 'number') return isFinite(val) ? val : 0;
+  if (val == null) return 0;
+  const n = parseFloat(String(val).replace(/[$,\s]/g, ''));
+  return isFinite(n) ? n : 0;
+};
 import { AnimatedNumber } from '@components/ui/animated-number';
 import { LottieLoader } from '@components/ui/lottie-loader';
 import { Button } from '@components/ui/button';
@@ -221,9 +230,8 @@ const Home: React.FC = () => {
 
   // Quick navigation items for soft dropdown (dashboard views)
   const quickNavItems = [
-    { id: 'dashboard', label: 'Dashboard', description: 'Summary tiles & metrics' },
-    { id: 'table', label: 'Financial Table', description: 'Browse raw financial data' },
-    { id: 'charts', label: 'Charts & Analytics', description: 'Visualize trends' },
+    { id: 'table', label: 'Data Table', description: 'Detailed financial records' },
+    { id: 'report', label: 'Performance Report', description: 'Visual analytics & KPIs' },
   ];
 
   // Build ordered month labels from budget data
@@ -466,16 +474,16 @@ const Home: React.FC = () => {
             
             {/* Page Navigation Tabs and Export Controls */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              {/* Map 'dashboard' to 'table' to keep Radix Tabs value valid */}
+              {/* Two-page report navigation */}
               <Tabs value={currentPage === 'dashboard' ? 'table' : currentPage} onValueChange={setCurrentPage} className="w-fit">
                 <TabsList ref={navigationRef}>
                   <TabsTrigger value="table" className="flex items-center gap-2">
                     <Table className="w-4 h-4" />
-                    Financial Table
+                    Data Table
                   </TabsTrigger>
-                  <TabsTrigger value="charts" className="flex items-center gap-2">
+                  <TabsTrigger value="report" className="flex items-center gap-2">
                     <BarChart3 className="w-4 h-4" />
-                    Charts & Analytics
+                    Performance Report
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -540,13 +548,6 @@ const Home: React.FC = () => {
 
             {/* Main Content Area */}
             <div className="p-8">
-              {/* Plan Performance Tiles (Gauge + Rolling Graph + Summary + Pie + Commentary) */}
-              <div className="max-w-7xl mx-auto">
-                <AccessibleErrorBoundary>
-                  <PlanPerformanceTiles data={effectiveBudget} commentaryTitle="Plan" />
-                </AccessibleErrorBoundary>
-              </div>
-
               {/* Page Content */}
               <AnimatePresence mode="wait">
                 {(currentPage === 'table' || currentPage === 'dashboard') ? (
@@ -562,55 +563,94 @@ const Home: React.FC = () => {
                       claimsData={filteredClaims}
                     />
                   </motion.div>
-                ) : currentPage === 'charts' || currentPage === 'analytics' ? (
+                ) : currentPage === 'report' ? (
                   <motion.div
-                    key="charts-page"
+                    key="report-page"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.3 }}
-                    ref={chartsGridRef}
-                    className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+                    className="space-y-6"
                   >
-                {/* Tile 1: Budget vs Expenses (ECharts) */}
-                <MotionCard delay={0.1}>
-                  <LazyChartWrapper chartName="Budget vs Expenses">
-                    <EChartsEnterpriseChart data={effectiveBudget} rollingMonths={effectiveBudget.length} />
-                  </LazyChartWrapper>
-                </MotionCard>
+                    {/* KPI Tiles - Top Level Metrics */}
+                    <KPITiles 
+                      metrics={{
+                        pctOfBudget: (() => {
+                          const totalBudget = effectiveBudget.reduce((sum, r) => sum + num(r['Budget'] || r['Computed Budget'] || 0), 0);
+                          const totalCost = effectiveBudget.reduce((sum, r) => {
+                            const medical = num(r['Medical Claims'] || r['medical_claims'] || 0);
+                            const pharmacy = num(r['Pharmacy Claims'] || r['pharmacy_claims'] || 0);
+                            const admin = num(r['Admin Fees'] || r['admin_fees'] || 0);
+                            const stopLoss = num(r['Stop Loss Premium'] || r['stop_loss_premium'] || 0);
+                            const reimb = num(r['Stop Loss Reimbursements'] || r['stop_loss_reimb'] || 0);
+                            const rebates = num(r['Rx Rebates'] || r['pharmacy_rebates'] || 0);
+                            return sum + medical + pharmacy + admin + stopLoss - reimb - rebates;
+                          }, 0);
+                          return totalBudget > 0 ? (totalCost / totalBudget) * 100 : 0;
+                        })(),
+                        totalBudget: effectiveBudget.reduce((sum, r) => sum + num(r['Budget'] || r['Computed Budget'] || 0), 0),
+                        totalPlanCost: effectiveBudget.reduce((sum, r) => {
+                          const medical = num(r['Medical Claims'] || r['medical_claims'] || 0);
+                          const pharmacy = num(r['Pharmacy Claims'] || r['pharmacy_claims'] || 0);
+                          const admin = num(r['Admin Fees'] || r['admin_fees'] || 0);
+                          const stopLoss = num(r['Stop Loss Premium'] || r['stop_loss_premium'] || 0);
+                          const reimb = num(r['Stop Loss Reimbursements'] || r['stop_loss_reimb'] || 0);
+                          const rebates = num(r['Rx Rebates'] || r['pharmacy_rebates'] || 0);
+                          return sum + medical + pharmacy + admin + stopLoss - reimb - rebates;
+                        }, 0),
+                        surplus: (() => {
+                          const totalBudget = effectiveBudget.reduce((sum, r) => sum + num(r['Budget'] || r['Computed Budget'] || 0), 0);
+                          const totalCost = effectiveBudget.reduce((sum, r) => {
+                            const medical = num(r['Medical Claims'] || r['medical_claims'] || 0);
+                            const pharmacy = num(r['Pharmacy Claims'] || r['pharmacy_claims'] || 0);
+                            const admin = num(r['Admin Fees'] || r['admin_fees'] || 0);
+                            const stopLoss = num(r['Stop Loss Premium'] || r['stop_loss_premium'] || 0);
+                            const reimb = num(r['Stop Loss Reimbursements'] || r['stop_loss_reimb'] || 0);
+                            const rebates = num(r['Rx Rebates'] || r['pharmacy_rebates'] || 0);
+                            return sum + medical + pharmacy + admin + stopLoss - reimb - rebates;
+                          }, 0);
+                          return totalBudget - totalCost;
+                        })(),
+                        planCostPEPM: (() => {
+                          const totalMembers = effectiveBudget.reduce((sum, r) => sum + num(r['Member Count'] || r['Enrollment'] || r['members'] || 0), 0);
+                          const totalCost = effectiveBudget.reduce((sum, r) => {
+                            const medical = num(r['Medical Claims'] || r['medical_claims'] || 0);
+                            const pharmacy = num(r['Pharmacy Claims'] || r['pharmacy_claims'] || 0);
+                            const admin = num(r['Admin Fees'] || r['admin_fees'] || 0);
+                            const stopLoss = num(r['Stop Loss Premium'] || r['stop_loss_premium'] || 0);
+                            const reimb = num(r['Stop Loss Reimbursements'] || r['stop_loss_reimb'] || 0);
+                            const rebates = num(r['Rx Rebates'] || r['pharmacy_rebates'] || 0);
+                            return sum + medical + pharmacy + admin + stopLoss - reimb - rebates;
+                          }, 0);
+                          return totalMembers > 0 ? totalCost / totalMembers : 0;
+                        })(),
+                        budgetPEPM: (() => {
+                          const totalMembers = effectiveBudget.reduce((sum, r) => sum + num(r['Member Count'] || r['Enrollment'] || r['members'] || 0), 0);
+                          const totalBudget = effectiveBudget.reduce((sum, r) => sum + num(r['Budget'] || r['Computed Budget'] || 0), 0);
+                          return totalMembers > 0 ? totalBudget / totalMembers : 0;
+                        })(),
+                        netPaidPEPM: (() => {
+                          const totalMembers = effectiveBudget.reduce((sum, r) => sum + num(r['Member Count'] || r['Enrollment'] || r['members'] || 0), 0);
+                          const netPaid = effectiveBudget.reduce((sum, r) => {
+                            const medical = num(r['Medical Claims'] || r['medical_claims'] || 0);
+                            const pharmacy = num(r['Pharmacy Claims'] || r['pharmacy_claims'] || 0);
+                            const reimb = num(r['Stop Loss Reimbursements'] || r['stop_loss_reimb'] || 0);
+                            const rebates = num(r['Rx Rebates'] || r['pharmacy_rebates'] || 0);
+                            return sum + medical + pharmacy - reimb - rebates;
+                          }, 0);
+                          return totalMembers > 0 ? netPaid / totalMembers : 0;
+                        })(),
+                        members: effectiveBudget.reduce((sum, r) => sum + num(r['Member Count'] || r['Enrollment'] || r['members'] || 0), 0)
+                      }}
+                      period={dateRange.preset === '12M' ? 'Rolling 12 Months' : dateRange.preset || 'Custom Period'}
+                    />
 
-                {/* Tile 2: Claims Breakdown (placeholder) */}
-                <MotionCard delay={0.2}>
-                  <GlassCard variant="elevated" className="p-6 h-[400px] flex flex-col justify-center text-center">
-                    <div className="text-6xl mb-4">🧮</div>
-                    <h3 className="text-lg font-semibold mb-2">Claims Breakdown</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Pie visualization coming soon</p>
-                  </GlassCard>
-                </MotionCard>
-
-                {/* Tile 3: Enrollment Trends (ECharts) */}
-                <MotionCard delay={0.3}>
-                  <LazyChartWrapper chartName="Enrollment Trends">
-                    <PremiumEnrollmentChart data={effectiveBudget} rollingMonths={effectiveBudget.length} />
-                  </LazyChartWrapper>
-                </MotionCard>
-
-                {/* Tile 4: High Cost Claimant Distribution (placeholder) */}
-                <MotionCard delay={0.4}>
-                  <GlassCard variant="elevated" className="p-6 h-[400px] flex flex-col justify-center text-center">
-                    <div className="text-6xl mb-4">📈</div>
-                    <h3 className="text-lg font-semibold mb-2">High Cost Claimants</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Band distribution coming soon</p>
-                  </GlassCard>
-                </MotionCard>
-
-                {/* Tile 7: HCC Data Table */}
-                <MotionCard delay={0.7}>
-                  <LazyChartWrapper chartName="HCC Data Table">
-                    <HCCDataTable data={filteredClaims} />
-                  </LazyChartWrapper>
-                </MotionCard>
-                </motion.div>
+                    {/* Plan Performance Tiles - Comprehensive Visualizations */}
+                    <PlanPerformanceTiles 
+                      data={effectiveBudget}
+                      commentaryTitle="Keenan Reporting Dashboard"
+                    />
+                  </motion.div>
                 ) : (
                   <motion.div
                     key="default-page"
