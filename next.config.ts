@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 import path from 'path';
-// import { createVanillaExtractPlugin } from '@vanilla-extract/next-plugin';
+import { createVanillaExtractPlugin } from '@vanilla-extract/next-plugin';
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -29,7 +29,7 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60,
   },
   
-  // Simplified webpack config - removed esbuild-loader and vanilla-extract to fix production build
+  // Simplified webpack config
   webpack: (config) => {
     // Basic path alias for imports
     config.resolve.alias = {
@@ -42,7 +42,6 @@ const nextConfig: NextConfig = {
   }
 };
 
-// Re-enable vanilla-extract so .css.ts styles render in production
-// const withVanillaExtract = createVanillaExtractPlugin();
-// export default withVanillaExtract(nextConfig);
-export default nextConfig;
+// Enable vanilla-extract so .css.ts styles compile in production
+const withVanillaExtract = createVanillaExtractPlugin();
+export default withVanillaExtract(nextConfig);
