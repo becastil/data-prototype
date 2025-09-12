@@ -9,6 +9,7 @@
 const isDev = process.env.NODE_ENV === 'development';
 const devLog = (...args: any[]) => isDev && console.log(...args);
 const devWarn = (...args: any[]) => isDev && console.warn(...args);
+const devError = (...args: any[]) => isDev && console.error(...args);
 
 type CacheEntry<T = unknown> = {
   data: T;
