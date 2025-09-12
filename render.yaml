@@ -5,7 +5,7 @@ services:
     plan: free
     branch: main
     rootDir: .
-    buildCommand: npm run install:legacy && npm run build
+    buildCommand: npm run build
     startCommand: npm start
     autoDeploy: true
     healthCheckPath: /api/health
@@ -13,3 +13,6 @@ services:
       # Optional; set via Render Dashboard if used by your deployment
       - key: NEXT_PUBLIC_API_URL
         sync: false
+      # Skip git hooks in CI installs
+      - key: HUSKY
+        value: "0"
