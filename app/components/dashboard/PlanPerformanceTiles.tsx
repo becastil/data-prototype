@@ -5,6 +5,7 @@ import * as echarts from 'echarts';
 import { GlassCard } from '@/app/components/ui/glass-card';
 import { Textarea } from '@/app/components/ui/textarea';
 import { secureHealthcareStorage } from '@/app/lib/SecureHealthcareStorage';
+import PerformanceIndicator from './PerformanceIndicator';
 
 type Row = Record<string, any>;
 
@@ -107,7 +108,6 @@ export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commenta
   }, [last12]);
 
   // ECharts refs
-  const gaugeRef = useRef<HTMLDivElement>(null);
   const stackedRef = useRef<HTMLDivElement>(null);
   const pieRef = useRef<HTMLDivElement>(null);
 
@@ -144,72 +144,6 @@ export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commenta
       setTimeout(() => setSaveState('idle'), 2000);
     }
   };
-
-  // Gauge chart
-  useEffect(() => {
-    if (!gaugeRef.current) return;
-    let chart: echarts.ECharts | null = null;
-    let resizeHandler: (() => void) | null = null;
-    
-    try {
-      chart = echarts.init(gaugeRef.current);
-      const option: echarts.EChartsOption = {
-        series: [
-          {
-            type: 'gauge',
-            startAngle: 180,
-            endAngle: 0,
-            center: ['50%', '70%'],
-            radius: '90%',
-            min: 0,
-            max: 140,
-            splitNumber: 7,
-            axisLine: {
-              lineStyle: {
-                width: 22,
-                color: [
-                  [0.95, '#22c55e'], // green <95%
-                  [1.05, '#f59e0b'], // yellow 95-105
-                  [1.4, '#ef4444'], // red >105
-                ],
-              },
-            },
-            pointer: { show: true, length: '60%', itemStyle: { color: '#111827' } },
-            title: { show: true, offsetCenter: [0, '-55%'], color: '#111827', fontWeight: 'bold', fontSize: 12 },
-            detail: {
-              formatter: '{value}%',
-              fontSize: 26,
-              color: '#0f0f0f',
-              offsetCenter: [0, '-8%'],
-              valueAnimation: true,
-            },
-            axisTick: { show: false },
-            splitLine: { show: false },
-            axisLabel: { show: false },
-            data: [{ value: gaugePercent, name: 'Budget Utilization' }],
-          },
-        ],
-      };
-      chart.setOption(option);
-      resizeHandler = () => chart?.resize();
-      window.addEventListener('resize', resizeHandler);
-    } catch (e) {
-      console.error('Failed to initialize gauge chart:', e);
-    }
-    
-    return () => {
-      if (resizeHandler) {
-        window.removeEventListener('resize', resizeHandler);
-      }
-      if (chart) {
-        try {
-          chart.dispose();
-        } catch (e) {
-          console.error('Failed to dispose gauge chart:', e);
-        }
-      }
-    };
-  }, [gaugePercent]);
 
   // Stacked bar + line
   useEffect(() => {
@@ -302,24 +236,18 @@ export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commenta
   }, [totals.medical, totals.pharmacy]);
 
   // Responsive heights for charts
-  const gaugeHeight = { height: 'clamp(180px, 28vw, 260px)' } as React.CSSProperties;
   const barsHeight = { height: 'clamp(220px, 32vw, 320px)' } as React.CSSProperties;
   const pieHeight = { height: 'clamp(200px, 28vw, 260px)' } as React.CSSProperties;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      {/* Left: Gauge + legend */}
-      <GlassCard variant="elevated" className="p-4">
-        <h3 className="text-base font-semibold text-gray-900 mb-2">Fuel Gauge - Plan Performance</h3>
-        <div className="grid grid-cols-1 gap-3">
-          <div ref={gaugeRef} style={{ width: '100%', ...gaugeHeight }} />
-          <div className="text-sm text-gray-800 bg-gray-50 border rounded p-2">
-            <div><span className="inline-block w-3 h-3 bg-[#22c55e] mr-2 align-middle rounded-sm" />Green — &lt; 95% of Budget</div>
-            <div><span className="inline-block w-3 h-3 bg-[#f59e0b] mr-2 align-middle rounded-sm" />Yellow — 95% to 105% of Budget</div>
-            <div><span className="inline-block w-3 h-3 bg-[#ef4444] mr-2 align-middle rounded-sm" />Red — &gt; 105% of Budget</div>
-          </div>
-        </div>
-      </GlassCard>
+      {/* Left: Performance Indicator with widget selector */}
+      <PerformanceIndicator 
+        value={gaugePercent}
+        title="Plan Performance"
+        defaultWidget="gauge"
+        showLegend={true}
+      />
 
       {/* Middle: Rolling 12 Month Graph */}
       <GlassCard variant="elevated" className="p-4 lg:col-span-2">
