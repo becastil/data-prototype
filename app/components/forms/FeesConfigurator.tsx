@@ -3,8 +3,12 @@
 import React, { useMemo, useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Copy } from 'lucide-react';
 import { GlassCard } from '@/app/components/ui/glass-card';
+import BulkApplyModal from './BulkApplyModal';
+import { BulkApplyConfig, MissingMonthStrategy } from '@/app/types/bulkApply';
+import { executeBulkApply, extractEnrollmentData } from '@/app/services/bulkApplyService';
+// import { toast } from 'sonner'; // Optional: Uncomment if sonner is installed
 
 export type RateBasis = 'PMPM' | 'PEPM' | 'Monthly' | 'Annual';
 
@@ -20,6 +24,27 @@ export interface FeesConfig {
   budgetOverride?: { amount: number; basis: RateBasis };
   stopLossReimb?: number; // reimbursements received for the month
   rebates?: number; // monthly rebates received
+  // Optional per-month overrides keyed by YYYY-MM
+  perMonth?: Record<string, {
+    // Override individual fees by fee id
+    fees?: Partial<Record<string, { amount: number; basis: RateBasis }>>;
+    // Override budget for the month
+    budgetOverride?: { amount: number; basis: RateBasis };
+    // Override reimbursements and rebates for the month
+    stopLossReimb?: number;
+    rebates?: number;
+  }>;
+}
+
+type OverrideType = 'budget' | 'stopLossReimb' | 'rebates' | 'fee';
+
+interface OverrideRow {
+  id: string;
+  month: string; // YYYY-MM
+  type: OverrideType;
+  feeId?: string; // when type === 'fee'
+  amount: number;
+  basis?: RateBasis; // for fee/budget rows
 }
 
 function toNumber(val: string | number): number {
@@ -48,11 +73,13 @@ export default function FeesConfigurator({
   defaultEmployees = 0,
   defaultMembers = 0,
   defaultBudget = 0,
+  csvData = [],
   onSubmit,
 }: {
   defaultEmployees?: number; // preview only, calculated from CSV
   defaultMembers?: number;   // preview only, calculated from CSV
   defaultBudget?: number;
+  csvData?: any[]; // CSV data for enrollment extraction
   onSubmit: (config: FeesConfig, computed: { monthlyFixed: number; monthlyBudget: number }) => void;
 }) {
   // Note: employees/members are not editable; we compute per-month from CSV later
@@ -67,6 +94,9 @@ export default function FeesConfigurator({
   const [budgetBasis, setBudgetBasis] = useState<RateBasis>('Monthly');
   const [stopLossReimb, setStopLossReimb] = useState<number>(0);
   const [rebates, setRebates] = useState<number>(0);
+  const [overrides, setOverrides] = useState<OverrideRow[]>([]);
+  const [showBulkApplyModal, setShowBulkApplyModal] = useState(false);
+  const [currentFeesConfig, setCurrentFeesConfig] = useState<FeesConfig | null>(null);
 
   const monthlyFixed = useMemo(() => {
     return fees.reduce((sum, f) => sum + monthlyFromBasis(f.amount, f.basis, employees, members), 0);
@@ -92,7 +122,149 @@ export default function FeesConfigurator({
     setFees(prev => prev.filter((_, i) => i !== index));
   };
 
+  const addOverride = () => {
+    setOverrides(prev => [
+      ...prev, 
+      {
+        id: `ovr-${Date.now()}-${prev.length + 1}`,
+        month: '',
+        type: 'budget',
+        amount: 0,
+        basis: 'Monthly',
+      }
+    ]);
+  };
+
+  const updateOverride = (id: string, patch: Partial<OverrideRow>) => {
+    setOverrides(prev => prev.map(o => o.id === id ? { ...o, ...patch } : o));
+  };
+
+  const removeOverride = (id: string) => {
+    setOverrides(prev => prev.filter(o => o.id !== id));
+  };
+
+  const toPerMonth = () => {
+    const byMonth: FeesConfig['perMonth'] = {};
+    for (const o of overrides) {
+      if (!o.month) continue;
+      const key = o.month;
+      byMonth[key] ||= {};
+      switch (o.type) {
+        case 'budget':
+          if (o.basis != null)
+            byMonth[key]!.budgetOverride = { amount: o.amount || 0, basis: o.basis! };
+          break;
+        case 'stopLossReimb':
+          byMonth[key]!.stopLossReimb = o.amount || 0;
+          break;
+        case 'rebates':
+          byMonth[key]!.rebates = o.amount || 0;
+          break;
+        case 'fee':
+          if (o.feeId) {
+            byMonth[key]!.fees ||= {};
+            byMonth[key]!.fees![o.feeId] = { amount: o.amount || 0, basis: o.basis || 'Monthly' };
+          }
+          break;
+      }
+    }
+    return byMonth;
+  };
+
   const canContinue = fees.every(f => Number.isFinite(f.amount)) && Number.isFinite(budgetAmount);
+
+  // Build current fees config for bulk apply
+  const buildCurrentFeesConfig = (): FeesConfig => ({
+    fees,
+    budgetOverride: { amount: budgetAmount, basis: budgetBasis },
+    stopLossReimb,
+    rebates,
+    perMonth: toPerMonth()
+  });
+
+  const handleOpenBulkApply = () => {
+    setCurrentFeesConfig(buildCurrentFeesConfig());
+    setShowBulkApplyModal(true);
+  };
+
+  const handleBulkApply = (config: BulkApplyConfig) => {
+    const feesConfig = buildCurrentFeesConfig();
+    const targetMonths = config.endMonth 
+      ? expandMonths(config.startMonth, undefined, config.endMonth)
+      : expandMonths(config.startMonth, config.duration);
+    
+    const enrollmentData = extractEnrollmentData(csvData, targetMonths);
+    
+    const result = executeBulkApply(
+      config,
+      feesConfig,
+      enrollmentData,
+      MissingMonthStrategy.CREATE
+    );
+    
+    if (result.success) {
+      // Update the overrides with the new per-month data
+      const newOverrides: OverrideRow[] = [];
+      const updatedFeesConfig = JSON.parse(JSON.stringify(feesConfig));
+      
+      // Apply the bulk changes to the fees config
+      for (const month of result.monthsUpdated) {
+        const monthData = updatedFeesConfig.perMonth?.[month];
+        if (monthData) {
+          // Convert back to override rows for display
+          if (monthData.budgetOverride) {
+            newOverrides.push({
+              id: `bulk-budget-${month}`,
+              month,
+              type: 'budget',
+              amount: monthData.budgetOverride.amount,
+              basis: monthData.budgetOverride.basis
+            });
+          }
+          if (monthData.stopLossReimb !== undefined) {
+            newOverrides.push({
+              id: `bulk-stoploss-${month}`,
+              month,
+              type: 'stopLossReimb',
+              amount: monthData.stopLossReimb
+            });
+          }
+          if (monthData.rebates !== undefined) {
+            newOverrides.push({
+              id: `bulk-rebates-${month}`,
+              month,
+              type: 'rebates',
+              amount: monthData.rebates
+            });
+          }
+          if (monthData.fees) {
+            Object.entries(monthData.fees).forEach(([feeId, fee]) => {
+              newOverrides.push({
+                id: `bulk-fee-${month}-${feeId}`,
+                month,
+                type: 'fee',
+                feeId,
+                amount: fee.amount,
+                basis: fee.basis
+              });
+            });
+          }
+        }
+      }
+      
+      setOverrides(prev => [...prev, ...newOverrides]);
+      // toast?.success(`Successfully applied settings to ${result.monthsUpdated.length} month(s)`);
+      console.log(`Successfully applied settings to ${result.monthsUpdated.length} month(s)`);
+    } else {
+      // toast?.error(`Failed to apply settings: ${result.errors.join(', ')}`);
+      console.error(`Failed to apply settings: ${result.errors.join(', ')}`);
+    }
+    
+    setShowBulkApplyModal(false);
+  };
+
+  // Import the expandMonths function for use
+  const { expandMonths } = require('@/app/services/bulkApplyService');
 
   return (
     <div className="min-h-screen bg-[#f5f7fa] p-6 fees-configurator">
@@ -194,7 +366,7 @@ export default function FeesConfigurator({
           </div>
         </GlassCard>
 
-        {/* Budget, Stop Loss & Rebates */}
+        {/* Budget, Stop Loss & Rebates (Global Defaults) */}
         <GlassCard variant="elevated" className="p-6 mb-6 bg-white shadow-sm rounded-lg">
           <h3 className="text-lg font-semibold mb-4 text-black">Budget, Stop Loss & Rebates</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
@@ -253,6 +425,105 @@ export default function FeesConfigurator({
           </div>
         </GlassCard>
 
+        {/* Per-Month Overrides */}
+        <GlassCard variant="elevated" className="p-6 mb-6 bg-white shadow-sm rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-black">Per-Month Overrides</h3>
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={handleOpenBulkApply}>
+                <Copy className="w-4 h-4 mr-2" /> Apply to Multiple Months
+              </Button>
+              <Button type="button" variant="outline" onClick={addOverride}>
+                <Plus className="w-4 h-4 mr-2" /> Add Override
+              </Button>
+            </div>
+          </div>
+          {overrides.length === 0 ? (
+            <p className="text-sm text-gray-600">Add overrides to target specific months (e.g., change Admin Fee in May 2025).</p>
+          ) : (
+            <div className="space-y-3">
+              {overrides.map((o) => (
+                <div key={o.id} className="grid grid-cols-12 gap-3 items-end border rounded-md p-3">
+                  <div className="col-span-3">
+                    <label className="block text-sm text-black font-medium mb-1">Month</label>
+                    <Input
+                      type="month"
+                      className="h-10 text-base"
+                      value={o.month}
+                      onChange={(e) => updateOverride(o.id, { month: e.target.value })}
+                    />
+                  </div>
+                  <div className="col-span-3">
+                    <label className="block text-sm text-black font-medium mb-1">Type</label>
+                    <select
+                      className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-base bg-white text-black focus:outline-none focus:border-black transition-colors"
+                      value={o.type}
+                      onChange={(e) => {
+                        const t = e.target.value as OverrideType;
+                        updateOverride(o.id, { type: t, feeId: t === 'fee' ? fees[0]?.id : undefined, basis: (t === 'fee' || t === 'budget') ? (o.basis || 'Monthly') : undefined });
+                      }}
+                    >
+                      <option value="budget">Budget</option>
+                      <option value="stopLossReimb">Stop Loss Reimb</option>
+                      <option value="rebates">Rebates</option>
+                      <option value="fee">Specific Fee</option>
+                    </select>
+                  </div>
+                  {o.type === 'fee' && (
+                    <div className="col-span-3">
+                      <label className="block text-sm text-black font-medium mb-1">Fee</label>
+                      <select
+                        className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-base bg-white text-black focus:outline-none focus:border-black transition-colors"
+                        value={o.feeId || ''}
+                        onChange={(e) => updateOverride(o.id, { feeId: e.target.value })}
+                      >
+                        {fees.map(f => (
+                          <option key={f.id} value={f.id}>{f.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  <div className={o.type === 'fee' ? 'col-span-2' : 'col-span-3'}>
+                    <label className="block text-sm text-black font-medium mb-1">Amount</label>
+                    <Input
+                      type="number"
+                      className="h-10 text-base"
+                      value={o.amount}
+                      onChange={(e) => updateOverride(o.id, { amount: toNumber(e.target.value) })}
+                      placeholder="e.g. 25000"
+                    />
+                  </div>
+                  {(o.type === 'budget' || o.type === 'fee') && (
+                    <div className="col-span-2">
+                      <label className="block text-sm text-black font-medium mb-1">Basis</label>
+                      <select
+                        className="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-base bg-white text-black focus:outline-none focus:border-black transition-colors"
+                        value={o.basis || 'Monthly'}
+                        onChange={(e) => updateOverride(o.id, { basis: e.target.value as RateBasis })}
+                      >
+                        <option value="Monthly">Monthly</option>
+                        <option value="Annual">Annual</option>
+                        <option value="PMPM">PMPM</option>
+                        <option value="PEPM">PEPM</option>
+                      </select>
+                    </div>
+                  )}
+                  <div className="col-span-1 flex justify-end pb-2">
+                    <button
+                      type="button"
+                      onClick={() => removeOverride(o.id)}
+                      className="text-gray-500 hover:text-red-600 transition-colors"
+                      aria-label="Remove override"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </GlassCard>
+
         {/* Summary */}
         <GlassCard variant="elevated" className="p-6 mb-6 bg-white shadow-sm rounded-lg">
           <h3 className="text-lg font-semibold mb-4 text-black">Summary</h3>
@@ -284,6 +555,7 @@ export default function FeesConfigurator({
                 budgetOverride: { amount: budgetAmount, basis: budgetBasis },
                 stopLossReimb,
                 rebates,
+                perMonth: toPerMonth(),
               },
               { monthlyFixed, monthlyBudget }
             )}
@@ -293,6 +565,17 @@ export default function FeesConfigurator({
           </Button>
         </div>
       </div>
+      
+      {/* Bulk Apply Modal */}
+      {currentFeesConfig && (
+        <BulkApplyModal
+          open={showBulkApplyModal}
+          onOpenChange={setShowBulkApplyModal}
+          feesConfig={currentFeesConfig}
+          csvData={csvData}
+          onApply={handleBulkApply}
+        />
+      )}
     </div>
   );
 }

@@ -354,6 +354,7 @@ const Home: React.FC = () => {
                 defaultEmployees={parseNumericValue((budgetData?.rows || []).slice(-1)[0]?.['Employee Count'] as any) || 0}
                 defaultMembers={parseNumericValue((budgetData?.rows || []).slice(-1)[0]?.['Member Count'] as any) || parseNumericValue((budgetData?.rows || []).slice(-1)[0]?.['Enrollment'] as any) || 0}
                 defaultBudget={parseNumericValue((budgetData?.rows || []).slice(-1)[0]?.['Budget'] as any) || 0}
+                csvData={budgetData?.rows || []}
                 onSubmit={handleFeesSubmit}
               />
             )}
