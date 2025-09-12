@@ -403,7 +403,7 @@ const Home: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="fixed bottom-8 right-8 bg-gray-100 border border-gray-400 rounded-lg p-4 max-w-md"
+              className="fixed bottom-8 right-8 bg-white border border-gray-400 rounded-lg p-4 max-w-md"
             >
               <p className="text-gray-800 font-medium">Error</p>
               <p className="text-gray-700 text-sm mt-1">{error}</p>
@@ -418,7 +418,7 @@ const Home: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="min-h-screen bg-gray-50 p-6"
+              className="min-h-screen bg-white p-6"
             >
               {/* Header */}
               <div className="max-w-7xl mx-auto mb-6">

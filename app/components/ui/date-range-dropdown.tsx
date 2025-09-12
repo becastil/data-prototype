@@ -47,8 +47,8 @@ export const DateRangeDropdown: React.FC<DateRangeDropdownProps> = ({ months, va
       <DropdownMenuTrigger asChild>
         <button
           className={cn(
-            "btn-perf inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-900",
-            "hover:bg-gray-200/90 active:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400",
+            "btn-perf inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-black",
+            "hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400",
             className
           )}
           aria-label="Date range"
@@ -70,8 +70,8 @@ export const DateRangeDropdown: React.FC<DateRangeDropdownProps> = ({ months, va
                   if (p.value !== 'CUSTOM') setOpen(false);
                 }}
                 className={cn(
-                  "col-span-1 rounded-lg px-2 py-1.5 text-xs font-medium",
-                  value.preset === p.value ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                  "col-span-1 rounded-lg px-2 py-1.5 text-xs font-medium border",
+                  value.preset === p.value ? "bg-black text-white border-black" : "bg-white text-black border-gray-300 hover:bg-gray-50"
                 )}
               >
                 {p.label}
@@ -89,7 +89,7 @@ export const DateRangeDropdown: React.FC<DateRangeDropdownProps> = ({ months, va
                 type="month"
                 value={start}
                 onChange={(e) => setStart(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                className="w-full rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-sm text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
               />
             </div>
             <div>
@@ -98,7 +98,7 @@ export const DateRangeDropdown: React.FC<DateRangeDropdownProps> = ({ months, va
                 type="month"
                 value={end}
                 onChange={(e) => setEnd(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                className="w-full rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-sm text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
               />
             </div>
           </div>
@@ -108,7 +108,7 @@ export const DateRangeDropdown: React.FC<DateRangeDropdownProps> = ({ months, va
                 onChange({ preset: 'CUSTOM', start, end });
                 setOpen(false);
               }}
-              className="rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800"
+              className="rounded-lg bg-black px-3 py-1.5 text-xs font-medium text-white hover:bg-gray-800 border border-black"
             >
               Apply
             </button>

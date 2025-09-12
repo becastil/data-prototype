@@ -74,7 +74,7 @@ export default function PerformanceIndicator({
         </h3>
         
         {/* Widget Selector Pills */}
-        <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg">
+        <div className="flex items-center gap-1 bg-white border border-gray-300 p-1 rounded-lg">
           {widgets.map((widget) => {
             const Icon = widget.icon;
             const isSelected = selectedWidget === widget.id;

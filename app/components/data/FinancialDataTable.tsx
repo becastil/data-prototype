@@ -245,15 +245,15 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
   // Get cell color based on value and type
   const getCellColor = (value: number, category: string, isVariance: boolean = false) => {
     if (isVariance) {
-      if (value > 0) return 'bg-gray-100';
-      if (value < 0) return 'bg-gray-200';
-      return 'bg-gray-50';
+      if (value > 0) return 'bg-green-50';
+      if (value < 0) return 'bg-red-50';
+      return 'bg-white';
     }
     
-    if (category === 'expense') return 'bg-gray-50';
-    if (category === 'revenue') return 'bg-gray-100';
-    if (category === 'total') return 'bg-gray-200 font-semibold';
-    if (category === 'budget') return 'bg-gray-100';
+    if (category === 'expense') return 'bg-white';
+    if (category === 'revenue') return 'bg-blue-50';
+    if (category === 'total') return 'bg-black text-white font-semibold';
+    if (category === 'budget') return 'bg-yellow-50';
     return '';
   };
 
@@ -382,7 +382,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
           <div className="flex gap-2">
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              className="px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
             >
               <Settings className="w-4 h-4" />
             </button>

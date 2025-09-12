@@ -83,7 +83,7 @@ export default function StoplightWidget({
       <h3 className="text-base font-semibold text-gray-900 mb-4">{title}</h3>
       
       {/* Stoplight Container */}
-      <div className="stoplight-container bg-gray-900 p-4 rounded-2xl shadow-xl">
+      <div className="stoplight-container bg-white border-2 border-gray-300 p-4 rounded-2xl shadow-xl">
         <div className="flex flex-col gap-3">
           {lights.map((light) => {
             const isActive = activeLight === light.color;
@@ -150,9 +150,9 @@ export default function StoplightWidget({
                         exit={{ opacity: 0, x: -10 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <div className="bg-gray-800 text-white px-3 py-1 rounded-md text-sm">
+                        <div className="bg-white border border-gray-300 text-black px-3 py-1 rounded-md text-sm shadow-sm">
                           <div className="font-semibold">{light.label}</div>
-                          <div className="text-xs opacity-75">{light.threshold}</div>
+                          <div className="text-xs text-gray-600">{light.threshold}</div>
                         </div>
                       </motion.div>
                     )}

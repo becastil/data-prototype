@@ -251,14 +251,14 @@ export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commenta
 
       {/* Middle: Rolling 12 Month Graph */}
       <GlassCard variant="elevated" className="p-4 lg:col-span-2">
-        <h3 className="text-base font-semibold text-gray-900 mb-2">Rolling 12 Month Graph</h3>
+        <h3 className="text-base font-semibold text-black mb-2">Rolling 12 Month Graph</h3>
         <div ref={stackedRef} style={{ width: '100%', ...barsHeight }} />
       </GlassCard>
 
       {/* Bottom left: Rolling 12 Month Summary */}
       <GlassCard variant="elevated" className="p-4">
-        <h3 className="text-base font-semibold text-gray-900 mb-2">Rolling 12 Month Summary</h3>
-        <div className="text-sm text-gray-800">
+        <h3 className="text-base font-semibold text-black mb-2">Rolling 12 Month Summary</h3>
+        <div className="text-sm text-black">
           <div className="flex justify-between py-1"><span>Total Budgeted Premium</span><span>{fmtCurrency(totals.budget)}</span></div>
           <div className="flex justify-between py-1"><span>Medical Paid Claims</span><span>{fmtCurrency(totals.medical)}</span></div>
           <div className="flex justify-between py-1"><span>Pharmacy Paid Claims</span><span>{fmtCurrency(totals.pharmacy)}</span></div>
@@ -277,7 +277,7 @@ export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commenta
 
       {/* Bottom middle: Pie */}
       <GlassCard variant="elevated" className="p-4">
-        <h3 className="text-base font-semibold text-gray-900 mb-2">Medical vs Pharmacy Distribution</h3>
+        <h3 className="text-base font-semibold text-black mb-2">Medical vs Pharmacy Distribution</h3>
         <div ref={pieRef} style={{ width: '100%', ...pieHeight }} />
       </GlassCard>
 

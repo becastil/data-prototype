@@ -182,7 +182,7 @@ export default function BulkApplyModal({
                           type="button"
                           onClick={() => setDuration(6)}
                           className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                            duration === 6 ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200'
+                            duration === 6 ? 'bg-blue-600 text-white' : 'bg-white border border-gray-300 hover:bg-gray-50'
                           }`}
                         >
                           6 months
@@ -191,7 +191,7 @@ export default function BulkApplyModal({
                           type="button"
                           onClick={() => setDuration(12)}
                           className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                            duration === 12 ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200'
+                            duration === 12 ? 'bg-blue-600 text-white' : 'bg-white border border-gray-300 hover:bg-gray-50'
                           }`}
                         >
                           12 months

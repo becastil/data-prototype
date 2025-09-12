@@ -115,7 +115,7 @@ export default function KPITiles({ metrics, period = "Rolling 12 Months" }: KPIT
       {/* Period indicator */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Key Performance Indicators</h2>
-        <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+        <span className="text-sm text-black bg-white border border-gray-300 px-3 py-1 rounded-full">
           {period}
         </span>
       </div>
@@ -179,14 +179,14 @@ export default function KPITiles({ metrics, period = "Rolling 12 Months" }: KPIT
       </div>
 
       {/* Optional: Budget Status Bar */}
-      <div className="mt-4 bg-gray-100 rounded-lg p-3">
+      <div className="mt-4 bg-white border border-gray-300 rounded-lg p-3">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-gray-700">Budget Utilization</span>
           <span className={`text-sm font-bold ${budgetStatus.text}`}>
             {formatPercent(metrics.pctOfBudget)}
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+        <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden border border-gray-300">
           <div 
             className={`h-full transition-all duration-500 ${
               metrics.pctOfBudget < 95 ? 'bg-green-500' :

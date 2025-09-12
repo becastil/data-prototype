@@ -187,7 +187,7 @@ export default function GaugeWidget({
       />
       
       {showLegend && (
-        <div ref={legendRef} className="text-sm text-gray-800 bg-gray-50 border rounded p-3 mt-3">
+        <div ref={legendRef} className="text-sm text-black bg-white border border-gray-300 rounded p-3 mt-3">
           <div className="legend-item flex items-center mb-1">
             <span className="inline-block w-3 h-3 bg-[#22c55e] mr-2 rounded-sm" />
             <span>Green — &lt; 95% of Budget</span>

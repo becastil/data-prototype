@@ -528,19 +528,19 @@ export default function FeesConfigurator({
         <GlassCard variant="elevated" className="p-6 mb-6 bg-white shadow-sm rounded-lg">
           <h3 className="text-lg font-semibold mb-4 text-black">Summary</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 rounded-lg bg-gray-100">
+            <div className="p-4 rounded-lg bg-white border border-gray-300">
               <div className="text-xs text-black font-medium">Monthly Fixed Costs</div>
               <div className="text-xl font-bold text-black">${monthlyFixed.toLocaleString()}</div>
             </div>
-            <div className="p-4 rounded-lg bg-gray-100">
+            <div className="p-4 rounded-lg bg-white border border-gray-300">
               <div className="text-xs text-black font-medium">Monthly Budget</div>
               <div className="text-xl font-bold text-black">${monthlyBudget.toLocaleString()}</div>
             </div>
-            <div className="p-4 rounded-lg bg-gray-100">
+            <div className="p-4 rounded-lg bg-white border border-gray-300">
               <div className="text-xs text-black font-medium">Stop Loss Reimb.</div>
               <div className="text-xl font-bold text-black">${(stopLossReimb || 0).toLocaleString()}</div>
             </div>
-            <div className="p-4 rounded-lg bg-gray-100">
+            <div className="p-4 rounded-lg bg-white border border-gray-300">
               <div className="text-xs text-black font-medium">Rebates</div>
               <div className="text-xl font-bold text-black">${(rebates || 0).toLocaleString()}</div>
             </div>
