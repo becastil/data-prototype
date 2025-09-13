@@ -39,7 +39,7 @@ export default function BulkApplyPreview({
       <div className="grid grid-cols-3 gap-3">
         <GlassCard variant="subtle" className="p-3">
           <div className="flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 text-green-600" />
+            <CheckCircle className="w-4 h-4 text-gray-700" />
             <div>
               <div className="text-sm font-medium text-gray-600">Months to Update</div>
               <div className="text-lg font-semibold">{monthsWithChanges.length}</div>
@@ -49,7 +49,7 @@ export default function BulkApplyPreview({
         
         <GlassCard variant="subtle" className="p-3">
           <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-blue-600" />
+            <Users className="w-4 h-4 text-gray-700" />
             <div>
               <div className="text-sm font-medium text-gray-600">Total Enrollment</div>
               <div className="text-lg font-semibold">
@@ -60,12 +60,12 @@ export default function BulkApplyPreview({
         </GlassCard>
         
         {monthsWithWarnings.length > 0 && (
-          <GlassCard variant="subtle" className="p-3 border-yellow-200 bg-yellow-50">
+          <GlassCard variant="subtle" className="p-3 border border-gray-200 bg-gray-50">
             <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-yellow-600" />
+              <AlertCircle className="w-4 h-4 text-gray-700" />
               <div>
                 <div className="text-sm font-medium text-gray-600">Warnings</div>
-                <div className="text-lg font-semibold text-yellow-600">{monthsWithWarnings.length}</div>
+                <div className="text-lg font-semibold text-gray-700">{monthsWithWarnings.length}</div>
               </div>
             </div>
           </GlassCard>
@@ -98,8 +98,8 @@ export default function BulkApplyPreview({
                   key={snapshot.month}
                   className={`
                     border-b transition-colors
-                    ${snapshot.hasChanges ? 'bg-blue-50/50' : ''}
-                    ${snapshot.warnings.length > 0 ? 'bg-yellow-50/50' : ''}
+                    ${snapshot.hasChanges ? 'bg-gray-50/50' : ''}
+                    ${snapshot.warnings.length > 0 ? 'bg-gray-100/50' : ''}
                   `}
                 >
                   <td className="py-2 px-3 font-medium">
@@ -122,7 +122,7 @@ export default function BulkApplyPreview({
                       {formatCurrency(snapshot.newTotalFixed)}
                     </div>
                     {snapshot.hasChanges && (
-                      <div className="text-xs text-blue-600">
+                      <div className="text-xs text-gray-700">
                         {formatDiff(snapshot.currentTotalFixed, snapshot.newTotalFixed)}
                       </div>
                     )}
@@ -133,7 +133,7 @@ export default function BulkApplyPreview({
                       {snapshot.newBudget !== null ? formatCurrency(snapshot.newBudget) : '-'}
                     </div>
                     {snapshot.hasChanges && snapshot.currentBudget !== snapshot.newBudget && (
-                      <div className="text-xs text-blue-600">
+                      <div className="text-xs text-gray-700">
                         {formatDiff(snapshot.currentBudget, snapshot.newBudget)}
                       </div>
                     )}
@@ -144,7 +144,7 @@ export default function BulkApplyPreview({
                       {snapshot.newStopLossReimb !== null ? formatCurrency(snapshot.newStopLossReimb) : '-'}
                     </div>
                     {snapshot.hasChanges && snapshot.currentStopLossReimb !== snapshot.newStopLossReimb && (
-                      <div className="text-xs text-blue-600">
+                      <div className="text-xs text-gray-700">
                         {formatDiff(snapshot.currentStopLossReimb, snapshot.newStopLossReimb)}
                       </div>
                     )}
@@ -155,7 +155,7 @@ export default function BulkApplyPreview({
                       {snapshot.newRebates !== null ? formatCurrency(snapshot.newRebates) : '-'}
                     </div>
                     {snapshot.hasChanges && snapshot.currentRebates !== snapshot.newRebates && (
-                      <div className="text-xs text-blue-600">
+                      <div className="text-xs text-gray-700">
                         {formatDiff(snapshot.currentRebates, snapshot.newRebates)}
                       </div>
                     )}
@@ -163,12 +163,12 @@ export default function BulkApplyPreview({
                   
                   <td className="py-2 px-3 text-center">
                     {snapshot.warnings.length > 0 ? (
-                      <div className="inline-flex items-center gap-1 text-yellow-600">
+                      <div className="inline-flex items-center gap-1 text-gray-700">
                         <AlertCircle className="w-3 h-3" />
                         <span className="text-xs">Warning</span>
                       </div>
                     ) : snapshot.hasChanges ? (
-                      <div className="inline-flex items-center gap-1 text-green-600">
+                      <div className="inline-flex items-center gap-1 text-gray-700">
                         <CheckCircle className="w-3 h-3" />
                         <span className="text-xs">Update</span>
                       </div>
@@ -184,12 +184,12 @@ export default function BulkApplyPreview({
         
         {/* Warnings Section */}
         {monthsWithWarnings.length > 0 && (
-          <div className="mt-4 p-3 bg-yellow-50 rounded-md border border-yellow-200">
+          <div className="mt-4 p-3 bg-gray-50 rounded-md border border-gray-200">
             <div className="flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5" />
+              <AlertCircle className="w-4 h-4 text-gray-700 mt-0.5" />
               <div className="text-sm">
-                <div className="font-medium text-yellow-800 mb-1">Warnings:</div>
-                <ul className="space-y-1 text-yellow-700">
+                <div className="font-medium text-gray-800 mb-1">Warnings:</div>
+                <ul className="space-y-1 text-gray-700">
                   {monthsWithWarnings.map(s => (
                     <li key={s.month}>
                       <span className="font-medium">{formatMonth(s.month)}:</span> {s.warnings.join(', ')}
@@ -217,7 +217,7 @@ export default function BulkApplyPreview({
             <button
               onClick={onConfirm}
               disabled={monthsWithChanges.length === 0}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 text-sm font-medium text-white bg-black rounded-md hover:bg-gray-900 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
             >
               Apply to {monthsWithChanges.length} Month{monthsWithChanges.length !== 1 ? 's' : ''}
             </button>

@@ -134,7 +134,7 @@ export default function BulkApplyModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-black">
             <Copy className="w-5 h-5" />
             Apply Settings to Multiple Months
           </DialogTitle>
@@ -147,14 +147,14 @@ export default function BulkApplyModal({
           <div className="space-y-6 mt-4">
             {/* Date Range Selection */}
             <GlassCard variant="subtle" className="p-4">
-              <h3 className="font-medium mb-3 flex items-center gap-2">
+              <h3 className="font-medium mb-3 flex items-center gap-2 text-black">
                 <Calendar className="w-4 h-4" />
                 Date Range
               </h3>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Start Month</label>
+                  <label className="block text-sm font-medium mb-1 text-black">Start Month</label>
                   <Input
                     type="month"
                     value={startMonth}
@@ -164,7 +164,7 @@ export default function BulkApplyModal({
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Apply To</label>
+                  <label className="block text-sm font-medium mb-2 text-black">Apply To</label>
                   <div className="space-y-3">
                     <label className="flex items-center gap-2">
                       <input
@@ -173,7 +173,7 @@ export default function BulkApplyModal({
                         onChange={() => setDurationType('duration')}
                         className="w-4 h-4"
                       />
-                      <span className="text-sm">Duration</span>
+                      <span className="text-sm text-black">Duration</span>
                     </label>
                     
                     {durationType === 'duration' && (
@@ -182,7 +182,7 @@ export default function BulkApplyModal({
                           type="button"
                           onClick={() => setDuration(6)}
                           className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                            duration === 6 ? 'bg-blue-600 text-white' : 'bg-white border border-gray-300 hover:bg-gray-50'
+                            duration === 6 ? 'bg-black text-white' : 'bg-white border border-gray-300 hover:bg-gray-50 text-black'
                           }`}
                         >
                           6 months
@@ -191,7 +191,7 @@ export default function BulkApplyModal({
                           type="button"
                           onClick={() => setDuration(12)}
                           className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                            duration === 12 ? 'bg-blue-600 text-white' : 'bg-white border border-gray-300 hover:bg-gray-50'
+                            duration === 12 ? 'bg-black text-white' : 'bg-white border border-gray-300 hover:bg-gray-50 text-black'
                           }`}
                         >
                           12 months
@@ -217,7 +217,7 @@ export default function BulkApplyModal({
                         onChange={() => setDurationType('endMonth')}
                         className="w-4 h-4"
                       />
-                      <span className="text-sm">End Month</span>
+                      <span className="text-sm text-black">End Month</span>
                     </label>
                     
                     {durationType === 'endMonth' && (
@@ -235,11 +235,11 @@ export default function BulkApplyModal({
                 </div>
                 
                 {targetMonths.length > 0 && (
-                  <div className="mt-3 p-3 bg-blue-50 rounded-md">
-                    <div className="text-sm font-medium text-blue-900">
+                  <div className="mt-3 p-3 bg-gray-50 rounded-md">
+                    <div className="text-sm font-medium text-gray-900">
                       Scope: {targetMonths.length} month{targetMonths.length !== 1 ? 's' : ''}
                     </div>
-                    <div className="text-xs text-blue-700 mt-1">
+                    <div className="text-xs text-gray-700 mt-1">
                       {formatMonthDisplay(targetMonths[0])} → {formatMonthDisplay(targetMonths[targetMonths.length - 1])}
                     </div>
                   </div>
@@ -249,7 +249,7 @@ export default function BulkApplyModal({
             
             {/* Components Selection */}
             <GlassCard variant="subtle" className="p-4">
-              <h3 className="font-medium mb-3 flex items-center gap-2">
+              <h3 className="font-medium mb-3 flex items-center gap-2 text-black">
                 <CheckSquare className="w-4 h-4" />
                 Components to Apply
               </h3>
@@ -262,7 +262,7 @@ export default function BulkApplyModal({
                     onChange={(e) => setComponents({ ...components, fees: e.target.checked })}
                     className="w-4 h-4"
                   />
-                  <span className="text-sm">Fees ({feesConfig.fees?.length || 0} items)</span>
+                  <span className="text-sm text-black">Fees ({feesConfig.fees?.length || 0} items)</span>
                 </label>
                 
                 <label className="flex items-center gap-2">
@@ -272,7 +272,7 @@ export default function BulkApplyModal({
                     onChange={(e) => setComponents({ ...components, budget: e.target.checked })}
                     className="w-4 h-4"
                   />
-                  <span className="text-sm">Budget Amount</span>
+                  <span className="text-sm text-black">Budget Amount</span>
                 </label>
                 
                 <label className="flex items-center gap-2">
@@ -282,7 +282,7 @@ export default function BulkApplyModal({
                     onChange={(e) => setComponents({ ...components, stopLossReimb: e.target.checked })}
                     className="w-4 h-4"
                   />
-                  <span className="text-sm">Stop Loss Reimbursements</span>
+                  <span className="text-sm text-black">Stop Loss Reimbursements</span>
                 </label>
                 
                 <label className="flex items-center gap-2">
@@ -292,14 +292,14 @@ export default function BulkApplyModal({
                     onChange={(e) => setComponents({ ...components, rebates: e.target.checked })}
                     className="w-4 h-4"
                   />
-                  <span className="text-sm">Rebates Received</span>
+                  <span className="text-sm text-black">Rebates Received</span>
                 </label>
               </div>
             </GlassCard>
             
             {/* Conflict Policy */}
             <GlassCard variant="subtle" className="p-4">
-              <h3 className="font-medium mb-3">Conflict Policy</h3>
+              <h3 className="font-medium mb-3 text-black">Conflict Policy</h3>
               
               <div className="space-y-2">
                 <label className="flex items-start gap-2">
@@ -310,7 +310,7 @@ export default function BulkApplyModal({
                     className="w-4 h-4 mt-0.5"
                   />
                   <div>
-                    <div className="text-sm font-medium">Overwrite</div>
+                    <div className="text-sm font-medium text-black">Overwrite</div>
                     <div className="text-xs text-gray-600">Replace existing values in target months</div>
                   </div>
                 </label>
@@ -323,7 +323,7 @@ export default function BulkApplyModal({
                     className="w-4 h-4 mt-0.5"
                   />
                   <div>
-                    <div className="text-sm font-medium">Fill Blanks Only</div>
+                    <div className="text-sm font-medium text-black">Fill Blanks Only</div>
                     <div className="text-xs text-gray-600">Only set months where no value exists</div>
                   </div>
                 </label>
@@ -336,7 +336,7 @@ export default function BulkApplyModal({
                     className="w-4 h-4 mt-0.5"
                   />
                   <div>
-                    <div className="text-sm font-medium">Additive</div>
+                    <div className="text-sm font-medium text-black">Additive</div>
                     <div className="text-xs text-gray-600">Add to existing values (combine fees, add amounts)</div>
                   </div>
                 </label>
@@ -347,16 +347,16 @@ export default function BulkApplyModal({
             {(validation.errors.length > 0 || validation.warnings.length > 0) && (
               <div className="space-y-2">
                 {validation.errors.map((error, idx) => (
-                  <div key={idx} className="flex items-start gap-2 p-3 bg-red-50 rounded-md border border-red-200">
-                    <AlertTriangle className="w-4 h-4 text-red-600 mt-0.5" />
-                    <span className="text-sm text-red-800">{error}</span>
+                  <div key={idx} className="flex items-start gap-2 p-3 bg-gray-50 rounded-md border border-gray-200">
+                    <AlertTriangle className="w-4 h-4 text-gray-600 mt-0.5" />
+                    <span className="text-sm text-gray-800">{error}</span>
                   </div>
                 ))}
                 
                 {validation.warnings.map((warning, idx) => (
-                  <div key={idx} className="flex items-start gap-2 p-3 bg-yellow-50 rounded-md border border-yellow-200">
-                    <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5" />
-                    <span className="text-sm text-yellow-800">{warning}</span>
+                  <div key={idx} className="flex items-start gap-2 p-3 bg-gray-50 rounded-md border border-gray-200">
+                    <AlertTriangle className="w-4 h-4 text-gray-600 mt-0.5" />
+                    <span className="text-sm text-gray-800">{warning}</span>
                   </div>
                 ))}
               </div>
@@ -364,12 +364,17 @@ export default function BulkApplyModal({
             
             {/* Action Buttons */}
             <div className="flex justify-end gap-3">
-              <Button variant="outline" onClick={handleCancel}>
+              <Button
+                variant="outline"
+                className="border-gray-400 text-black hover:bg-gray-100 focus-visible:ring-gray-300"
+                onClick={handleCancel}
+              >
                 Cancel
               </Button>
               <Button
                 onClick={handlePreviewClick}
                 disabled={!validation.isValid}
+                className="bg-black text-white hover:bg-gray-900 focus-visible:ring-gray-300"
               >
                 Preview Changes
               </Button>
