@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gauge, TrafficIcon as Traffic, ChevronRight } from 'lucide-react';
+import { Gauge, TrafficCone as Traffic, ChevronRight } from 'lucide-react';
 import GaugeWidget from './GaugeWidget';
 import StoplightWidget from './StoplightWidget';
 import { GlassCard } from '@/app/components/ui/glass-card';
