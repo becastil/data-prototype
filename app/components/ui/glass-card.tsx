@@ -13,10 +13,10 @@ interface GlassCardProps extends Omit<HTMLMotionProps<"div">, 'children'> {
 }
 
 const glassVariants = {
-  default: "bg-[rgba(11,18,32,0.85)] border border-[rgba(255,255,255,0.05)] text-[var(--foreground)] backdrop-blur-lg",
-  elevated: "bg-[linear-gradient(145deg,rgba(16,26,44,0.82),rgba(8,15,28,0.94))] border border-[rgba(0,229,137,0.18)] text-[var(--foreground)] shadow-[0_24px_60px_rgba(3,12,24,0.55)] backdrop-blur-xl",
-  subtle: "bg-[rgba(16,26,44,0.65)] border border-[rgba(255,255,255,0.04)] text-[var(--foreground)] backdrop-blur-md",
-  vibrant: "bg-[linear-gradient(130deg,rgba(0,229,137,0.18),rgba(0,192,255,0.16))] border border-[rgba(0,229,137,0.32)] text-[var(--foreground)] backdrop-blur-xl"
+  default: "bg-[var(--surface)] border border-[var(--surface-border)] text-[var(--foreground)] backdrop-blur-lg shadow-[var(--card-base-shadow)]",
+  elevated: "bg-[var(--surface-elevated)] border border-[var(--accent-soft)] text-[var(--foreground)] shadow-[var(--card-elevated-shadow)] backdrop-blur-xl",
+  subtle: "bg-[var(--surface-muted)] border border-[var(--surface-border)] text-[var(--foreground)] backdrop-blur-md shadow-[var(--card-base-shadow)]",
+  vibrant: "bg-[linear-gradient(130deg,var(--accent-soft),var(--surface-elevated))] border border-[var(--accent-soft)] text-[var(--foreground)] backdrop-blur-xl"
 };
 
 const blurLevels = {
@@ -42,14 +42,14 @@ const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(({
     blurLevels[blur],
     
     // Glow effect
-    glow && "shadow-[0_0_32px_var(--accent-glow)] border-[rgba(0,229,137,0.28)]",
+    glow && "shadow-[0_0_32px_var(--accent-glow)] border-[var(--card-hover-border)]",
     
     // Interactive states
     interactive && [
       "transition-all duration-300 ease-out",
       "hover:-translate-y-1",
-      "hover:border-[rgba(0,229,137,0.4)]",
-      "hover:shadow-[0_26px_70px_rgba(0,229,137,0.22)]",
+      "hover:border-[var(--card-hover-border)]",
+      "hover:shadow-[var(--card-hover-shadow)]",
       "active:scale-[0.98]",
       "cursor-pointer"
     ],

@@ -72,18 +72,18 @@ const ThemeToggle: React.FC = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="h-9 w-9 rounded-md border border-gray-200 bg-white shadow-sm hover:bg-gray-50"
+          className="h-9 w-9 rounded-md border border-[var(--surface-border)] bg-[var(--surface)] text-[var(--foreground)] shadow-[var(--card-base-shadow)] hover:bg-[var(--surface-muted)]"
         >
           {getCurrentIcon()}
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-32">
+      <DropdownMenuContent align="end" className="w-32 bg-[var(--surface)] text-[var(--foreground)] border border-[var(--surface-border)] shadow-[var(--card-base-shadow)]">
         {themes.map(({ key, icon: Icon, label }) => (
           <DropdownMenuItem
             key={key}
             onClick={() => handleThemeChange(key)}
-            className={`flex items-center gap-2 ${theme === key ? 'bg-gray-100' : ''}`}
+            className={`flex items-center gap-2 text-[var(--foreground-muted)] ${theme === key ? 'bg-[var(--accent-soft)] text-[var(--accent)]' : ''}`}
           >
             <Icon className="h-4 w-4" />
             {label}

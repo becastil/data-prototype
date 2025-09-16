@@ -41,8 +41,8 @@ function formatNumber(value: number): string {
 function getBudgetStatusColor(pct: number): { bg: string; border: string; text: string; icon: React.ReactNode } {
   if (pct < 95) {
     return {
-      bg: 'bg-[rgba(0,229,137,0.12)]',
-      border: 'border-l-4 border-[rgba(0,229,137,0.6)]',
+      bg: 'bg-[var(--accent-soft)]',
+      border: 'border-l-4 border-[var(--accent)]',
       text: 'text-[var(--accent)]',
       icon: <TrendingDown className="w-4 h-4 text-[var(--accent)]" />
     };
@@ -50,18 +50,18 @@ function getBudgetStatusColor(pct: number): { bg: string; border: string; text: 
 
   if (pct <= 105) {
     return {
-      bg: 'bg-[rgba(255,181,71,0.12)]',
-      border: 'border-l-4 border-[rgba(255,181,71,0.65)]',
-      text: 'text-[#FFC76A]',
-      icon: <Activity className="w-4 h-4 text-[#FFC76A]" />
+      bg: 'bg-[var(--surface-muted)]',
+      border: 'border-l-4 border-[var(--surface-border)]',
+      text: 'text-[var(--foreground-muted)]',
+      icon: <Activity className="w-4 h-4 text-[var(--foreground-muted)]" />
     };
   }
 
   return {
-    bg: 'bg-[rgba(255,111,111,0.14)]',
-    border: 'border-l-4 border-[rgba(255,111,111,0.65)]',
-    text: 'text-[#FF8D8D]',
-    icon: <TrendingUp className="w-4 h-4 text-[#FF8D8D]" />
+    bg: 'bg-[var(--surface-muted)]',
+    border: 'border-l-4 border-[var(--danger)]',
+    text: 'text-[var(--danger)]',
+    icon: <TrendingUp className="w-4 h-4 text-[var(--danger)]" />
   };
 }
 
@@ -89,7 +89,7 @@ export default function KPITiles({ metrics, period = "Rolling 12 Months" }: KPIT
   }) => (
     <GlassCard 
       variant="elevated" 
-      className={`p-4 ${bgClass} ${borderClass} transition-all duration-200 hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]`}
+      className={`p-4 ${bgClass} ${borderClass} transition-all duration-200 hover:shadow-[var(--card-hover-shadow)]`}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
@@ -117,7 +117,7 @@ export default function KPITiles({ metrics, period = "Rolling 12 Months" }: KPIT
       {/* Period indicator */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-[var(--foreground)]">Key Performance Indicators</h2>
-        <span className="text-sm text-[var(--accent)] bg-[rgba(0,229,137,0.12)] border border-[rgba(0,229,137,0.25)] px-3 py-1 rounded-full">
+        <span className="text-sm text-[var(--accent)] bg-[var(--accent-soft)] border border-[var(--card-hover-border)] px-3 py-1 rounded-full">
           {period}
         </span>
       </div>
@@ -156,11 +156,11 @@ export default function KPITiles({ metrics, period = "Rolling 12 Months" }: KPIT
           subLabel={isSurplus ? "Surplus" : "Deficit"}
           icon={isSurplus ? 
             <TrendingUp className="w-4 h-4 text-[var(--accent)]" /> : 
-            <TrendingDown className="w-4 h-4 text-[#FF8D8D]" />
+            <TrendingDown className="w-4 h-4 text-[var(--danger)]" />
           }
-          colorClass={isSurplus ? 'text-[var(--accent)]' : 'text-[#FF8D8D]'}
-          borderClass={isSurplus ? 'border-l-4 border-[rgba(0,229,137,0.6)]' : 'border-l-4 border-[rgba(255,111,111,0.6)]'}
-          bgClass={isSurplus ? 'bg-[rgba(0,229,137,0.12)]' : 'bg-[rgba(255,111,111,0.14)]'}
+          colorClass={isSurplus ? 'text-[var(--accent)]' : 'text-[var(--danger)]'}
+          borderClass={isSurplus ? 'border-l-4 border-[var(--accent)]' : 'border-l-4 border-[var(--danger)]'}
+          bgClass={isSurplus ? 'bg-[var(--accent-soft)]' : 'bg-[var(--surface-muted)]'}
         />
 
         {/* Plan Cost PEPM */}
@@ -181,18 +181,18 @@ export default function KPITiles({ metrics, period = "Rolling 12 Months" }: KPIT
       </div>
 
       {/* Optional: Budget Status Bar */}
-      <div className="mt-4 bg-[rgba(15,26,44,0.7)] border border-[rgba(255,255,255,0.06)] rounded-xl p-3">
+      <div className="mt-4 bg-[var(--surface)] border border-[var(--surface-border)] rounded-xl p-3">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-[var(--foreground-muted)]">Budget Utilization</span>
           <span className={`text-sm font-bold ${budgetStatus.text}`}>
             {formatPercent(metrics.pctOfBudget)}
           </span>
         </div>
-        <div className="w-full bg-[rgba(7,12,24,0.8)] rounded-full h-2 overflow-hidden border border-[rgba(255,255,255,0.05)]">
+        <div className="w-full bg-[var(--surface-muted)] rounded-full h-2 overflow-hidden border border-[var(--surface-border)]">
           <div 
             className={`h-full transition-all duration-500 ${
-              metrics.pctOfBudget < 95 ? 'bg-[rgba(0,229,137,0.9)]' :
-              metrics.pctOfBudget <= 105 ? 'bg-[#FFB547]' : 'bg-[#FF6F6F]'
+              metrics.pctOfBudget < 95 ? 'bg-[var(--accent)]' :
+              metrics.pctOfBudget <= 105 ? 'bg-[var(--foreground-muted)]' : 'bg-[var(--danger)]'
             }`}
             style={{ width: `${Math.min(metrics.pctOfBudget, 130)}%` }}
           />
@@ -200,8 +200,8 @@ export default function KPITiles({ metrics, period = "Rolling 12 Months" }: KPIT
         <div className="flex justify-between mt-1">
           <span className="text-xs text-[var(--foreground-subtle)]">0%</span>
           <span className="text-xs text-[var(--foreground-subtle)]">95%</span>
-          <span className="text-xs text-gray-500">105%</span>
-          <span className="text-xs text-gray-500">130%</span>
+          <span className="text-xs text-[var(--foreground-subtle)]">105%</span>
+          <span className="text-xs text-[var(--foreground-subtle)]">130%</span>
         </div>
       </div>
     </div>

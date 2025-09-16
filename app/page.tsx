@@ -369,10 +369,10 @@ const Home: React.FC = () => {
               >
                 <GlassCard variant="elevated" className="p-12 text-center max-w-md">
                   <LottieLoader type="pulse" size="xl" />
-                  <h3 className="mt-6 text-xl font-semibold text-gray-800 dark:text-gray-200">
+                  <h3 className="mt-6 text-xl font-semibold text-[var(--foreground)]">
                     Processing your data
                   </h3>
-                  <p className="mt-2 text-gray-600 dark:text-gray-400">
+                  <p className="mt-2 text-[var(--foreground-muted)]">
                     Applying premium analytics transformations...
                   </p>
                 </GlassCard>
@@ -389,10 +389,10 @@ const Home: React.FC = () => {
               >
                 <GlassCard variant="vibrant" glow className="p-12 text-center max-w-md">
                   <LottieLoader type="success" size="xl" />
-                  <h3 className="mt-6 text-xl font-semibold text-gray-800 dark:text-gray-200">
+                  <h3 className="mt-6 text-xl font-semibold text-[var(--foreground)]">
                     Analytics Ready!
                   </h3>
-                  <p className="mt-2 text-gray-600 dark:text-gray-400">
+                  <p className="mt-2 text-[var(--foreground-muted)]">
                     Your premium dashboard is now live
                   </p>
                 </GlassCard>
@@ -403,7 +403,7 @@ const Home: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="fixed bottom-8 right-8 bg-[rgba(15,26,44,0.92)] border border-[rgba(255,255,255,0.08)] rounded-xl p-4 max-w-md shadow-[0_20px_40px_rgba(0,0,0,0.45)]"
+              className="fixed bottom-8 right-8 bg-[var(--surface-elevated)] border border-[var(--surface-border)] rounded-xl p-4 max-w-md shadow-[var(--card-base-shadow)]"
             >
               <p className="text-[var(--foreground)] font-semibold">Error</p>
               <p className="text-[var(--foreground-muted)] text-sm mt-1">{error}</p>
@@ -411,7 +411,7 @@ const Home: React.FC = () => {
           )}
         </motion.div>
       ) : (
-        <Suspense fallback={<div className="p-8 text-gray-600">Loading analytics...</div>}>
+        <Suspense fallback={<div className="p-8 text-[var(--foreground-muted)]">Loading analytics...</div>}>
           <AccessibleErrorBoundary>
             <motion.div
               key="dashboard"
@@ -511,13 +511,13 @@ const Home: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-4 p-4 bg-[rgba(0,229,137,0.1)] border border-[rgba(0,229,137,0.3)] rounded-xl"
+                className="mb-4 p-4 bg-[var(--accent-soft)] border border-[var(--card-hover-border)] rounded-xl"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-[var(--accent)] font-semibold">🐛 Debug Mode Active</span>
                   <button
                     onClick={() => console.clear()}
-                    className="text-xs bg-[rgba(0,229,137,0.2)] hover:bg-[rgba(0,229,137,0.28)] px-2 py-1 rounded"
+                    className="text-xs px-2 py-1 rounded bg-[var(--surface)] text-[var(--foreground)] border border-[var(--surface-border)] hover:bg-[var(--surface-muted)]"
                   >
                     Clear Console
                   </button>
@@ -530,7 +530,7 @@ const Home: React.FC = () => {
                   {budgetData?.headers && (
                     <details className="mt-2">
                       <summary className="cursor-pointer text-xs font-medium text-[var(--foreground-muted)]">Budget Headers</summary>
-                      <p className="text-xs mt-1 font-mono bg-[rgba(5,10,20,0.85)] text-[var(--foreground)] p-2 rounded">
+                      <p className="text-xs mt-1 font-mono bg-[var(--surface)] text-[var(--foreground)] border border-[var(--surface-border)] p-2 rounded">
                         {budgetData.headers.join(', ')}
                       </p>
                     </details>
@@ -538,7 +538,7 @@ const Home: React.FC = () => {
                   {claimsData?.headers && (
                     <details className="mt-2">
                       <summary className="cursor-pointer text-xs font-medium text-[var(--foreground-muted)]">Claims Headers</summary>
-                      <p className="text-xs mt-1 font-mono bg-[rgba(5,10,20,0.85)] text-[var(--foreground)] p-2 rounded">
+                      <p className="text-xs mt-1 font-mono bg-[var(--surface)] text-[var(--foreground)] border border-[var(--surface-border)] p-2 rounded">
                         {claimsData.headers.join(', ')}
                       </p>
                     </details>
@@ -659,7 +659,7 @@ const Home: React.FC = () => {
                     animate={{ opacity: 1 }}
                     className="flex items-center justify-center h-96"
                   >
-                    <p className="text-gray-500">Select a page from the sidebar</p>
+                    <p className="text-[var(--foreground-muted)]">Select a page from the sidebar</p>
                   </motion.div>
                 )}
               </AnimatePresence>

@@ -74,7 +74,7 @@ export default function PerformanceIndicator({
         </h3>
         
         {/* Widget Selector Pills */}
-        <div className="flex items-center gap-1 bg-[rgba(8,14,26,0.85)] border border-[rgba(255,255,255,0.08)] p-1 rounded-xl">
+        <div className="flex items-center gap-1 bg-[var(--surface)] border border-[var(--surface-border)] p-1 rounded-xl">
           {widgets.map((widget) => {
             const Icon = widget.icon;
             const isSelected = selectedWidget === widget.id;
@@ -87,7 +87,7 @@ export default function PerformanceIndicator({
                   relative flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide uppercase
                   transition-all duration-200
                   ${isSelected 
-                    ? 'bg-[rgba(0,229,137,0.18)] text-[var(--accent)] shadow-[0_10px_24px_rgba(0,229,137,0.22)]' 
+                    ? 'bg-[var(--accent-soft)] text-[var(--accent)] shadow-[var(--card-hover-shadow)]' 
                     : 'text-[var(--foreground-muted)] hover:text-[var(--accent)]'
                   }
                 `}
@@ -101,7 +101,7 @@ export default function PerformanceIndicator({
                 {/* Selection Indicator */}
                 {isSelected && (
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-[rgba(0,229,137,0.25)] to-[rgba(0,192,255,0.25)] rounded-lg"
+                    className="absolute inset-0 bg-gradient-to-r from-[var(--accent-soft)] to-[var(--surface-muted)] rounded-lg"
                     layoutId="widget-selector"
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
@@ -149,13 +149,13 @@ export default function PerformanceIndicator({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <div className="w-8 h-8 border-3 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+            <div className="w-8 h-8 border-3 border-[var(--surface-border)] border-t-[var(--accent)] rounded-full animate-spin" />
           </motion.div>
         )}
       </div>
       
       {/* Widget Description */}
-      <div className="mt-3 pt-3 border-t border-[rgba(255,255,255,0.08)]">
+      <div className="mt-3 pt-3 border-t border-[var(--surface-border)]">
         <div className="flex items-center justify-between text-xs text-[var(--foreground-subtle)]">
           <div className="flex items-center gap-1">
             <span>Currently viewing:</span>

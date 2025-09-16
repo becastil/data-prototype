@@ -314,18 +314,18 @@ export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commenta
         <Textarea
           value={commentary}
           onChange={(e) => setCommentary(e.target.value)}
-          className="min-h-[160px] text-sm bg-[rgba(11,18,32,0.9)] text-[var(--foreground)] border border-[rgba(255,255,255,0.08)] placeholder:text-[var(--foreground-subtle)]"
+          className="min-h-[160px] text-sm bg-[var(--surface)] text-[var(--foreground)] border border-[var(--surface-border)] placeholder:text-[var(--foreground-subtle)]"
           placeholder="Enter commentary..."
         />
         <div className="flex items-center gap-3 mt-3">
           <button
             onClick={handleSave}
-            className="px-3 py-2 text-sm rounded-md bg-[linear-gradient(135deg,#00E589_0%,#00C0FF_100%)] text-[#021015] font-semibold shadow-[0_10px_30px_rgba(0,229,137,0.25)] hover:shadow-[0_14px_40px_rgba(0,229,137,0.32)]"
+            className="px-3 py-2 text-sm rounded-md bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] text-[var(--button-primary-text)] font-semibold shadow-[var(--card-elevated-shadow)] hover:shadow-[var(--card-hover-shadow)]"
           >
             {saveState === 'saving' ? 'Saving...' : saveState === 'saved' ? 'Saved' : 'Save'}
           </button>
           {saveState === 'error' && (
-            <span className="text-sm text-[#FF8D8D]">Could not save. Try again.</span>
+            <span className="text-sm text-[var(--danger)]">Could not save. Try again.</span>
           )}
         </div>
       </GlassCard>

@@ -127,7 +127,7 @@ const PerformanceMonitor = () => {
       {/* Toggle button */}
       <button
         onClick={() => setIsVisible(!isVisible)}
-        className="fixed bottom-4 right-4 z-50 bg-[linear-gradient(135deg,#00E589_0%,#00C0FF_100%)] text-[#041014] p-2 rounded-full shadow-[0_12px_30px_rgba(0,229,137,0.35)] hover:shadow-[0_16px_38px_rgba(0,229,137,0.4)] transition-all duration-200"
+        className="fixed bottom-4 right-4 z-50 bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] text-[var(--button-primary-text)] p-2 rounded-full shadow-[var(--card-elevated-shadow)] hover:shadow-[var(--card-hover-shadow)] transition-all duration-200"
         aria-label="Toggle Performance Monitor"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -137,7 +137,7 @@ const PerformanceMonitor = () => {
 
       {/* Performance panel */}
       {isVisible && (
-        <div className="fixed bottom-16 right-4 z-40 bg-[rgba(10,18,32,0.95)] border border-[rgba(0,229,137,0.22)] rounded-xl shadow-[0_24px_60px_rgba(0,0,0,0.55)] p-4 max-w-sm w-80 text-[var(--foreground)]">
+        <div className="fixed bottom-16 right-4 z-40 bg-[var(--surface-elevated)] border border-[var(--surface-border)] rounded-xl shadow-[var(--card-base-shadow)] p-4 max-w-sm w-80 text-[var(--foreground)]">
           <div className="flex justify-between items-center mb-3">
             <h3 className="font-semibold text-[var(--foreground)] text-sm">
               Performance Metrics
@@ -152,7 +152,7 @@ const PerformanceMonitor = () => {
 
           <div className="space-y-2 text-xs">
             {/* Core Web Vitals */}
-            <div className="font-semibold text-[var(--foreground-muted)] border-b border-[rgba(255,255,255,0.08)] pb-1">
+            <div className="font-semibold text-[var(--foreground-muted)] border-b border-[var(--surface-border)] pb-1">
               Core Web Vitals
             </div>
 
@@ -173,7 +173,7 @@ const PerformanceMonitor = () => {
             })}
 
             {/* Bundle & Performance */}
-            <div className="font-semibold text-[var(--foreground-muted)] border-b border-[rgba(255,255,255,0.08)] pb-1 pt-2">
+            <div className="font-semibold text-[var(--foreground-muted)] border-b border-[var(--surface-border)] pb-1 pt-2">
               Bundle & Performance
             </div>
 
@@ -205,50 +205,50 @@ const PerformanceMonitor = () => {
             )}
 
             {/* Optimization Status */}
-            <div className="font-semibold text-gray-700 dark:text-gray-300 border-b pb-1 pt-2">
+            <div className="font-semibold text-[var(--foreground-muted)] border-b border-[var(--surface-border)] pb-1 pt-2">
               Optimizations
             </div>
-            
+
             <div className="space-y-1">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">Code Splitting:</span>
-                <span className="text-green-600 dark:text-green-400 text-xs">✓ Enabled</span>
+                <span className="text-[var(--foreground-subtle)]">Code Splitting:</span>
+                <span className="text-[var(--accent)] text-xs">✓ Enabled</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">WebGL:</span>
-                <span className="text-green-600 dark:text-green-400 text-xs">✓ Active</span>
+                <span className="text-[var(--foreground-subtle)]">WebGL:</span>
+                <span className="text-[var(--accent)] text-xs">✓ Active</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">GPU Accel:</span>
-                <span className="text-green-600 dark:text-green-400 text-xs">✓ Hardware</span>
+                <span className="text-[var(--foreground-subtle)]">GPU Accel:</span>
+                <span className="text-[var(--accent)] text-xs">✓ Hardware</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">Lazy Loading:</span>
-                <span className="text-green-600 dark:text-green-400 text-xs">✓ Charts</span>
+                <span className="text-[var(--foreground-subtle)]">Lazy Loading:</span>
+                <span className="text-[var(--accent)] text-xs">✓ Charts</span>
               </div>
             </div>
 
             {/* Target vs Actual */}
-            <div className="font-semibold text-gray-700 dark:text-gray-300 border-b pb-1 pt-2">
+            <div className="font-semibold text-[var(--foreground-muted)] border-b border-[var(--surface-border)] pb-1 pt-2">
               Million-Dollar UI Targets
             </div>
-            
+
             <div className="space-y-1">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">Bundle Target:</span>
-                <span className="text-blue-600 dark:text-blue-400 text-xs">&lt;200KB</span>
+                <span className="text-[var(--foreground-subtle)]">Bundle Target:</span>
+                <span className="text-[var(--info)] text-xs">&lt;200KB</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">LCP Target:</span>
-                <span className="text-blue-600 dark:text-blue-400 text-xs">&lt;2.5s</span>
+                <span className="text-[var(--foreground-subtle)]">LCP Target:</span>
+                <span className="text-[var(--info)] text-xs">&lt;2.5s</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">CLS Target:</span>
-                <span className="text-blue-600 dark:text-blue-400 text-xs">&lt;0.1</span>
+                <span className="text-[var(--foreground-subtle)]">CLS Target:</span>
+                <span className="text-[var(--info)] text-xs">&lt;0.1</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">FID Target:</span>
-                <span className="text-blue-600 dark:text-blue-400 text-xs">&lt;100ms</span>
+                <span className="text-[var(--foreground-subtle)]">FID Target:</span>
+                <span className="text-[var(--info)] text-xs">&lt;100ms</span>
               </div>
             </div>
           </div>
