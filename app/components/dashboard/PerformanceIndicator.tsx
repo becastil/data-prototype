@@ -53,7 +53,7 @@ export default function PerformanceIndicator({
   const widgets = [
     {
       id: 'gauge' as const,
-      label: 'Fuel Gauge',
+      label: 'Gauge',
       icon: Gauge,
       description: 'Segmented arc visualization'
     },
@@ -69,12 +69,12 @@ export default function PerformanceIndicator({
     <GlassCard variant="elevated" className="p-4">
       {/* Header with Widget Selector */}
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-base font-semibold text-gray-900">
+        <h3 className="text-base font-semibold text-[var(--foreground)]">
           {title}
         </h3>
         
         {/* Widget Selector Pills */}
-        <div className="flex items-center gap-1 bg-white border border-gray-300 p-1 rounded-lg">
+        <div className="flex items-center gap-1 bg-[rgba(8,14,26,0.85)] border border-[rgba(255,255,255,0.08)] p-1 rounded-xl">
           {widgets.map((widget) => {
             const Icon = widget.icon;
             const isSelected = selectedWidget === widget.id;
@@ -84,14 +84,14 @@ export default function PerformanceIndicator({
                 key={widget.id}
                 onClick={() => handleWidgetChange(widget.id)}
                 className={`
-                  relative flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium
+                  relative flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide uppercase
                   transition-all duration-200
                   ${isSelected 
-                    ? 'bg-white text-gray-900 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-[rgba(0,229,137,0.18)] text-[var(--accent)] shadow-[0_10px_24px_rgba(0,229,137,0.22)]' 
+                    : 'text-[var(--foreground-muted)] hover:text-[var(--accent)]'
                   }
                 `}
-                whileHover={{ scale: isSelected ? 1 : 1.05 }}
+                whileHover={{ scale: isSelected ? 1 : 1.04 }}
                 whileTap={{ scale: 0.95 }}
                 title={widget.description}
               >
@@ -101,7 +101,7 @@ export default function PerformanceIndicator({
                 {/* Selection Indicator */}
                 {isSelected && (
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-blue-600/10 rounded-md"
+                    className="absolute inset-0 bg-gradient-to-r from-[rgba(0,229,137,0.25)] to-[rgba(0,192,255,0.25)] rounded-lg"
                     layoutId="widget-selector"
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
@@ -155,11 +155,11 @@ export default function PerformanceIndicator({
       </div>
       
       {/* Widget Description */}
-      <div className="mt-3 pt-3 border-t border-gray-200">
-        <div className="flex items-center justify-between text-xs text-gray-600">
+      <div className="mt-3 pt-3 border-t border-[rgba(255,255,255,0.08)]">
+        <div className="flex items-center justify-between text-xs text-[var(--foreground-subtle)]">
           <div className="flex items-center gap-1">
             <span>Currently viewing:</span>
-            <span className="font-medium text-gray-900">
+            <span className="font-medium text-[var(--foreground)]">
               {widgets.find(w => w.id === selectedWidget)?.label}
             </span>
           </div>
@@ -167,7 +167,7 @@ export default function PerformanceIndicator({
           {/* Quick Switch Hint */}
           <motion.button
             onClick={() => handleWidgetChange(selectedWidget === 'gauge' ? 'stoplight' : 'gauge')}
-            className="flex items-center gap-1 text-blue-600 hover:text-blue-700"
+            className="flex items-center gap-1 text-[var(--accent)] hover:text-[var(--accent-hover)]"
             whileHover={{ x: 2 }}
           >
             <span>Try {selectedWidget === 'gauge' ? 'Stoplight' : 'Gauge'}</span>

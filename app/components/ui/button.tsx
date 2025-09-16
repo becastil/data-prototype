@@ -12,14 +12,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         // Primary button per Gallagher
-        default: "bg-[#6FACDE] text-[#00263E] hover:brightness-90 focus-visible:ring-2 focus-visible:ring-[#A4CBE1]",
-        destructive: "bg-red-500 text-red-50 hover:bg-red-600 focus-visible:ring-2 focus-visible:ring-[#A4CBE1]",
-        // Secondary outline per Gallagher
-        outline: "border border-[#6FACDE] bg-transparent text-[#00263E] hover:bg-[#F4F8FC] focus-visible:ring-2 focus-visible:ring-[#A4CBE1]",
-        secondary: "bg-transparent text-[#00263E] border border-[#6FACDE] hover:bg-[#F4F8FC] focus-visible:ring-2 focus-visible:ring-[#A4CBE1]",
-        soft: "bg-[#F4F8FC] text-[#00263E] border border-[#A4CBE1] shadow-sm hover:bg-[#F4F8FC] active:bg-[#F4F8FC] focus-visible:ring-2 focus-visible:ring-[#A4CBE1]",
-        ghost: "bg-transparent text-[#00263E] hover:bg-[#F4F8FC] focus-visible:ring-2 focus-visible:ring-[#A4CBE1]",
-        link: "text-[#00263E] underline-offset-4 hover:underline hover:text-[#2E4B66] focus-visible:ring-2 focus-visible:ring-[#A4CBE1]",
+        default: "bg-gradient-to-r from-[#00E589] via-[#00E589] to-[#00C0FF] text-[#021015] shadow-[0_12px_30px_rgba(0,229,137,0.24)] hover:shadow-[0_18px_40px_rgba(0,229,137,0.32)] focus-visible:ring-2 focus-visible:ring-[rgba(0,229,137,0.45)]",
+        destructive: "bg-[#FF5F5F] text-white hover:bg-[#ff3f3f] focus-visible:ring-2 focus-visible:ring-[rgba(255,95,95,0.3)]",
+        outline: "border border-[rgba(255,255,255,0.18)] bg-[rgba(12,20,36,0.75)] text-[var(--foreground)] hover:border-[rgba(0,229,137,0.35)] hover:bg-[rgba(18,30,50,0.9)] focus-visible:ring-2 focus-visible:ring-[rgba(0,229,137,0.45)]",
+        secondary: "bg-[rgba(0,229,137,0.12)] text-[var(--accent)] border border-[rgba(0,229,137,0.3)] hover:bg-[rgba(0,229,137,0.18)] focus-visible:ring-2 focus-visible:ring-[rgba(0,229,137,0.3)]",
+        soft: "bg-[rgba(15,26,44,0.65)] text-[var(--foreground)] border border-[rgba(255,255,255,0.08)] shadow-sm hover:bg-[rgba(20,34,56,0.85)] active:bg-[rgba(18,30,50,0.9)] focus-visible:ring-2 focus-visible:ring-[rgba(0,229,137,0.35)]",
+        ghost: "bg-transparent text-[var(--foreground-muted)] hover:bg-[rgba(0,229,137,0.12)] hover:text-[var(--accent)] focus-visible:ring-2 focus-visible:ring-[rgba(0,229,137,0.45)]",
+        link: "text-[var(--accent)] underline-offset-4 hover:underline hover:text-[var(--accent-hover)] focus-visible:ring-2 focus-visible:ring-[rgba(0,229,137,0.35)]",
       },
       size: {
         default: "h-9 px-4 py-2",

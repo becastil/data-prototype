@@ -403,10 +403,10 @@ const Home: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="fixed bottom-8 right-8 bg-white border border-gray-400 rounded-lg p-4 max-w-md"
+              className="fixed bottom-8 right-8 bg-[rgba(15,26,44,0.92)] border border-[rgba(255,255,255,0.08)] rounded-xl p-4 max-w-md shadow-[0_20px_40px_rgba(0,0,0,0.45)]"
             >
-              <p className="text-gray-800 font-medium">Error</p>
-              <p className="text-gray-700 text-sm mt-1">{error}</p>
+              <p className="text-[var(--foreground)] font-semibold">Error</p>
+              <p className="text-[var(--foreground-muted)] text-sm mt-1">{error}</p>
             </motion.div>
           )}
         </motion.div>
@@ -418,7 +418,7 @@ const Home: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="min-h-screen bg-white p-6"
+              className="min-h-screen bg-gradient-to-br from-[#05080F] via-[#08142A] to-[#041022] text-[var(--foreground)] p-6"
             >
               {/* Header */}
               <div className="max-w-7xl mx-auto mb-6">
@@ -427,13 +427,13 @@ const Home: React.FC = () => {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="w-2 h-8 bg-black"
+                  className="w-2 h-8 bg-[var(--accent)] shadow-[0_0_18px_rgba(0,229,137,0.55)]"
                   style={{ borderRadius: 'var(--radius-full)' }}
                 />
                 <motion.h1
                   initial={{ y: -20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  className="text-3xl font-bold text-black font-heading"
+                  className="text-3xl font-bold text-[var(--foreground)] font-heading tracking-tight"
                 >
                   Keenan Reporting Dashboard
                 </motion.h1>
@@ -511,34 +511,34 @@ const Home: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg"
+                className="mb-4 p-4 bg-[rgba(0,229,137,0.1)] border border-[rgba(0,229,137,0.3)] rounded-xl"
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-yellow-600 font-semibold">🐛 Debug Mode Active</span>
+                  <span className="text-[var(--accent)] font-semibold">🐛 Debug Mode Active</span>
                   <button
                     onClick={() => console.clear()}
-                    className="text-xs bg-yellow-100 hover:bg-yellow-200 px-2 py-1 rounded"
+                    className="text-xs bg-[rgba(0,229,137,0.2)] hover:bg-[rgba(0,229,137,0.28)] px-2 py-1 rounded"
                   >
                     Clear Console
                   </button>
                 </div>
-                <div className="text-sm text-yellow-700 space-y-1">
+                <div className="text-sm text-[var(--foreground)] space-y-1">
                   <p><strong>Budget Data:</strong> {budgetData?.rowCount || 0} rows, {budgetData?.headers?.length || 0} columns</p>
                   <p><strong>Claims Data:</strong> {claimsData?.rowCount || 0} rows, {claimsData?.headers?.length || 0} columns</p>
                   <p><strong>Date Filter:</strong> {dateRange.preset || 'Custom'}</p>
                   <p><strong>Current Page:</strong> {currentPage}</p>
                   {budgetData?.headers && (
                     <details className="mt-2">
-                      <summary className="cursor-pointer text-xs font-medium">Budget Headers</summary>
-                      <p className="text-xs mt-1 font-mono bg-yellow-100 p-2 rounded">
+                      <summary className="cursor-pointer text-xs font-medium text-[var(--foreground-muted)]">Budget Headers</summary>
+                      <p className="text-xs mt-1 font-mono bg-[rgba(5,10,20,0.85)] text-[var(--foreground)] p-2 rounded">
                         {budgetData.headers.join(', ')}
                       </p>
                     </details>
                   )}
                   {claimsData?.headers && (
                     <details className="mt-2">
-                      <summary className="cursor-pointer text-xs font-medium">Claims Headers</summary>
-                      <p className="text-xs mt-1 font-mono bg-yellow-100 p-2 rounded">
+                      <summary className="cursor-pointer text-xs font-medium text-[var(--foreground-muted)]">Claims Headers</summary>
+                      <p className="text-xs mt-1 font-mono bg-[rgba(5,10,20,0.85)] text-[var(--foreground)] p-2 rounded">
                         {claimsData.headers.join(', ')}
                       </p>
                     </details>

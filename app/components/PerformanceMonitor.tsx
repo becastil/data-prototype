@@ -90,10 +90,10 @@ const PerformanceMonitor = () => {
 
   const getMetricColor = (rating: string) => {
     switch (rating) {
-      case 'good': return 'text-green-600 dark:text-green-400';
-      case 'needs-improvement': return 'text-yellow-600 dark:text-yellow-400';
-      case 'poor': return 'text-red-600 dark:text-red-400';
-      default: return 'text-gray-600 dark:text-gray-400';
+      case 'good': return 'text-[var(--accent)]';
+      case 'needs-improvement': return 'text-[#FFC76A]';
+      case 'poor': return 'text-[#FF8D8D]';
+      default: return 'text-[var(--foreground-muted)]';
     }
   };
 
@@ -127,7 +127,7 @@ const PerformanceMonitor = () => {
       {/* Toggle button */}
       <button
         onClick={() => setIsVisible(!isVisible)}
-        className="fixed bottom-4 right-4 z-50 bg-black dark:bg-white text-white dark:text-black p-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
+        className="fixed bottom-4 right-4 z-50 bg-[linear-gradient(135deg,#00E589_0%,#00C0FF_100%)] text-[#041014] p-2 rounded-full shadow-[0_12px_30px_rgba(0,229,137,0.35)] hover:shadow-[0_16px_38px_rgba(0,229,137,0.4)] transition-all duration-200"
         aria-label="Toggle Performance Monitor"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -137,14 +137,14 @@ const PerformanceMonitor = () => {
 
       {/* Performance panel */}
       {isVisible && (
-        <div className="fixed bottom-16 right-4 z-40 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-4 max-w-sm w-80">
+        <div className="fixed bottom-16 right-4 z-40 bg-[rgba(10,18,32,0.95)] border border-[rgba(0,229,137,0.22)] rounded-xl shadow-[0_24px_60px_rgba(0,0,0,0.55)] p-4 max-w-sm w-80 text-[var(--foreground)]">
           <div className="flex justify-between items-center mb-3">
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
+            <h3 className="font-semibold text-[var(--foreground)] text-sm">
               Performance Metrics
             </h3>
             <button
               onClick={() => setIsVisible(false)}
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="text-[var(--foreground-muted)] hover:text-[var(--accent)]"
             >
               ×
             </button>
@@ -152,17 +152,17 @@ const PerformanceMonitor = () => {
 
           <div className="space-y-2 text-xs">
             {/* Core Web Vitals */}
-            <div className="font-semibold text-gray-700 dark:text-gray-300 border-b pb-1">
+            <div className="font-semibold text-[var(--foreground-muted)] border-b border-[rgba(255,255,255,0.08)] pb-1">
               Core Web Vitals
             </div>
-            
+
             {Object.entries(metrics).map(([key, metric]) => {
               if (key === 'bundleSize' || key === 'renderTime' || key === 'chartLoadTime' || !metric) return null;
               
               const webVitalsMetric = metric as WebVitalsMetric;
               return (
                 <div key={key} className="flex justify-between items-center">
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-[var(--foreground-subtle)]">
                     {webVitalsMetric.name}:
                   </span>
                   <span className={`font-mono ${getMetricColor(webVitalsMetric.rating)}`}>
@@ -173,23 +173,23 @@ const PerformanceMonitor = () => {
             })}
 
             {/* Bundle & Performance */}
-            <div className="font-semibold text-gray-700 dark:text-gray-300 border-b pb-1 pt-2">
+            <div className="font-semibold text-[var(--foreground-muted)] border-b border-[rgba(255,255,255,0.08)] pb-1 pt-2">
               Bundle & Performance
             </div>
-            
+
             {metrics.bundleSize && (
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">Bundle Size:</span>
+                <span className="text-[var(--foreground-subtle)]">Bundle Size:</span>
                 <span className={`font-mono ${getMetricColor(getBundleSizeRating(metrics.bundleSize))}`}>
                   {metrics.bundleSize}KB
                 </span>
               </div>
             )}
-            
+
             {metrics.renderTime && (
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">Render Time:</span>
-                <span className="font-mono text-gray-700 dark:text-gray-300">
+                <span className="text-[var(--foreground-subtle)]">Render Time:</span>
+                <span className="font-mono text-[var(--foreground)]">
                   {metrics.renderTime}ms
                 </span>
               </div>
@@ -197,8 +197,8 @@ const PerformanceMonitor = () => {
 
             {metrics.chartLoadTime && (
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">Chart Load:</span>
-                <span className="font-mono text-gray-700 dark:text-gray-300">
+                <span className="text-[var(--foreground-subtle)]">Chart Load:</span>
+                <span className="font-mono text-[var(--foreground)]">
                   {metrics.chartLoadTime}ms
                 </span>
               </div>

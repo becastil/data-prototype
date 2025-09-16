@@ -13,15 +13,15 @@ interface GlassCardProps extends Omit<HTMLMotionProps<"div">, 'children'> {
 }
 
 const glassVariants = {
-  default: "bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10",
-  elevated: "bg-white/15 dark:bg-white/8 border-white/30 dark:border-white/15",
-  subtle: "bg-white/5 dark:bg-white/3 border-white/10 dark:border-white/5",
-  vibrant: "bg-gradient-to-br from-gray-100/10 to-gray-200/10 dark:from-gray-600/8 dark:to-gray-700/8 border-white/20 dark:border-white/10"
+  default: "bg-[rgba(11,18,32,0.85)] border border-[rgba(255,255,255,0.05)] text-[var(--foreground)] backdrop-blur-lg",
+  elevated: "bg-[linear-gradient(145deg,rgba(16,26,44,0.82),rgba(8,15,28,0.94))] border border-[rgba(0,229,137,0.18)] text-[var(--foreground)] shadow-[0_24px_60px_rgba(3,12,24,0.55)] backdrop-blur-xl",
+  subtle: "bg-[rgba(16,26,44,0.65)] border border-[rgba(255,255,255,0.04)] text-[var(--foreground)] backdrop-blur-md",
+  vibrant: "bg-[linear-gradient(130deg,rgba(0,229,137,0.18),rgba(0,192,255,0.16))] border border-[rgba(0,229,137,0.32)] text-[var(--foreground)] backdrop-blur-xl"
 };
 
 const blurLevels = {
   sm: "backdrop-blur-sm",
-  md: "backdrop-blur-md", 
+  md: "backdrop-blur-md",
   lg: "backdrop-blur-lg",
   xl: "backdrop-blur-xl"
 };
@@ -37,23 +37,19 @@ const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(({
 }, ref) => {
   const baseClasses = cn(
     // Base glass effect
-    "rounded-xl border",
+    "rounded-2xl border overflow-hidden",
     glassVariants[variant],
     blurLevels[blur],
     
-    // Shadow system
-    "shadow-lg shadow-black/5 dark:shadow-black/20",
-    
     // Glow effect
-    glow && "shadow-2xl shadow-blue-500/10 dark:shadow-blue-400/20",
+    glow && "shadow-[0_0_32px_var(--accent-glow)] border-[rgba(0,229,137,0.28)]",
     
     // Interactive states
     interactive && [
       "transition-all duration-300 ease-out",
-      "hover:bg-white/20 dark:hover:bg-white/10",
-      "hover:border-white/40 dark:hover:border-white/20",
-      "hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30",
       "hover:-translate-y-1",
+      "hover:border-[rgba(0,229,137,0.4)]",
+      "hover:shadow-[0_26px_70px_rgba(0,229,137,0.22)]",
       "active:scale-[0.98]",
       "cursor-pointer"
     ],
@@ -103,18 +99,14 @@ const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(({
       whileTap="tap"
       {...props}
     >
-      {/* Glass reflection effect */}
-      <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/10 to-transparent opacity-50 pointer-events-none" />
+      {/* Glass reflection effect - removed for clean white look */}
       
       {/* Content */}
       <div className="relative z-10">
         {children}
       </div>
       
-      {/* Optional glow border */}
-      {glow && (
-        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-gray-300/20 to-gray-400/20 blur-sm -z-10" />
-      )}
+      {/* Optional glow border - removed for clean white look */}
     </motion.div>
   );
 });
