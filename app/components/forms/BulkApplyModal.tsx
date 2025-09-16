@@ -205,7 +205,7 @@ export default function BulkApplyModal({
                             max="60"
                             className="w-20"
                           />
-                          <span className="text-sm text-gray-600">months</span>
+                          <span className="text-sm text-black">months</span>
                         </div>
                       </div>
                     )}
@@ -235,11 +235,11 @@ export default function BulkApplyModal({
                 </div>
                 
                 {targetMonths.length > 0 && (
-                  <div className="mt-3 p-3 bg-gray-50 rounded-md">
-                    <div className="text-sm font-medium text-gray-900">
+                  <div className="mt-3 p-3 bg-white border border-gray-200 rounded-md">
+                    <div className="text-sm font-medium text-black">
                       Scope: {targetMonths.length} month{targetMonths.length !== 1 ? 's' : ''}
                     </div>
-                    <div className="text-xs text-gray-700 mt-1">
+                    <div className="text-xs text-black mt-1">
                       {formatMonthDisplay(targetMonths[0])} → {formatMonthDisplay(targetMonths[targetMonths.length - 1])}
                     </div>
                   </div>
@@ -311,7 +311,7 @@ export default function BulkApplyModal({
                   />
                   <div>
                     <div className="text-sm font-medium text-black">Overwrite</div>
-                    <div className="text-xs text-gray-600">Replace existing values in target months</div>
+                    <div className="text-xs text-black opacity-70">Replace existing values in target months</div>
                   </div>
                 </label>
                 
@@ -324,7 +324,7 @@ export default function BulkApplyModal({
                   />
                   <div>
                     <div className="text-sm font-medium text-black">Fill Blanks Only</div>
-                    <div className="text-xs text-gray-600">Only set months where no value exists</div>
+                    <div className="text-xs text-black opacity-70">Only set months where no value exists</div>
                   </div>
                 </label>
                 
@@ -337,7 +337,7 @@ export default function BulkApplyModal({
                   />
                   <div>
                     <div className="text-sm font-medium text-black">Additive</div>
-                    <div className="text-xs text-gray-600">Add to existing values (combine fees, add amounts)</div>
+                    <div className="text-xs text-black opacity-70">Add to existing values (combine fees, add amounts)</div>
                   </div>
                 </label>
               </div>
@@ -347,16 +347,16 @@ export default function BulkApplyModal({
             {(validation.errors.length > 0 || validation.warnings.length > 0) && (
               <div className="space-y-2">
                 {validation.errors.map((error, idx) => (
-                  <div key={idx} className="flex items-start gap-2 p-3 bg-gray-50 rounded-md border border-gray-200">
-                    <AlertTriangle className="w-4 h-4 text-gray-600 mt-0.5" />
-                    <span className="text-sm text-gray-800">{error}</span>
+                  <div key={idx} className="flex items-start gap-2 p-3 bg-white rounded-md border border-gray-200">
+                    <AlertTriangle className="w-4 h-4 text-black mt-0.5" />
+                    <span className="text-sm text-black">{error}</span>
                   </div>
                 ))}
                 
                 {validation.warnings.map((warning, idx) => (
-                  <div key={idx} className="flex items-start gap-2 p-3 bg-gray-50 rounded-md border border-gray-200">
-                    <AlertTriangle className="w-4 h-4 text-gray-600 mt-0.5" />
-                    <span className="text-sm text-gray-800">{warning}</span>
+                  <div key={idx} className="flex items-start gap-2 p-3 bg-white rounded-md border border-gray-200">
+                    <AlertTriangle className="w-4 h-4 text-black mt-0.5" />
+                    <span className="text-sm text-black">{warning}</span>
                   </div>
                 ))}
               </div>
@@ -366,7 +366,7 @@ export default function BulkApplyModal({
             <div className="flex justify-end gap-3">
               <Button
                 variant="outline"
-                className="border-gray-400 text-black hover:bg-gray-100 focus-visible:ring-gray-300"
+                className="border-gray-300 text-black hover:bg-gray-50 focus-visible:ring-black"
                 onClick={handleCancel}
               >
                 Cancel
@@ -374,7 +374,7 @@ export default function BulkApplyModal({
               <Button
                 onClick={handlePreviewClick}
                 disabled={!validation.isValid}
-                className="bg-black text-white hover:bg-gray-900 focus-visible:ring-gray-300"
+                className="bg-black text-white hover:bg-gray-800 focus-visible:ring-black"
               >
                 Preview Changes
               </Button>

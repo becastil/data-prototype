@@ -7,35 +7,73 @@ import {
   MonthlySnapshot,
   MissingMonthStrategy,
   BulkApplyAuditEntry
-} from '@/app/types/bulkApply';
-import { FeeItem, FeesConfig, RateBasis } from '@/app/components/forms/FeesConfigurator';
-import { parseNumericValue } from '@/app/utils/chartDataProcessors';
+} from '../types/bulkApply';
+import { FeeItem, FeesConfig, RateBasis } from '../components/forms/FeesConfigurator';
+import { parseNumericValue } from '../utils/chartDataProcessors';
+
+const padMonth = (value: number): string => value.toString().padStart(2, '0');
+
+const parseYearMonth = (value: string): { year: number; month: number } | null => {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const match = trimmed.match(/^(\d{4})-(\d{1,2})$/);
+  if (match) {
+    const year = Number.parseInt(match[1], 10);
+    const month = Number.parseInt(match[2], 10);
+    if (month >= 1 && month <= 12) {
+      return { year, month };
+    }
+  }
+
+  const fallback = new Date(trimmed.length === 7 ? `${trimmed}-01` : trimmed);
+  if (!Number.isNaN(fallback.getTime())) {
+    return { year: fallback.getUTCFullYear(), month: fallback.getUTCMonth() + 1 };
+  }
+
+  return null;
+};
 
 /**
  * Expands a date range into an array of month strings
  */
 export function expandMonths(startMonth: string, duration?: number, endMonth?: string): string[] {
-  const months: string[] = [];
-  const start = new Date(startMonth + '-01');
-  
-  let end: Date;
+  const startParts = parseYearMonth(startMonth);
+  if (!startParts) return [];
+
+  let endParts: { year: number; month: number } | null = null;
+
   if (endMonth) {
-    end = new Date(endMonth + '-01');
-  } else if (duration) {
-    end = new Date(start);
-    end.setMonth(end.getMonth() + duration - 1);
-  } else {
-    return [startMonth]; // Single month if no duration or end
+    endParts = parseYearMonth(endMonth);
+  } else if (duration && duration > 0) {
+    const addedMonths = duration - 1;
+    const totalMonths = startParts.month - 1 + addedMonths;
+    const year = startParts.year + Math.floor(totalMonths / 12);
+    const month = (totalMonths % 12) + 1;
+    endParts = { year, month };
   }
-  
-  const current = new Date(start);
-  while (current <= end) {
-    const year = current.getFullYear();
-    const month = String(current.getMonth() + 1).padStart(2, '0');
-    months.push(`${year}-${month}`);
-    current.setMonth(current.getMonth() + 1);
+
+  if (!endParts) {
+    endParts = { ...startParts };
   }
-  
+
+  const months: string[] = [];
+  let currentYear = startParts.year;
+  let currentMonth = startParts.month;
+
+  while (
+    currentYear < endParts.year ||
+    (currentYear === endParts.year && currentMonth <= endParts.month)
+  ) {
+    months.push(`${currentYear}-${padMonth(currentMonth)}`);
+    currentMonth += 1;
+    if (currentMonth > 12) {
+      currentMonth = 1;
+      currentYear += 1;
+    }
+  }
+
   return months;
 }
 
@@ -445,6 +483,7 @@ export function executeBulkApply(
     monthsUpdated: updatedMonths,
     monthsSkipped: skippedMonths,
     errors,
-    auditLog
+    auditLog,
+    updatedConfig: newFeesConfig
   };
 }

@@ -74,9 +74,22 @@ const DashboardSummaryTiles: React.FC<DashboardSummaryTilesProps> = ({
       totalPharmacy += pharmacy;
       
       // Fixed costs
-      const admin = parseValue(row['Admin Fees'] || row['admin_fees'] || 0);
-      const stopLoss = parseValue(row['Stop Loss Premium'] || row['stop_loss_premium'] || 0);
-      totalFixed += admin + stopLoss;
+      let fixedContribution = parseValue(
+        row['Fixed Costs'] ||
+        row['Computed Fixed Cost'] ||
+        row['fixed_costs'] ||
+        0
+      );
+
+      if (fixedContribution === 0) {
+        const admin = parseValue(row['Admin Fees'] || row['admin_fees'] || 0);
+        const tpa = parseValue(row['TPA Fee'] || row['tpa_fee'] || 0);
+        const stopLoss = parseValue(row['Stop Loss Premium'] || row['stop_loss_premium'] || 0);
+        const wellness = parseValue(row['Wellness Programs'] || row['wellness_programs'] || 0);
+        fixedContribution = admin + tpa + stopLoss + wellness;
+      }
+
+      totalFixed += fixedContribution;
       
       // Revenues
       const stopLossReimb = parseValue(row['Stop Loss Reimbursements'] || row['stop_loss_reimb'] || 0);

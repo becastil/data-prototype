@@ -93,7 +93,8 @@ export function useBulkApply(
             componentsApplied: [],
             conflictPolicy: config.conflictPolicy,
             monthsAffected: 0
-          }
+          },
+          updatedConfig: feesConfig
         };
         
         setLastResult(errorResult);

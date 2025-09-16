@@ -47,6 +47,62 @@ interface OverrideRow {
   basis?: RateBasis; // for fee/budget rows
 }
 
+const perMonthToOverrideRows = (perMonth?: FeesConfig['perMonth']): OverrideRow[] => {
+  if (!perMonth) return [];
+
+  const overrides: OverrideRow[] = [];
+
+  const months = Object.keys(perMonth).sort();
+
+  for (const month of months) {
+    const data = perMonth[month];
+    if (!data) continue;
+
+    if (data.budgetOverride) {
+      overrides.push({
+        id: `override-budget-${month}`,
+        month,
+        type: 'budget',
+        amount: data.budgetOverride.amount,
+        basis: data.budgetOverride.basis
+      });
+    }
+
+    if (data.stopLossReimb !== undefined) {
+      overrides.push({
+        id: `override-stoploss-${month}`,
+        month,
+        type: 'stopLossReimb',
+        amount: data.stopLossReimb
+      });
+    }
+
+    if (data.rebates !== undefined) {
+      overrides.push({
+        id: `override-rebates-${month}`,
+        month,
+        type: 'rebates',
+        amount: data.rebates
+      });
+    }
+
+    if (data.fees) {
+      for (const [feeId, feeOverride] of Object.entries(data.fees)) {
+        overrides.push({
+          id: `override-fee-${month}-${feeId}`,
+          month,
+          type: 'fee',
+          feeId,
+          amount: feeOverride.amount,
+          basis: feeOverride.basis
+        });
+      }
+    }
+  }
+
+  return overrides;
+};
+
 function toNumber(val: string | number): number {
   if (typeof val === 'number') return val;
   const s = (val || '').toString().replace(/[$,\s]/g, '');
@@ -203,56 +259,8 @@ export default function FeesConfigurator({
     );
     
     if (result.success) {
-      // Update the overrides with the new per-month data
-      const newOverrides: OverrideRow[] = [];
-      const updatedFeesConfig = JSON.parse(JSON.stringify(feesConfig));
-      
-      // Apply the bulk changes to the fees config
-      for (const month of result.monthsUpdated) {
-        const monthData = updatedFeesConfig.perMonth?.[month];
-        if (monthData) {
-          // Convert back to override rows for display
-          if (monthData.budgetOverride) {
-            newOverrides.push({
-              id: `bulk-budget-${month}`,
-              month,
-              type: 'budget',
-              amount: monthData.budgetOverride.amount,
-              basis: monthData.budgetOverride.basis
-            });
-          }
-          if (monthData.stopLossReimb !== undefined) {
-            newOverrides.push({
-              id: `bulk-stoploss-${month}`,
-              month,
-              type: 'stopLossReimb',
-              amount: monthData.stopLossReimb
-            });
-          }
-          if (monthData.rebates !== undefined) {
-            newOverrides.push({
-              id: `bulk-rebates-${month}`,
-              month,
-              type: 'rebates',
-              amount: monthData.rebates
-            });
-          }
-          if (monthData.fees) {
-            Object.entries(monthData.fees).forEach(([feeId, fee]) => {
-              newOverrides.push({
-                id: `bulk-fee-${month}-${feeId}`,
-                month,
-                type: 'fee',
-                feeId,
-                amount: fee.amount,
-                basis: fee.basis
-              });
-            });
-          }
-        }
-      }
-      
-      setOverrides(prev => [...prev, ...newOverrides]);
+      setOverrides(perMonthToOverrideRows(result.updatedConfig.perMonth));
+      setCurrentFeesConfig(result.updatedConfig);
       // toast?.success(`Successfully applied settings to ${result.monthsUpdated.length} month(s)`);
       console.log(`Successfully applied settings to ${result.monthsUpdated.length} month(s)`);
     } else {

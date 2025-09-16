@@ -1,4 +1,4 @@
-import { FeeItem, RateBasis } from '@/app/components/forms/FeesConfigurator';
+import { FeeItem, FeesConfig, RateBasis } from '@/app/components/forms/FeesConfigurator';
 
 /**
  * Conflict resolution policies for bulk apply operations
@@ -80,6 +80,7 @@ export interface BulkApplyResult {
   monthsSkipped: string[];
   errors: string[];
   auditLog: BulkApplyAuditEntry;
+  updatedConfig: FeesConfig;
 }
 
 /**
