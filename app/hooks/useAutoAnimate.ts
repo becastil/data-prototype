@@ -9,17 +9,21 @@ export const useAutoAnimate = <T extends Element>(options?: any) => {
   const ref = useRef<T>(null);
 
   useEffect(() => {
-    if (ref.current) {
-      // Enable auto-animate on the element
-      const cleanup = autoAnimate(ref.current, {
-        // Optimized settings for premium feel
-        duration: 250, // Slightly faster than default 250ms
-        easing: 'cubic-bezier(0.4, 0, 0.2, 1)', // Material Design Curve
-        ...options
-      });
-      
-      return cleanup;
-    }
+    if (!ref.current) return;
+
+    // Enable auto-animate on the element
+    const controller = autoAnimate(ref.current, {
+      // Optimized settings for premium feel
+      duration: 250, // Slightly faster than default 250ms
+      easing: 'cubic-bezier(0.4, 0, 0.2, 1)', // Material Design Curve
+      ...options
+    });
+
+    return () => {
+      // autoAnimate returns an AnimationController object, not a cleanup fn
+      controller?.destroy?.();
+      controller?.disable?.();
+    };
   }, [options]);
 
   return ref;
