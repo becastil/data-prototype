@@ -8,6 +8,7 @@
 - Polished uploader, configuration, modal, and dashboard visuals with glassmorphism-inspired treatments.
 - Reverted primary surfaces to light backgrounds to maintain white-theme aesthetic.
 - Added real PDF export via jsPDF instead of plain-text placeholder.
+- Fixed CSV loader client directive placement to restore production build.
 
 ### Breaking changes
 - None.

@@ -1,11 +1,11 @@
-import { useCsvUpload } from '@/app/hooks/useCsvUpload';
-// touched by PR-008: UI polish for CSV dropzone
+// touched by PR-009: refactored upload flow + light theme
 'use client';
 
 import React, { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Upload, FileSpreadsheet, AlertCircle, CheckCircle, XCircle, Loader2, FileUp } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
+import { useCsvUpload } from '@/app/hooks/useCsvUpload';
 
 export interface ParsedCSVData {
   headers: string[];
