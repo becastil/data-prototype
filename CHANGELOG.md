@@ -13,3 +13,4 @@
 ### Breaking changes
 - None.
 - Refactored CSV upload flow into reusable hook and simplified loader components.
+- Refined bulk apply modal: default month memoized, lighter theme retained.

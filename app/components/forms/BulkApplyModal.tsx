@@ -1,7 +1,7 @@
-// touched by PR-008: modal visual refresh for bulk apply
+// touched by PR-010: memoized modal state + light theme
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -44,7 +44,12 @@ export default function BulkApplyModal({
   onApply
 }: BulkApplyModalProps) {
   // Form state
-  const [startMonth, setStartMonth] = useState<string>('');
+  const [startMonth, setStartMonth] = useState<string>(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`;
+  });
   const [durationType, setDurationType] = useState<'duration' | 'endMonth'>('duration');
   const [duration, setDuration] = useState<number>(6);
   const [endMonth, setEndMonth] = useState<string>('');
@@ -57,17 +62,10 @@ export default function BulkApplyModal({
   const [conflictPolicy, setConflictPolicy] = useState<ConflictPolicy>(ConflictPolicy.OVERWRITE);
   const [showPreview, setShowPreview] = useState(false);
   
-  // Set default start month to current month
-  useEffect(() => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    setStartMonth(`${year}-${month}`);
-  }, []);
-  
   // Calculate target months
   const targetMonths = useMemo(() => {
     if (!startMonth) return [];
+
     return expandMonths(
       startMonth,
       durationType === 'duration' ? duration : undefined,
