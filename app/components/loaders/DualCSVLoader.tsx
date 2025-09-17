@@ -1,3 +1,4 @@
+// touched by PR-008: UI polish for upload workflow
 'use client';
 
 import React from 'react';
@@ -133,7 +134,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
 
   return (
     <motion.div 
-      className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-gray-100 p-8"
+      className="min-h-screen bg-gradient-to-br from-[#0B1220] via-[#0F1C33] to-[#05080F] px-6 py-16 text-slate-100"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -160,46 +161,47 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
           ))}
         </AnimatePresence>
       </div>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <motion.div
-          className="text-center mb-8"
+          className="text-center mb-14"
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <h1 className="text-4xl font-bold text-gray-800 mb-3">
+          <h1 className="text-4xl font-semibold tracking-tight text-white mb-4">
             Healthcare Data Dashboard
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-base text-slate-300 max-w-2xl mx-auto">
             Upload claims & enrollment data - budget parameters will be configured next
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           <motion.div
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
             className="relative"
           >
-            <div className="absolute -top-6 left-4 bg-[#6FACDE] text-[#00263E] px-4 py-1 rounded-md text-sm font-semibold z-10 shadow-sm">
+            <div className="absolute -top-7 left-10 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-200/95 to-emerald-200/90 text-slate-800 px-5 py-2 text-sm font-semibold shadow-[0_12px_30px_rgba(15,23,42,0.35)]">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               Claims & Enrollment Data
             </div>
-            <div className="bg-white rounded-xl shadow-lg p-6 pt-10 border border-[#e0e0e0] min-h-[480px] flex flex-col">
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Required Columns</h3>
-                <ul className="text-sm text-gray-700 space-y-1">
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>month</strong> (or <em>period</em>)</span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Employee Count</strong>, <strong>Member Count</strong> (or <em>Enrollment</em>)</span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Medical Claims</strong> (or <em>medical_claims</em>)</span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Pharmacy Claims</strong> (or <em>pharmacy_claims, Rx Claims</em>)</span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span>Optional: Detailed claims breakdown</span></li>
+            <div className="bg-white/90 text-slate-800 rounded-3xl shadow-[0_35px_80px_rgba(8,15,40,0.28)] border border-white/40 backdrop-blur-xl p-8 pt-14 min-h-[520px] flex flex-col gap-6">
+              <div className="space-y-5">
+                <h3 className="text-xl font-semibold text-slate-900">Required Columns</h3>
+                <ul className="text-sm text-slate-700 space-y-2">
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>month</strong> (or <em>period</em>)</span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Employee Count</strong>, <strong>Member Count</strong> (or <em>Enrollment</em>)</span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Medical Claims</strong> (or <em>medical_claims</em>)</span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Pharmacy Claims</strong> (or <em>pharmacy_claims</em>, Rx Claims)</span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span className="text-slate-600">Optional: Detailed claims breakdown</span></li>
                 </ul>
-                <p className="text-xs text-gray-600 mt-2 p-2 bg-blue-50 rounded">
-                  💡 <strong>Note:</strong> Budget, fixed costs, and reimbursements will be configured in the next step - only upload actual claims experience data here.
+                <p className="text-xs leading-relaxed text-slate-600 bg-emerald-50/80 border border-emerald-100 rounded-2xl px-4 py-3">
+                  💡 <strong>Note:</strong> Budget, fixed costs, and reimbursements will be configured in the next step. Only upload actual claims experience data here to keep the pipeline clean.
                 </p>
-                <div className="mt-3">
-                  <Link href="/sample-budget.csv" className="inline-flex items-center gap-1 text-[#2E4B66] hover:text-[#00263E] text-sm">
+                <div className="pt-1">
+                  <Link href="/sample-budget.csv" className="inline-flex items-center gap-2 text-sky-700 hover:text-sky-900 text-sm font-medium transition-colors">
                     <Download className="w-4 h-4" /> Download template
                   </Link>
                 </div>
@@ -208,15 +210,16 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
                 onDataLoaded={handleBudgetLoaded}
                 onError={onError}
                 maxFileSize={10 * 1024 * 1024}
+                className="mt-2"
               />
               {budgetData && (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="mt-4 flex items-center justify-center text-green-700"
+                  className="mt-6 inline-flex items-center self-center gap-2 px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold shadow-inner"
                 >
-                  <CheckCircle className="w-5 h-5 mr-2" />
-                  <span className="font-semibold">Budget data loaded</span>
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Budget data loaded</span>
                 </motion.div>
               )}
             </div>
@@ -228,23 +231,24 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
             transition={{ delay: 0.4 }}
             className="relative"
           >
-            <div className="absolute -top-6 left-4 bg-[#2E4B66] text-white px-4 py-1 rounded-md text-sm font-semibold z-10 shadow-sm">
+            <div className="absolute -top-7 left-10 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-300/95 to-blue-300/95 text-slate-900 px-5 py-2 text-sm font-semibold shadow-[0_12px_30px_rgba(8,15,40,0.35)]">
+              <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
               Detailed Claims Data (Optional)
             </div>
-            <div className="bg-white rounded-xl shadow-lg p-6 pt-10 border border-[#e0e0e0] min-h-[480px] flex flex-col">
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Optional Detailed Breakdown</h3>
-                <ul className="text-sm text-gray-700 space-y-1">
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Claimant Number</strong></span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Service Type</strong>, <strong>ICD-10-CM Code</strong></span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Medical</strong>, <strong>Rx</strong>, <strong>Total</strong> (costs)</span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5" /> <span><strong>Medical Description</strong>, <strong>Layman's Term</strong></span></li>
+            <div className="bg-white/90 text-slate-800 rounded-3xl shadow-[0_35px_80px_rgba(8,15,40,0.28)] border border-white/40 backdrop-blur-xl p-8 pt-14 min-h-[520px] flex flex-col gap-6">
+              <div className="space-y-5">
+                <h3 className="text-xl font-semibold text-slate-900">Optional Detailed Breakdown</h3>
+                <ul className="text-sm text-slate-700 space-y-2">
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Claimant Number</strong></span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Service Type</strong>, <strong>ICD-10-CM Code</strong></span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Medical</strong>, <strong>Rx</strong>, <strong>Total</strong> (costs)</span></li>
+                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Medical Description</strong>, <strong>Layman's Term</strong></span></li>
                 </ul>
-                <p className="text-xs text-gray-600 mt-2 p-2 bg-amber-50 rounded">
-                  ⚠️ <strong>Optional:</strong> This provides detailed claims breakdown for advanced analytics. If not needed, you can skip this file.
+                <p className="text-xs leading-relaxed text-slate-600 bg-amber-50/80 border border-amber-100 rounded-2xl px-4 py-3">
+                  ⚠️ <strong>Optional:</strong> This file unlocks granular claims analytics. Feel free to skip it if you only need high-level KPIs.
                 </p>
-                <div className="mt-3">
-                  <Link href="/sample-claims.csv" className="inline-flex items-center gap-1 text-[#2E4B66] hover:text-[#00263E] text-sm">
+                <div className="pt-1">
+                  <Link href="/sample-claims.csv" className="inline-flex items-center gap-2 text-sky-700 hover:text-sky-900 text-sm font-medium transition-colors">
                     <Download className="w-4 h-4" /> Download template
                   </Link>
                 </div>
@@ -253,15 +257,16 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
                 onDataLoaded={handleClaimsLoaded}
                 onError={onError}
                 maxFileSize={10 * 1024 * 1024}
+                className="mt-2"
               />
               {claimsData && (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="mt-4 flex items-center justify-center text-green-700"
+                  className="mt-6 inline-flex items-center self-center gap-2 px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold shadow-inner"
                 >
-                  <CheckCircle className="w-5 h-5 mr-2" />
-                  <span className="font-semibold">Claims data loaded</span>
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Claims data loaded</span>
                 </motion.div>
               )}
             </div>
@@ -272,11 +277,11 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-8 text-center text-gray-600"
+            className="mt-12 text-center text-slate-300"
           >
-            <div className="inline-flex items-center space-x-2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#2E4B66]"></div>
-              <span>Waiting for {budgetData ? 'claims' : 'budget'} data...</span>
+            <div className="inline-flex items-center space-x-3 rounded-full bg-white/10 px-6 py-3 backdrop-blur-md border border-white/10">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-sky-300"></div>
+              <span className="text-sm tracking-wide">Waiting for {budgetData ? 'claims' : 'budget'} data...</span>
             </div>
           </motion.div>
         )}
