@@ -7,6 +7,7 @@
 - Documented current bulk-apply and fee override modules in `FINDINGS.md` for upcoming hardening tasks.
 - Polished uploader, configuration, modal, and dashboard visuals with glassmorphism-inspired treatments.
 - Reverted primary surfaces to light backgrounds to maintain white-theme aesthetic.
+- Added real PDF export via jsPDF instead of plain-text placeholder.
 
 ### Breaking changes
 - None.

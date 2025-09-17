@@ -57,6 +57,7 @@
     "fuse.js": "^7.1.0",
     "gsap": "^3.13.0",
     "immer": "^10.1.1",
+    "jspdf": "^3.0.2",
     "lottie-react": "^2.4.1",
     "lottie-web": "^5.13.0",
     "lucide-react": "^0.541.0",
@@ -86,10 +87,10 @@
     "cross-env": "^7.0.3",
     "esbuild-loader": "^4.3.0",
     "husky": "^8.0.3",
-    "vitest": "^3.2.4",
     "lint-staged": "^15.2.0",
     "tailwindcss": "^4",
     "typescript": "^5",
+    "vitest": "^3.2.4",
     "xo": "^0.59.0"
   },
   "xo": {

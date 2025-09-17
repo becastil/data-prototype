@@ -1,3 +1,4 @@
+// touched by PR-009: enable real PDF download via jsPDF
 'use client';
 
 import React, { useState } from 'react';
@@ -78,29 +79,6 @@ const EnterpriseDataExport: React.FC<EnterpriseDataExportProps> = ({
     return JSON.stringify(exportPackage, null, 2);
   };
 
-  // Generate PDF content (simplified - would use a proper PDF library in production)
-  const generatePDFContent = (data: ExportData) => {
-    const reportContent = `
-# ${title}
-Generated: ${new Date().toLocaleDateString()}
-
-## Summary Statistics
-- Budget Records: ${data.budgetData?.length || 0}
-- Claims Records: ${data.claimsData?.length || 0}
-- Chart Data Points: ${data.chartData?.length || 0}
-
-## Key Metrics
-${Object.entries(data.metrics || {})
-  .map(([key, value]) => `- ${key}: ${value}`)
-  .join('\n')}
-
-## Data Tables
-[Note: Full data tables would be rendered here in a production PDF export]
-    `.trim();
-
-    return reportContent;
-  };
-
   // Download file utility
   const downloadFile = (content: string, filename: string, mimeType: string) => {
     const blob = new Blob([content], { type: mimeType });
@@ -143,11 +121,54 @@ ${Object.entries(data.metrics || {})
           setExportStatus('JSON export completed successfully');
           break;
 
-        case 'pdf':
-          const pdfContent = generatePDFContent(data);
-          downloadFile(pdfContent, `healthcare-report-${timestamp}.txt`, 'text/plain');
-          setExportStatus('Report export completed successfully (Note: PDF generation requires additional setup)');
+        case 'pdf': {
+          const { jsPDF } = await import('jspdf');
+          const doc = new jsPDF();
+
+          const headingY = 20;
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(18);
+          doc.text(title, 14, headingY);
+
+          doc.setFontSize(11);
+          doc.setFont('helvetica', 'normal');
+          doc.text(`Generated: ${new Date().toLocaleString()}`, 14, headingY + 10);
+
+          doc.setFont('helvetica', 'bold');
+          doc.text('Summary Statistics', 14, headingY + 22);
+          doc.setFont('helvetica', 'normal');
+          const summaryLines = [
+            `Budget Records: ${data.budgetData?.length || 0}`,
+            `Claims Records: ${data.claimsData?.length || 0}`,
+            `Chart Points: ${data.chartData?.length || 0}`
+          ];
+          summaryLines.forEach((line, idx) => {
+            doc.text(`• ${line}`, 18, headingY + 32 + idx * 6);
+          });
+
+          doc.setFont('helvetica', 'bold');
+          doc.text('Key Metrics', 14, headingY + 52);
+          doc.setFont('helvetica', 'normal');
+          const metricsEntries = Object.entries(data.metrics || {});
+          if (metricsEntries.length === 0) {
+            doc.text('No metrics available', 18, headingY + 62);
+          } else {
+            metricsEntries.slice(0, 10).forEach(([key, value], idx) => {
+              doc.text(`• ${key}: ${value}`, 18, headingY + 62 + idx * 6);
+            });
+            if (metricsEntries.length > 10) {
+              doc.text(`• +${metricsEntries.length - 10} more...`, 18, headingY + 62 + metricsEntries.slice(0, 10).length * 6);
+            }
+          }
+
+          doc.setFont('helvetica', 'italic');
+          doc.setFontSize(10);
+          doc.text('[Detailed tables are available via CSV/JSON exports.]', 14, 280);
+
+          doc.save(`healthcare-report-${timestamp}.pdf`);
+          setExportStatus('PDF export completed successfully');
           break;
+        }
 
         case 'excel':
           // In production, would use a library like SheetJS
