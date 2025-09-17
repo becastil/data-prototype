@@ -1,10 +1,9 @@
+import { useCsvUpload } from '@/app/hooks/useCsvUpload';
 // touched by PR-008: UI polish for CSV dropzone
 'use client';
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import Papa from 'papaparse';
-import { sanitizeCSVData } from '@utils/phi';
 import { Upload, FileSpreadsheet, AlertCircle, CheckCircle, XCircle, Loader2, FileUp } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 
@@ -23,6 +22,7 @@ export interface CSVLoaderProps {
   className?: string;
 }
 
+// retained type alias for outgoing props compatibility
 type LoadingState = 'idle' | 'loading' | 'success' | 'error';
 type DragState = 'idle' | 'hover' | 'active';
 
@@ -153,133 +153,19 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
   maxFileSize = 10 * 1024 * 1024, // 10MB default
   className = ''
 }) => {
-  const [loadingState, setLoadingState] = useState<LoadingState>('idle');
   const [dragState, setDragState] = useState<DragState>('idle');
-  const [errorMessage, setErrorMessage] = useState<string>('');
-  const [successMessage, setSuccessMessage] = useState<string>('');
-  const [previewData, setPreviewData] = useState<ParsedCSVData | null>(null);
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dragCounter = useRef<number>(0);
-  const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const resetState = useCallback(() => {
-    // Clear progress interval if it exists
-    if (progressIntervalRef.current) {
-      clearInterval(progressIntervalRef.current);
-      progressIntervalRef.current = null;
-    }
-    
-    setLoadingState('idle');
-    setDragState('idle');
-    setErrorMessage('');
-    setSuccessMessage('');
-    setPreviewData(null);
-    setUploadProgress(0);
-  }, []);
-
-  const validateFile = useCallback((file: File): string | null => {
-    if (!file.name.toLowerCase().endsWith('.csv')) {
-      return 'Please select a valid CSV file';
-    }
-    if (file.size > maxFileSize) {
-      return `File size too large (max ${Math.round(maxFileSize / 1024 / 1024)}MB)`;
-    }
-    if (file.size === 0) {
-      return 'CSV file appears to be empty';
-    }
-    return null;
-  }, [maxFileSize]);
-
-  const parseCSV = useCallback((file: File) => {
-    setLoadingState('loading');
-    setErrorMessage('');
-    setSuccessMessage('');
-    
-    // Simulate upload progress
-    progressIntervalRef.current = setInterval(() => {
-      setUploadProgress(prev => Math.min(prev + 10, 90));
-    }, 100);
-
-    Papa.parse(file, {
-      complete: (result) => {
-        if (progressIntervalRef.current) {
-          clearInterval(progressIntervalRef.current);
-          progressIntervalRef.current = null;
-        }
-        setUploadProgress(100);
-
-        if (result.errors.length > 0) {
-          const errorMsg = 'Unable to parse CSV - please check format';
-          setErrorMessage(errorMsg);
-          setLoadingState('error');
-          onError(errorMsg);
-          return;
-        }
-
-        if (!result.data || result.data.length === 0) {
-          const errorMsg = 'CSV appears to be empty or corrupted';
-          setErrorMessage(errorMsg);
-          setLoadingState('error');
-          onError(errorMsg);
-          return;
-        }
-
-        const headers = result.data[0] as string[];
-        const rows = result.data.slice(1).map((row: any) => {
-          const obj: Record<string, string> = {};
-          headers.forEach((header, index) => {
-            obj[header] = row[index] || '';
-          });
-          return obj;
-        }).filter((row: Record<string, string>) => 
-          Object.values(row).some(val => val !== '')
-        );
-
-        const sanitized = sanitizeCSVData(headers, rows);
-
-        const parsedData: ParsedCSVData = {
-          headers: sanitized.headers,
-          rows: sanitized.rows,
-          rawData: '',
-          fileName: file.name,
-          rowCount: sanitized.rows.length,
-          fileSize: file.size,
-          lastModified: file.lastModified
-        };
-
-        setPreviewData(parsedData);
-        setLoadingState('success');
-        setSuccessMessage(`Successfully loaded ${rows.length} rows from ${file.name}`);
-        onDataLoaded(parsedData);
-      },
-      error: (error) => {
-        if (progressIntervalRef.current) {
-          clearInterval(progressIntervalRef.current);
-          progressIntervalRef.current = null;
-        }
-        const errorMsg = `CSV parsing error: ${error.message}`;
-        setErrorMessage(errorMsg);
-        setLoadingState('error');
-        onError(errorMsg);
-      },
-      header: false,
-      skipEmptyLines: true,
-      encoding: 'UTF-8',
-      worker: true
-    });
-  }, [onDataLoaded, onError]);
-
-  const handleFileSelect = useCallback((file: File) => {
-    const validationError = validateFile(file);
-    if (validationError) {
-      setErrorMessage(validationError);
-      setLoadingState('error');
-      onError(validationError);
-      return;
-    }
-    parseCSV(file);
-  }, [validateFile, parseCSV, onError]);
+  const {
+    loadingState,
+    errorMessage,
+    successMessage,
+    previewData,
+    uploadProgress,
+    handleFileSelect,
+    resetState
+  } = useCsvUpload({ maxFileSize, onDataLoaded, onError });
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -328,16 +214,6 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
 
   const handleClick = useCallback(() => {
     fileInputRef.current?.click();
-  }, []);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-        progressIntervalRef.current = null;
-      }
-    };
   }, []);
 
   const getDropZoneVariant = () => {

@@ -10,3 +10,4 @@
 
 ### Breaking changes
 - None.
+- Refactored CSV upload flow into reusable hook and simplified loader components.
