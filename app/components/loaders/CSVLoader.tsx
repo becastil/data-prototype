@@ -29,13 +29,13 @@ type DragState = 'idle' | 'hover' | 'active';
 const dropZoneVariants: Variants = {
   idle: {
     scale: 1,
-    borderColor: 'rgba(148, 163, 184, 0.4)',
-    backgroundColor: 'rgba(15, 23, 42, 0.25)',
+    borderColor: 'rgba(203, 213, 225, 1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
   },
   hover: {
     scale: 1.02,
-    borderColor: 'rgba(96, 165, 250, 0.7)',
-    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+    borderColor: 'rgba(96, 165, 250, 0.8)',
+    backgroundColor: 'rgba(219, 234, 254, 0.85)',
     transition: {
       duration: 0.2,
       ease: 'easeInOut'
@@ -43,21 +43,21 @@ const dropZoneVariants: Variants = {
   },
   active: {
     scale: 0.98,
-    borderColor: 'rgba(14, 165, 233, 0.85)',
-    backgroundColor: 'rgba(8, 145, 178, 0.18)',
+    borderColor: 'rgba(59, 130, 246, 0.9)',
+    backgroundColor: 'rgba(191, 219, 254, 0.9)',
     transition: {
       duration: 0.12
     }
   },
   success: {
     scale: 1,
-    borderColor: 'rgba(34, 197, 94, 0.85)',
-    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+    borderColor: 'rgba(16, 185, 129, 0.9)',
+    backgroundColor: 'rgba(187, 247, 208, 0.85)',
   },
   error: {
     scale: 1,
-    borderColor: 'rgba(248, 113, 113, 0.85)',
-    backgroundColor: 'rgba(248, 113, 113, 0.12)',
+    borderColor: 'rgba(239, 68, 68, 0.9)',
+    backgroundColor: 'rgba(254, 202, 202, 0.85)',
     x: [0, -5, 5, -5, 5, 0],
     transition: {
       x: {
@@ -358,13 +358,13 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
   const getIcon = () => {
     switch (loadingState) {
       case 'loading':
-        return <Loader2 className="w-12 h-12 text-sky-300" />;
+        return <Loader2 className="w-12 h-12 text-sky-500" />;
       case 'success':
-        return <CheckCircle className="w-12 h-12 text-emerald-400" />;
+        return <CheckCircle className="w-12 h-12 text-emerald-500" />;
       case 'error':
-        return <XCircle className="w-12 h-12 text-rose-400" />;
+        return <XCircle className="w-12 h-12 text-rose-500" />;
       default:
-        return <FileSpreadsheet className="w-12 h-12 text-slate-200" />;
+        return <FileSpreadsheet className="w-12 h-12 text-slate-400" />;
     }
   };
 
@@ -386,7 +386,7 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
         />
         
         <motion.div
-          className="border-2 border-dashed rounded-3xl p-12 text-center cursor-pointer transition-all bg-gradient-to-br from-white/10 via-white/5 to-white/0 shadow-[0_25px_60px_rgba(15,23,42,0.4)] backdrop-blur-xl"
+          className="border-2 border-dashed rounded-3xl p-12 text-center cursor-pointer transition-all bg-white shadow-[0_20px_45px_rgba(15,23,42,0.1)]"
           onDrop={handleDrop}
           onDragEnter={handleDragEnter}
           onDragOver={handleDragOver}
@@ -405,30 +405,30 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
             {getIcon()}
             
             <div className="space-y-3">
-              <p className="text-xl font-semibold text-slate-100">
+              <p className="text-xl font-semibold text-slate-800">
                 {loadingState === 'loading' && 'Processing CSV file...'}
                 {loadingState === 'success' && 'CSV loaded successfully!'}
                 {loadingState === 'error' && 'Error loading CSV'}
                 {loadingState === 'idle' && 'Drop CSV file here or click to upload'}
               </p>
-              <div className="text-sm text-slate-200/90 flex items-center justify-center gap-2">
-                <span className="inline-flex items-center gap-2 bg-white/10 text-sky-200 px-3 py-1 rounded-full border border-white/20">
+              <div className="text-sm text-slate-500 flex items-center justify-center gap-2">
+                <span className="inline-flex items-center gap-2 bg-slate-100 text-sky-700 px-3 py-1 rounded-full border border-sky-200">
                   <FileUp className="w-4 h-4" /> .csv only
                 </span>
-                <span className="opacity-70">•</span>
-                <span className="font-medium">Max {Math.round(maxFileSize / 1024 / 1024)}MB</span>
+                <span className="opacity-50">•</span>
+                <span className="font-medium text-slate-600">Max {Math.round(maxFileSize / 1024 / 1024)}MB</span>
               </div>
             </div>
 
             {loadingState === 'loading' && (
               <motion.div
-                className="w-64 h-2 bg-white/10 rounded-full overflow-hidden shadow-inner"
+                className="w-64 h-2 bg-slate-200 rounded-full overflow-hidden"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
               >
                 <motion.div
-                  className="h-full bg-gradient-to-r from-sky-300 via-emerald-300 to-cyan-200"
+                  className="h-full bg-gradient-to-r from-sky-400 via-emerald-400 to-cyan-300"
                   initial={{ width: 0 }}
                   animate={{ width: `${uploadProgress}%` }}
                   transition={{ duration: 0.2 }}
@@ -438,7 +438,7 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
 
             {loadingState !== 'loading' && (
               <div className="pt-2">
-                <Button variant="outline" type="button" onClick={handleClick} className="rounded-full border-white/30 text-slate-900 bg-white font-semibold shadow-[0_12px_30px_rgba(15,23,42,0.25)] hover:bg-slate-100">
+                <Button variant="outline" type="button" onClick={handleClick} className="rounded-full border-slate-200 text-slate-700 bg-white font-semibold shadow-sm hover:bg-slate-50">
                   Browse Files
                 </Button>
               </div>
@@ -451,7 +451,7 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
         {errorMessage && (
           <motion.div
             key="error"
-            className="bg-rose-100/90 border border-rose-300 rounded-xl p-4 flex items-start space-x-3 text-rose-900"
+            className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-start space-x-3 text-rose-700"
             variants={alertVariants}
             initial="hidden"
             animate="visible"
@@ -474,7 +474,7 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
         {successMessage && (
           <motion.div
             key="success"
-            className="bg-emerald-100/90 border border-emerald-200 rounded-xl p-4 flex items-start space-x-3 text-emerald-900"
+            className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-start space-x-3 text-emerald-700"
             variants={alertVariants}
             initial="hidden"
             animate="visible"
@@ -499,11 +499,11 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="bg-slate-900/60 px-6 py-4 border-b border-white/10">
-              <h3 className="text-lg font-semibold text-white">
+            <div className="bg-slate-50 px-6 py-4 border-b border-slate-200">
+              <h3 className="text-lg font-semibold text-slate-900">
                 Data Preview (First 5 rows)
               </h3>
-              <div className="text-sm text-slate-200/80 mt-1 flex flex-wrap gap-3">
+              <div className="text-sm text-slate-600 mt-1 flex flex-wrap gap-3">
                 <span>Total rows: {previewData.rowCount}</span>
                 <span>• Columns: {previewData.headers.length}</span>
                 {previewData.fileName && (
@@ -520,7 +520,7 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
 
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-slate-900/50 border-b border-white/10 text-slate-100">
+                <thead className="bg-slate-100 border-b border-slate-200 text-slate-700">
                   <tr>
                     {previewData.headers.map((header, index) => (
                       <motion.th
@@ -535,7 +535,7 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
                     ))}
                   </tr>
                 </thead>
-                <tbody className="bg-white/60 divide-y divide-slate-200 text-slate-900">
+                <tbody className="bg-white divide-y divide-slate-200 text-slate-800">
                   {previewData.rows.slice(0, 5).map((row, rowIndex) => (
                     <motion.tr
                       key={rowIndex}
@@ -544,13 +544,13 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
                       initial="hidden"
                       animate="visible"
                       exit="exit"
-                      className={rowIndex % 2 === 0 ? 'bg-white/80' : 'bg-white/60'}
+                      className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50'}
                       whileHover={{ backgroundColor: 'rgba(125, 211, 252, 0.18)' }}
                     >
                       {previewData.headers.map((header, cellIndex) => (
-                        <td
-                          key={cellIndex}
-                          className="px-4 py-3 text-sm text-gray-900 whitespace-nowrap"
+                      <td
+                        key={cellIndex}
+                        className="px-4 py-3 text-sm whitespace-nowrap"
                           title={row[header]}
                         >
                           <div className="max-w-xs truncate">
@@ -565,15 +565,15 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
             </div>
 
             <motion.div
-              className="px-6 py-3 bg-slate-900/60 border-t border-white/10 flex justify-between items-center text-slate-200"
+              className="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-between items-center text-slate-600"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              <p className="text-sm opacity-80">
+              <p className="text-sm">
                 Showing {Math.min(5, previewData.rows.length)} of {previewData.rowCount} rows
               </p>
-              <Button variant="ghost" onClick={resetState} className="text-sky-200 hover:text-white">
+              <Button variant="ghost" onClick={resetState} className="text-sky-600 hover:text-sky-800">
                 Replace File
               </Button>
             </motion.div>

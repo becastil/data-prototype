@@ -276,18 +276,18 @@ export default function FeesConfigurator({
   const { expandMonths } = require('@/app/services/bulkApplyService');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#04060D] via-[#0B1220] to-[#02040A] px-6 py-16 text-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 px-6 py-16 text-slate-900">
       <div className="max-w-6xl mx-auto space-y-10">
         <div className="space-y-4">
           <h2 className="text-3xl font-semibold tracking-tight">Configure Fees & Budget</h2>
           <details className="inline-block">
-            <summary className="text-sm cursor-pointer text-slate-300 font-medium inline-flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-xs font-semibold text-slate-200">?</span>
+            <summary className="text-sm cursor-pointer text-slate-600 font-medium inline-flex items-center gap-2">
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">?</span>
               What is this?
             </summary>
-            <div className="mt-3 text-sm text-slate-200/90 bg-white/10 border border-white/15 rounded-2xl px-5 py-4 max-w-xl backdrop-blur-xl">
+            <div className="mt-3 text-sm text-slate-700 bg-white border border-slate-200 rounded-2xl px-5 py-4 max-w-xl shadow-sm">
               <p>Configure budgets, fixed fees, and reimbursements used throughout analytics. Claims uploads only need experience data—financial overrides stay here.</p>
-              <ul className="mt-3 space-y-1 text-xs text-slate-200/70">
+              <ul className="mt-3 space-y-1 text-xs text-slate-500">
                 <li><strong>PMPM:</strong> Per Member Per Month (multiplies member count)</li>
                 <li><strong>PEPM:</strong> Per Employee Per Month (multiplies employee count)</li>
                 <li><strong>Monthly:</strong> Fixed monthly amount</li>
@@ -298,31 +298,31 @@ export default function FeesConfigurator({
         </div>
 
         {/* Data Source Preview (non-editable) */}
-        <GlassCard variant="elevated" blur="xl" className="p-8 border-white/15 bg-white/6 shadow-[0_30px_80px_rgba(7,14,35,0.45)]">
-          <h3 className="text-lg font-semibold mb-3 text-slate-100">Enrollment Data from CSV</h3>
-          <p className="text-sm text-slate-300">PMPM/PEPM calculations pull from these counts each month. Snapshot from your latest upload:</p>
+        <GlassCard variant="elevated" blur="xl" className="p-8 border-slate-200/60 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
+          <h3 className="text-lg font-semibold mb-3 text-slate-900">Enrollment Data from CSV</h3>
+          <p className="text-sm text-slate-600">PMPM/PEPM calculations pull from these counts each month. Snapshot from your latest upload:</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
-            <div className="p-4 rounded-2xl bg-white/12 border border-white/15 backdrop-blur-lg">
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-300">Employees</div>
-              <div className="text-2xl font-semibold text-white mt-2">{employees.toLocaleString()}</div>
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Employees</div>
+              <div className="text-2xl font-semibold text-slate-900 mt-2">{employees.toLocaleString()}</div>
             </div>
-            <div className="p-4 rounded-2xl bg-white/12 border border-white/15 backdrop-blur-lg">
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-300">Members</div>
-              <div className="text-2xl font-semibold text-white mt-2">{members.toLocaleString()}</div>
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Members</div>
+              <div className="text-2xl font-semibold text-slate-900 mt-2">{members.toLocaleString()}</div>
             </div>
-            <div className="p-4 rounded-2xl bg-white/12 border border-white/15 backdrop-blur-lg">
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-300">Budget Preview</div>
-              <div className="text-2xl font-semibold text-white mt-2">${defaultBudget.toLocaleString()}</div>
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Budget Preview</div>
+              <div className="text-2xl font-semibold text-slate-900 mt-2">${defaultBudget.toLocaleString()}</div>
             </div>
           </div>
         </GlassCard>
 
         {/* Fees */}
-        <GlassCard variant="elevated" blur="xl" className="p-8 border-white/15 bg-white/6 shadow-[0_30px_80px_rgba(7,14,35,0.45)]">
+        <GlassCard variant="elevated" blur="xl" className="p-8 border-slate-200/60 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div>
-              <h3 className="text-lg font-semibold text-white">Fees</h3>
-              <p className="text-xs text-slate-300 leading-tight mt-1">Create monthly fees and choose whether they scale by members, employees, or stay flat.</p>
+              <h3 className="text-lg font-semibold text-slate-900">Fees</h3>
+              <p className="text-xs text-slate-500 leading-tight mt-1">Create monthly fees and choose whether they scale by members, employees, or stay flat.</p>
             </div>
             <Button variant="default" onClick={addFee} className="gap-2 rounded-full bg-gradient-to-r from-sky-400 to-cyan-300 text-slate-900 shadow-[0_12px_30px_rgba(56,189,248,0.45)] hover:opacity-90">
               <Plus className="w-4 h-4" /> Add Fee
@@ -331,30 +331,30 @@ export default function FeesConfigurator({
 
           <div className="space-y-3">
             {fees.map((f, i) => (
-              <div key={f.id} className="grid grid-cols-12 gap-4 items-end bg-white/10 border border-white/15 backdrop-blur-lg p-4 rounded-2xl">
+              <div key={f.id} className="grid grid-cols-12 gap-4 items-end bg-slate-50 border border-slate-200 p-4 rounded-2xl">
                 <div className="col-span-4">
-                  <label className="block text-xs uppercase tracking-[0.18em] text-slate-300 mb-2">Label</label>
+                  <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Label</label>
                   <Input 
-                    className="h-11 text-base rounded-xl border-white/20 bg-white/20 text-white placeholder:text-slate-400"
+                    className="h-11 text-base rounded-xl border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"
                     value={f.label} 
                     placeholder="e.g. Admin Fee"
                     onChange={(e) => updateFee(i, { label: e.target.value })} 
                   />
                 </div>
                 <div className="col-span-3">
-                  <label className="block text-xs uppercase tracking-[0.18em] text-slate-300 mb-2">Amount</label>
+                  <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Amount</label>
                   <Input 
                     type="number"
-                    className="h-11 text-base rounded-xl border-white/20 bg-white/20 text-white placeholder:text-slate-400"
+                    className="h-11 text-base rounded-xl border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"
                     value={f.amount}
                     onChange={(e) => updateFee(i, { amount: toNumber(e.target.value) })}
                     placeholder="e.g. 25" 
                   />
                 </div>
                 <div className="col-span-3">
-                  <label className="block text-xs uppercase tracking-[0.18em] text-slate-300 mb-2">Basis</label>
+                  <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Basis</label>
                   <select 
-                    className="w-full h-11 border border-white/20 rounded-xl px-3 py-2 text-base bg-white/15 text-white focus:outline-none focus:border-sky-300 transition-all"
+                    className="w-full h-11 border border-slate-200 rounded-xl px-3 py-2 text-base bg-white text-slate-900 focus:outline-none focus:border-sky-400 transition-all"
                     value={f.basis}
                     onChange={(e) => updateFee(i, { basis: e.target.value as RateBasis })}
                   >
@@ -365,14 +365,14 @@ export default function FeesConfigurator({
                   </select>
                 </div>
                 <div className="col-span-1">
-                  <label className="block text-xs uppercase tracking-[0.18em] text-slate-400 mb-2">Monthly</label>
-                  <div className="text-sm font-mono text-slate-100">${(monthlyFromBasis(f.amount, f.basis, employees, members) || 0).toLocaleString()}</div>
+                  <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Monthly</label>
+                  <div className="text-sm font-mono text-slate-800">${(monthlyFromBasis(f.amount, f.basis, employees, members) || 0).toLocaleString()}</div>
                 </div>
                 <div className="col-span-1 flex justify-end pb-2">
                   <button
                     type="button"
                     onClick={() => removeFee(i)}
-                    className="text-slate-400 hover:text-rose-400 transition-colors"
+                    className="text-slate-400 hover:text-rose-500 transition-colors"
                     aria-label={`Remove ${f.label}`}
                   >
                     <X className="w-5 h-5" />
@@ -384,26 +384,26 @@ export default function FeesConfigurator({
         </GlassCard>
 
         {/* Budget, Stop Loss & Rebates (Global Defaults) */}
-        <GlassCard variant="elevated" blur="xl" className="p-8 border-white/15 bg-white/6 shadow-[0_30px_80px_rgba(7,14,35,0.45)]">
-          <h3 className="text-lg font-semibold mb-4 text-white">Budget, Stop Loss & Rebates</h3>
+        <GlassCard variant="elevated" blur="xl" className="p-8 border-slate-200/60 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
+          <h3 className="text-lg font-semibold mb-4 text-slate-900">Budget, Stop Loss & Rebates</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
             <div>
-              <label className="block text-xs uppercase tracking-[0.18em] text-slate-300 mb-2">
+              <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">
                 Budget Amount
                 <span className="text-[10px] text-slate-400 font-normal ml-2">(overrides CSV)</span>
               </label>
               <Input 
                 type="number" 
-                className="h-11 text-base rounded-xl border-white/20 bg-white/20 text-white placeholder:text-slate-400"
+                className="h-11 text-base rounded-xl border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"
                 value={budgetAmount}
                 onChange={(e) => setBudgetAmount(toNumber(e.target.value))}
                 placeholder="e.g. 250000" 
               />
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-[0.18em] text-slate-300 mb-2">Budget Basis</label>
+              <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Budget Basis</label>
               <select 
-                className="w-full h-11 border border-white/20 rounded-xl px-3 py-2 text-base bg-white/15 text-white focus:outline-none focus:border-sky-300 transition-all"
+                className="w-full h-11 border border-slate-200 rounded-xl px-3 py-2 text-base bg-white text-slate-900 focus:outline-none focus:border-sky-400 transition-all"
                 value={budgetBasis}
                 onChange={(e) => setBudgetBasis(e.target.value as RateBasis)}
               >
@@ -414,26 +414,26 @@ export default function FeesConfigurator({
               </select>
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-[0.18em] text-slate-300 mb-2">
+              <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">
                 Stop Loss Reimbursements
                 <span className="text-[10px] text-slate-400 font-normal ml-2">(monthly)</span>
               </label>
               <Input 
                 type="number" 
-                className="h-11 text-base rounded-xl border-white/20 bg-white/20 text-white placeholder:text-slate-400"
+                className="h-11 text-base rounded-xl border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"
                 value={stopLossReimb}
                 onChange={(e) => setStopLossReimb(toNumber(e.target.value))}
                 placeholder="e.g. 50000" 
               />
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-[0.18em] text-slate-300 mb-2">
+              <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">
                 Rebates Received
                 <span className="text-[10px] text-slate-400 font-normal ml-2">(monthly)</span>
               </label>
               <Input 
                 type="number" 
-                className="h-11 text-base rounded-xl border-white/20 bg-white/20 text-white placeholder:text-slate-400"
+                className="h-11 text-base rounded-xl border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"
                 value={rebates}
                 onChange={(e) => setRebates(toNumber(e.target.value))}
                 placeholder="e.g. 25000" 
@@ -443,40 +443,40 @@ export default function FeesConfigurator({
         </GlassCard>
 
         {/* Per-Month Overrides */}
-        <GlassCard variant="elevated" blur="xl" className="p-8 border-white/15 bg-white/6 shadow-[0_30px_80px_rgba(7,14,35,0.45)]">
+        <GlassCard variant="elevated" blur="xl" className="p-8 border-slate-200/60 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div>
-              <h3 className="text-lg font-semibold text-white">Per-Month Overrides</h3>
-              <p className="text-xs text-slate-300 leading-tight mt-1">Target specific months with fee, budget, or reimbursement tweaks.</p>
+              <h3 className="text-lg font-semibold text-slate-900">Per-Month Overrides</h3>
+              <p className="text-xs text-slate-500 leading-tight mt-1">Target specific months with fee, budget, or reimbursement tweaks.</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button type="button" variant="outline" onClick={handleOpenBulkApply} className="rounded-full border-white/30 text-white hover:text-slate-900 hover:bg-white/90 transition-colors">
+              <Button type="button" variant="outline" onClick={handleOpenBulkApply} className="rounded-full border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors">
                 <Copy className="w-4 h-4 mr-2" /> Apply to Multiple Months
               </Button>
-              <Button type="button" variant="outline" onClick={addOverride} className="rounded-full border-white/30 text-white hover:text-slate-900 hover:bg-white/90 transition-colors">
+              <Button type="button" variant="outline" onClick={addOverride} className="rounded-full border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors">
                 <Plus className="w-4 h-4 mr-2" /> Add Override
               </Button>
             </div>
           </div>
           {overrides.length === 0 ? (
-            <p className="text-sm text-slate-300">Add overrides to target specific months (e.g., adjust Admin Fee in May 2025).</p>
+            <p className="text-sm text-slate-500">Add overrides to target specific months (e.g., adjust Admin Fee in May 2025).</p>
           ) : (
             <div className="space-y-3">
               {overrides.map((o) => (
-                <div key={o.id} className="grid grid-cols-12 gap-4 items-end bg-white/10 border border-white/15 backdrop-blur-lg p-4 rounded-2xl">
+                <div key={o.id} className="grid grid-cols-12 gap-4 items-end bg-slate-50 border border-slate-200 p-4 rounded-2xl">
                   <div className="col-span-3">
-                    <label className="block text-xs uppercase tracking-[0.18em] text-slate-300 mb-2">Month</label>
+                    <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Month</label>
                     <Input
                       type="month"
-                      className="h-11 text-base rounded-xl border-white/20 bg-white/20 text-white"
+                      className="h-11 text-base rounded-xl border-slate-200 bg-white text-slate-900"
                       value={o.month}
                       onChange={(e) => updateOverride(o.id, { month: e.target.value })}
                     />
                   </div>
                   <div className="col-span-3">
-                    <label className="block text-xs uppercase tracking-[0.18em] text-slate-300 mb-2">Type</label>
+                    <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Type</label>
                     <select
-                      className="w-full h-11 border border-white/20 rounded-xl px-3 py-2 text-base bg-white/15 text-white focus:outline-none focus:border-sky-300 transition-all"
+                      className="w-full h-11 border border-slate-200 rounded-xl px-3 py-2 text-base bg-white text-slate-900 focus:outline-none focus:border-sky-400 transition-all"
                       value={o.type}
                       onChange={(e) => {
                         const t = e.target.value as OverrideType;
@@ -491,9 +491,9 @@ export default function FeesConfigurator({
                   </div>
                   {o.type === 'fee' && (
                     <div className="col-span-3">
-                      <label className="block text-xs uppercase tracking-[0.18em] text-slate-300 mb-2">Fee</label>
+                      <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Fee</label>
                       <select
-                        className="w-full h-11 border border-white/20 rounded-xl px-3 py-2 text-base bg-white/15 text-white focus:outline-none focus:border-sky-300 transition-all"
+                        className="w-full h-11 border border-slate-200 rounded-xl px-3 py-2 text-base bg-white text-slate-900 focus:outline-none focus:border-sky-400 transition-all"
                         value={o.feeId || ''}
                         onChange={(e) => updateOverride(o.id, { feeId: e.target.value })}
                       >
@@ -504,10 +504,10 @@ export default function FeesConfigurator({
                     </div>
                   )}
                   <div className={o.type === 'fee' ? 'col-span-2' : 'col-span-3'}>
-                    <label className="block text-xs uppercase tracking-[0.18em] text-slate-300 mb-2">Amount</label>
+                    <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Amount</label>
                     <Input
                       type="number"
-                      className="h-11 text-base rounded-xl border-white/20 bg-white/20 text-white placeholder:text-slate-400"
+                      className="h-11 text-base rounded-xl border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"
                       value={o.amount}
                       onChange={(e) => updateOverride(o.id, { amount: toNumber(e.target.value) })}
                       placeholder="e.g. 25000"
@@ -515,9 +515,9 @@ export default function FeesConfigurator({
                   </div>
                   {(o.type === 'budget' || o.type === 'fee') && (
                     <div className="col-span-2">
-                      <label className="block text-xs uppercase tracking-[0.18em] text-slate-300 mb-2">Basis</label>
+                      <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Basis</label>
                       <select
-                        className="w-full h-11 border border-white/20 rounded-xl px-3 py-2 text-base bg-white/15 text-white focus:outline-none focus:border-sky-300 transition-all"
+                        className="w-full h-11 border border-slate-200 rounded-xl px-3 py-2 text-base bg-white text-slate-900 focus:outline-none focus:border-sky-400 transition-all"
                         value={o.basis || 'Monthly'}
                         onChange={(e) => updateOverride(o.id, { basis: e.target.value as RateBasis })}
                       >
@@ -545,24 +545,24 @@ export default function FeesConfigurator({
         </GlassCard>
 
         {/* Summary */}
-        <GlassCard variant="elevated" blur="xl" className="p-8 border-white/15 bg-white/6 shadow-[0_30px_80px_rgba(7,14,35,0.45)]">
-          <h3 className="text-lg font-semibold mb-4 text-white">Summary</h3>
+        <GlassCard variant="elevated" blur="xl" className="p-8 border-slate-200/60 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
+          <h3 className="text-lg font-semibold mb-4 text-slate-900">Summary</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 rounded-2xl bg-white/12 border border-white/15 backdrop-blur-lg">
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-300">Monthly Fixed Costs</div>
-              <div className="text-2xl font-semibold text-white mt-2">${monthlyFixed.toLocaleString()}</div>
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Monthly Fixed Costs</div>
+              <div className="text-2xl font-semibold text-slate-900 mt-2">${monthlyFixed.toLocaleString()}</div>
             </div>
-            <div className="p-4 rounded-2xl bg-white/12 border border-white/15 backdrop-blur-lg">
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-300">Monthly Budget</div>
-              <div className="text-2xl font-semibold text-white mt-2">${monthlyBudget.toLocaleString()}</div>
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Monthly Budget</div>
+              <div className="text-2xl font-semibold text-slate-900 mt-2">${monthlyBudget.toLocaleString()}</div>
             </div>
-            <div className="p-4 rounded-2xl bg-white/12 border border-white/15 backdrop-blur-lg">
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-300">Stop Loss Reimb.</div>
-              <div className="text-2xl font-semibold text-white mt-2">${(stopLossReimb || 0).toLocaleString()}</div>
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Stop Loss Reimb.</div>
+              <div className="text-2xl font-semibold text-slate-900 mt-2">${(stopLossReimb || 0).toLocaleString()}</div>
             </div>
-            <div className="p-4 rounded-2xl bg-white/12 border border-white/15 backdrop-blur-lg">
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-300">Rebates</div>
-              <div className="text-2xl font-semibold text-white mt-2">${(rebates || 0).toLocaleString()}</div>
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Rebates</div>
+              <div className="text-2xl font-semibold text-slate-900 mt-2">${(rebates || 0).toLocaleString()}</div>
             </div>
           </div>
         </GlassCard>

@@ -246,16 +246,16 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
   // Get cell color based on value and type
   const getCellColor = (value: number, category: string, isVariance: boolean = false) => {
     if (isVariance) {
-      if (value > 0) return 'bg-emerald-500/15 text-emerald-100';
-      if (value < 0) return 'bg-rose-500/15 text-rose-100';
-      return 'bg-white/5 text-slate-200';
+      if (value > 0) return 'bg-emerald-50 text-emerald-700';
+      if (value < 0) return 'bg-rose-50 text-rose-700';
+      return 'bg-white text-slate-700';
     }
 
-    if (category === 'expense') return 'bg-white/5 text-slate-100';
+    if (category === 'expense') return 'bg-white/5 text-slate-600';
     if (category === 'revenue') return 'bg-cyan-500/15 text-cyan-100';
-    if (category === 'total') return 'bg-slate-950 text-white font-semibold';
+    if (category === 'total') return 'bg-slate-950 text-slate-900 font-semibold';
     if (category === 'budget') return 'bg-amber-500/10 text-amber-100';
-    return 'text-slate-100';
+    return 'text-slate-600';
   };
 
   // Toggle row expansion
@@ -375,15 +375,15 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
   }, [searchTerm, expandedRows]);
 
   return (
-    <div className="w-full h-full flex flex-col rounded-3xl border border-white/15 bg-white/8 backdrop-blur-2xl shadow-[0_40px_90px_rgba(6,12,30,0.55)]">
+    <div className="w-full h-full flex flex-col rounded-3xl border border-slate-200 bg-white shadow-[0_30px_60px_rgba(15,23,42,0.12)]">
       {/* Header */}
-      <div className="p-6 border-b border-white/10 bg-white/5 rounded-t-3xl">
+      <div className="p-6 border-b border-slate-200 bg-white rounded-t-3xl">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-white tracking-tight">Financial Data Overview</h2>
+          <h2 className="text-xl font-semibold text-slate-900 tracking-tight">Financial Data Overview</h2>
           <div className="flex gap-3">
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="px-4 py-2 text-slate-200 hover:text-slate-900 bg-white/10 hover:bg-white/80 border border-white/20 rounded-full transition-colors"
+              className="px-4 py-2 text-slate-600 hover:text-slate-900 bg-white hover:bg-white/80 border border-white/20 rounded-full transition-colors"
             >
               <Settings className="w-4 h-4" />
             </button>
@@ -402,13 +402,13 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
         {/* Search and filters */}
         <div className="flex gap-4">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 w-4 h-4" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 w-4 h-4" />
             <input
               type="text"
               placeholder="Search line items..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-11 pr-4 py-2.5 w-full rounded-full border border-white/15 bg-white/15 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-300/60"
+              className="pl-11 pr-4 py-2.5 w-full rounded-full border border-slate-200 bg-white text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-300"
             />
           </div>
         </div>
@@ -419,9 +419,9 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mt-4 p-4 bg-white/10 border border-white/15 rounded-2xl"
+            className="mt-4 p-4 bg-white border border-slate-200 rounded-2xl shadow-sm"
           >
-            <p className="text-sm font-medium text-slate-200 mb-3">Show/Hide Months:</p>
+            <p className="text-sm font-medium text-slate-600 mb-3">Show/Hide Months:</p>
             <div className="flex flex-wrap gap-2">
               {matrixData.months.map((month, index) => (
                 <button
@@ -429,7 +429,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
                   onClick={() => toggleColumn(index)}
                   className={`px-3 py-1.5 text-xs rounded-full transition-colors border ${
                     hiddenColumns.has(index)
-                      ? 'bg-white/10 border-white/10 text-slate-300'
+                      ? 'bg-white border-white/10 text-slate-600'
                       : 'bg-white border-white/20 text-slate-900'
                   }`}
                 >
@@ -444,10 +444,10 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
 
       {/* Table Container */}
       <div className="flex-1 overflow-auto">
-        <table className="w-full text-sm text-slate-100">
-          <thead className="sticky top-0 z-20 bg-white/12 backdrop-blur-xl">
+        <table className="w-full text-sm text-slate-600">
+          <thead className="sticky top-0 z-20 bg-slate-50 backdrop-blur-xl">
             <tr>
-              <th className="sticky left-0 z-30 bg-white/12 px-5 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.3em] border-r border-white/15 min-w-[200px]">
+              <th className="sticky left-0 z-30 bg-slate-50 px-5 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.3em] border-r border-white/15 min-w-[200px]">
                 Line Item
               </th>
               {matrixData.months.map((month, index) => 
@@ -461,7 +461,7 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
               <th className="px-5 py-4 text-right text-[11px] font-semibold uppercase tracking-[0.3em]">Average</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/10">
+          <tbody className="divide-y divide-slate-200">
             {visibleLineItems.map((item, rowIndex) => {
               const values = matrixData.months.map(month => matrixData.matrix[item.key]?.[month] || 0);
               const total = values.reduce((sum, val) => sum + val, 0);
@@ -475,13 +475,13 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: rowIndex * 0.01 }}
-                  className={`hover:bg-white/12 transition-colors ${
-                    item.category === 'total' ? 'bg-slate-950 text-white font-semibold' : 'bg-white/6 text-slate-100'
+                  className={`hover:bg-slate-50 transition-colors ${
+                    item.category === 'total' ? 'bg-slate-900 text-white font-semibold' : 'bg-white text-slate-700'
                   }`}
                 >
                   <td className={`sticky left-0 z-10 px-5 py-4 text-sm ${
-                    item.category === 'total' ? 'font-semibold text-white' : 'text-slate-100'
-                  } ${isChild ? 'pl-10 text-slate-300' : ''} bg-white/10 backdrop-blur-lg border-r border-white/15`}>
+                    item.category === 'total' ? 'font-semibold text-white' : 'text-slate-700'
+                  } ${isChild ? 'pl-10 text-slate-600' : ''} bg-white backdrop-blur-lg border-r border-white/15`}>
                     <div className="flex items-center">
                       {isParent && (
                         <button
@@ -522,22 +522,22 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
                         }
                         {isVariance && value !== 0 && (
                           <span className="ml-1">
-                            {value > 0 ? <TrendingUp className="w-3 h-3 inline text-emerald-200" /> : <TrendingDown className="w-3 h-3 inline text-rose-200" />}
+                            {value > 0 ? <TrendingUp className="w-3 h-3 inline text-emerald-600" /> : <TrendingDown className="w-3 h-3 inline text-rose-600" />}
                           </span>
                         )}
                       </td>
                     );
                   })}
-                  <td className={`px-5 py-4 text-sm text-right font-semibold border-l border-white/10 bg-white/10 ${
-                    item.key === 'variance' && total !== 0 ? (total > 0 ? 'text-emerald-200' : 'text-rose-200') : ''
+                  <td className={`px-5 py-4 text-sm text-right font-semibold border-l border-white/10 bg-white ${
+                    item.key === 'variance' && total !== 0 ? (total > 0 ? 'text-emerald-600' : 'text-rose-600') : ''
                   }`}>
                     {(item.key === 'variance_percent' || item.key === 'loss_ratio')
                       ? formatPercentage(average)  // For percentages, show average not total
                       : formatCurrency(total)
                     }
                   </td>
-                  <td className={`px-5 py-4 text-sm text-right bg-white/10 ${
-                    item.key === 'variance' && average !== 0 ? (average > 0 ? 'text-emerald-200' : 'text-rose-200') : ''
+                  <td className={`px-5 py-4 text-sm text-right bg-white ${
+                    item.key === 'variance' && average !== 0 ? (average > 0 ? 'text-emerald-600' : 'text-rose-600') : ''
                   }`}>
                     {(item.key === 'variance_percent' || item.key === 'loss_ratio')
                       ? formatPercentage(average)
@@ -552,18 +552,18 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
       </div>
 
       {/* Summary Footer */}
-      <div className="p-5 border-t border-white/10 bg-white/6 rounded-b-3xl">
+      <div className="p-5 border-t border-white/10 bg-white rounded-b-3xl">
         <div className="flex justify-between items-center mb-4">
-          <div className="text-sm text-slate-300">
-            <span className="font-medium text-white">Current View:</span>
-            <span className="ml-2 font-semibold text-white">Filtered Selection</span>
+          <div className="text-sm text-slate-600">
+            <span className="font-medium text-slate-900">Current View:</span>
+            <span className="ml-2 font-semibold text-slate-900">Filtered Selection</span>
             <span className="ml-2 text-slate-400">({matrixData.months.length} months)</span>
           </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-lg p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-300">Total Budget (YTD)</p>
-            <p className="text-lg font-semibold text-white mt-2">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-600">Total Budget (YTD)</p>
+            <p className="text-lg font-semibold text-slate-900 mt-2">
               {formatCurrency(
                 matrixData.months.reduce((sum, month) => 
                   sum + (matrixData.matrix['budget']?.[month] || 0), 0
@@ -571,9 +571,9 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
               )}
             </p>
           </div>
-          <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-lg p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-300">Total Net Cost (YTD)</p>
-            <p className="text-lg font-semibold text-white mt-2">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-600">Total Net Cost (YTD)</p>
+            <p className="text-lg font-semibold text-slate-900 mt-2">
               {formatCurrency(
                 matrixData.months.reduce((sum, month) => 
                   sum + (matrixData.matrix['net_cost']?.[month] || 0), 0
@@ -581,12 +581,12 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
               )}
             </p>
           </div>
-          <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-lg p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-300">Total Variance (YTD)</p>
+          <div className="rounded-2xl border border-slate-200 bg-white p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-600">Total Variance (YTD)</p>
             <p className={`text-lg font-semibold mt-2 ${
               matrixData.months.reduce((sum, month) => sum + (matrixData.matrix['variance']?.[month] || 0), 0) >= 0
-                ? 'text-emerald-200'
-                : 'text-rose-200'
+                ? 'text-emerald-600'
+                : 'text-rose-600'
             }`}>
               {formatCurrency(
                 matrixData.months.reduce((sum, month) => 
@@ -595,14 +595,14 @@ const FinancialDataTable: React.FC<FinancialDataTableProps> = ({ budgetData, cla
               )}
             </p>
           </div>
-          <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-lg p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-300">Avg Monthly Variance %</p>
+          <div className="rounded-2xl border border-slate-200 bg-white p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-600">Avg Monthly Variance %</p>
             <p className={`text-lg font-semibold mt-2 ${
               (matrixData.months.length > 0 
                 ? matrixData.months.reduce((sum, month) => sum + (matrixData.matrix['variance_percent']?.[month] || 0), 0) / matrixData.months.length 
                 : 0) >= 0
-                ? 'text-emerald-200'
-                : 'text-rose-200'
+                ? 'text-emerald-600'
+                : 'text-rose-600'
             }`}>
               {formatPercentage(
                 matrixData.months.length > 0 

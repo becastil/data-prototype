@@ -134,7 +134,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
 
   return (
     <motion.div 
-      className="min-h-screen bg-gradient-to-br from-[#0B1220] via-[#0F1C33] to-[#05080F] px-6 py-16 text-slate-100"
+      className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 px-6 py-16 text-slate-900"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -168,10 +168,10 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <h1 className="text-4xl font-semibold tracking-tight text-white mb-4">
+          <h1 className="text-4xl font-semibold tracking-tight text-slate-900 mb-4">
             Healthcare Data Dashboard
           </h1>
-          <p className="text-base text-slate-300 max-w-2xl mx-auto">
+          <p className="text-base text-slate-600 max-w-2xl mx-auto">
             Upload claims & enrollment data - budget parameters will be configured next
           </p>
         </motion.div>
@@ -183,11 +183,11 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
             transition={{ delay: 0.3 }}
             className="relative"
           >
-            <div className="absolute -top-7 left-10 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-200/95 to-emerald-200/90 text-slate-800 px-5 py-2 text-sm font-semibold shadow-[0_12px_30px_rgba(15,23,42,0.35)]">
+            <div className="absolute -top-7 left-10 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-100 to-emerald-100 text-slate-800 px-5 py-2 text-sm font-semibold shadow-[0_12px_24px_rgba(148,163,184,0.35)]">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               Claims & Enrollment Data
             </div>
-            <div className="bg-white/90 text-slate-800 rounded-3xl shadow-[0_35px_80px_rgba(8,15,40,0.28)] border border-white/40 backdrop-blur-xl p-8 pt-14 min-h-[520px] flex flex-col gap-6">
+            <div className="bg-white text-slate-800 rounded-3xl shadow-[0_35px_80px_rgba(15,23,42,0.12)] border border-slate-200/60 p-8 pt-14 min-h-[520px] flex flex-col gap-6">
               <div className="space-y-5">
                 <h3 className="text-xl font-semibold text-slate-900">Required Columns</h3>
                 <ul className="text-sm text-slate-700 space-y-2">
@@ -197,7 +197,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
                   <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Pharmacy Claims</strong> (or <em>pharmacy_claims</em>, Rx Claims)</span></li>
                   <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span className="text-slate-600">Optional: Detailed claims breakdown</span></li>
                 </ul>
-                <p className="text-xs leading-relaxed text-slate-600 bg-emerald-50/80 border border-emerald-100 rounded-2xl px-4 py-3">
+                <p className="text-xs leading-relaxed text-slate-600 bg-emerald-50 border border-emerald-100 rounded-2xl px-4 py-3">
                   💡 <strong>Note:</strong> Budget, fixed costs, and reimbursements will be configured in the next step. Only upload actual claims experience data here to keep the pipeline clean.
                 </p>
                 <div className="pt-1">
@@ -216,7 +216,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="mt-6 inline-flex items-center self-center gap-2 px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold shadow-inner"
+                  className="mt-6 inline-flex items-center self-center gap-2 px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 text-sm font-semibold"
                 >
                   <CheckCircle className="w-4 h-4" />
                   <span>Budget data loaded</span>
@@ -231,11 +231,11 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
             transition={{ delay: 0.4 }}
             className="relative"
           >
-            <div className="absolute -top-7 left-10 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-300/95 to-blue-300/95 text-slate-900 px-5 py-2 text-sm font-semibold shadow-[0_12px_30px_rgba(8,15,40,0.35)]">
+            <div className="absolute -top-7 left-10 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-100 to-blue-100 text-slate-900 px-5 py-2 text-sm font-semibold shadow-[0_12px_24px_rgba(148,163,184,0.35)]">
               <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
               Detailed Claims Data (Optional)
             </div>
-            <div className="bg-white/90 text-slate-800 rounded-3xl shadow-[0_35px_80px_rgba(8,15,40,0.28)] border border-white/40 backdrop-blur-xl p-8 pt-14 min-h-[520px] flex flex-col gap-6">
+            <div className="bg-white text-slate-800 rounded-3xl shadow-[0_35px_80px_rgba(15,23,42,0.12)] border border-slate-200/60 p-8 pt-14 min-h-[520px] flex flex-col gap-6">
               <div className="space-y-5">
                 <h3 className="text-xl font-semibold text-slate-900">Optional Detailed Breakdown</h3>
                 <ul className="text-sm text-slate-700 space-y-2">
@@ -244,7 +244,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
                   <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Medical</strong>, <strong>Rx</strong>, <strong>Total</strong> (costs)</span></li>
                   <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Medical Description</strong>, <strong>Layman's Term</strong></span></li>
                 </ul>
-                <p className="text-xs leading-relaxed text-slate-600 bg-amber-50/80 border border-amber-100 rounded-2xl px-4 py-3">
+                <p className="text-xs leading-relaxed text-slate-600 bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3">
                   ⚠️ <strong>Optional:</strong> This file unlocks granular claims analytics. Feel free to skip it if you only need high-level KPIs.
                 </p>
                 <div className="pt-1">
@@ -263,7 +263,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="mt-6 inline-flex items-center self-center gap-2 px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold shadow-inner"
+                  className="mt-6 inline-flex items-center self-center gap-2 px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 text-sm font-semibold"
                 >
                   <CheckCircle className="w-4 h-4" />
                   <span>Claims data loaded</span>
@@ -277,10 +277,10 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-12 text-center text-slate-300"
+            className="mt-12 text-center text-slate-600"
           >
-            <div className="inline-flex items-center space-x-3 rounded-full bg-white/10 px-6 py-3 backdrop-blur-md border border-white/10">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-sky-300"></div>
+            <div className="inline-flex items-center space-x-3 rounded-full bg-white px-6 py-3 border border-slate-200 text-slate-600 shadow-sm">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-sky-400"></div>
               <span className="text-sm tracking-wide">Waiting for {budgetData ? 'claims' : 'budget'} data...</span>
             </div>
           </motion.div>
