@@ -517,7 +517,7 @@ const Home: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="min-h-screen bg-gradient-to-br from-[#05080F] via-[#08142A] to-[#041022] text-[var(--foreground)] p-6"
+              className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 text-[var(--foreground)] p-6"
             >
               {/* Header */}
               <div className="max-w-7xl mx-auto mb-6">
