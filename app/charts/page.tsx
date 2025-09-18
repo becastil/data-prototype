@@ -91,7 +91,4 @@ export default function ChartsPage() {
   );
 }
 
-export const metadata = {
-  title: 'Charts & Analytics - Healthcare Dashboard',
-  description: 'Advanced analytics and visualization tools for healthcare data'
-};
+// Per-route metadata is not exported here because this is a client component.
