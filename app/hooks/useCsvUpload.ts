@@ -6,6 +6,31 @@ import Papa from 'papaparse';
 import { sanitizeCSVData } from '@utils/phi';
 import type { ParsedCSVData } from '@/app/components/loaders/CSVLoader';
 
+const THOUSANDS_VALUE_PATTERN = /^-?\$?\d{1,3}(?:,\d{3})*(?:\.\d+)?$/;
+
+const normalizeCellValue = (value: unknown): string => {
+  if (value == null) return '';
+
+  const stringValue = typeof value === 'string' ? value.trim() : String(value);
+  if (stringValue === '') return '';
+
+  if (stringValue.includes(',')) {
+    const collapsed = stringValue.replace(/\s+/g, '');
+    if (THOUSANDS_VALUE_PATTERN.test(collapsed)) {
+      const hasNegative = collapsed.startsWith('-');
+      let remainder = hasNegative ? collapsed.slice(1) : collapsed;
+      const hasCurrency = remainder.startsWith('$');
+      remainder = hasCurrency ? remainder.slice(1) : remainder;
+      const sanitized = remainder.replace(/,/g, '');
+      const sign = hasNegative ? '-' : '';
+      const prefix = hasCurrency ? '$' : '';
+      return `${sign}${prefix}${sanitized}`;
+    }
+  }
+
+  return stringValue;
+};
+
 export type LoadingState = 'idle' | 'loading' | 'success' | 'error';
 
 interface UseCsvUploadOptions {
@@ -73,7 +98,7 @@ export function useCsvUpload({ maxFileSize, onDataLoaded, onError }: UseCsvUploa
         const rows = result.data.slice(1).map((row: any) => {
           const obj: Record<string, string> = {};
           headers.forEach((header, index) => {
-            obj[header] = row[index] || '';
+            obj[header] = normalizeCellValue(row[index]);
           });
           return obj;
         }).filter((row: Record<string, string>) => Object.values(row).some((val) => val !== ''));

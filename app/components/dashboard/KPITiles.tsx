@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { GlassCard } from '@/app/components/ui/glass-card';
+import { ModernMetric, type MetricAccent } from '@components/index';
 import { TrendingUp, TrendingDown, DollarSign, Activity, Target, Users } from 'lucide-react';
 
 interface KPIMetrics {
@@ -38,79 +38,43 @@ function formatNumber(value: number): string {
 }
 
 // Determine color based on budget percentage thresholds
-function getBudgetStatusColor(pct: number): { bg: string; border: string; text: string; icon: React.ReactNode } {
+function getBudgetStatus(
+  pct: number
+): { accent: MetricAccent; icon: React.ReactNode; status: string } {
   if (pct < 95) {
     return {
-      bg: 'bg-[var(--accent-soft)]',
-      border: 'border-l-4 border-[var(--accent)]',
-      text: 'text-[var(--accent)]',
-      icon: <TrendingDown className="w-4 h-4 text-[var(--accent)]" />
+      accent: 'accent',
+      status: 'Under budget',
+      icon: <TrendingDown className="h-4 w-4 text-[var(--accent)]" />,
     };
   }
 
   if (pct <= 105) {
     return {
-      bg: 'bg-[var(--surface-muted)]',
-      border: 'border-l-4 border-[var(--surface-border)]',
-      text: 'text-[var(--foreground-muted)]',
-      icon: <Activity className="w-4 h-4 text-[var(--foreground-muted)]" />
+      accent: 'neutral',
+      status: 'Near budget',
+      icon: <Activity className="h-4 w-4 text-[var(--foreground-muted)]" />,
     };
   }
 
   return {
-    bg: 'bg-[var(--surface-muted)]',
-    border: 'border-l-4 border-[var(--danger)]',
-    text: 'text-[var(--danger)]',
-    icon: <TrendingUp className="w-4 h-4 text-[var(--danger)]" />
+    accent: 'danger',
+    status: 'Over budget',
+    icon: <TrendingUp className="h-4 w-4 text-[var(--danger)]" />,
   };
 }
 
-export default function KPITiles({ metrics, period = "Rolling 12 Months" }: KPITilesProps) {
-  const budgetStatus = getBudgetStatusColor(metrics.pctOfBudget);
-  const isSurplus = metrics.surplus >= 0;
+const accentTextClass: Record<MetricAccent, string> = {
+  accent: 'text-[var(--accent)]',
+  info: 'text-[var(--info)]',
+  warning: 'text-[var(--warning)]',
+  danger: 'text-[var(--danger)]',
+  neutral: 'text-[var(--foreground-muted)]',
+};
 
-  // Individual KPI Tile Component
-  const KPITile = ({ 
-    label, 
-    value, 
-    subLabel, 
-    icon, 
-    colorClass = '', 
-    borderClass = '',
-    bgClass = 'bg-white'
-  }: {
-    label: string;
-    value: string;
-    subLabel?: string;
-    icon?: React.ReactNode;
-    colorClass?: string;
-    borderClass?: string;
-    bgClass?: string;
-  }) => (
-    <GlassCard 
-      variant="elevated" 
-      className={`p-4 ${bgClass} ${borderClass} transition-all duration-200 hover:shadow-[var(--card-hover-shadow)]`}
-    >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--foreground-muted)] mb-1">
-            {label}
-          </p>
-          <p className={`text-2xl font-bold ${colorClass || 'text-[var(--foreground)]'}`}>
-            {value}
-          </p>
-          {subLabel && (
-            <p className="text-xs text-[var(--foreground-subtle)] mt-1">{subLabel}</p>
-          )}
-        </div>
-        {icon && (
-          <div className="ml-3 flex-shrink-0">
-            {icon}
-          </div>
-        )}
-      </div>
-    </GlassCard>
-  );
+export default function KPITiles({ metrics, period = "Rolling 12 Months" }: KPITilesProps) {
+  const budgetStatus = getBudgetStatus(metrics.pctOfBudget);
+  const isSurplus = metrics.surplus >= 0;
 
   return (
     <div className="w-full mb-6">
@@ -123,60 +87,74 @@ export default function KPITiles({ metrics, period = "Rolling 12 Months" }: KPIT
       </div>
 
       {/* KPI Tiles Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {/* % of Budget - with color coding */}
-        <KPITile
-          label="% of Budget"
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
+        <ModernMetric
+          label="% of budget"
           value={formatPercent(metrics.pctOfBudget)}
-          subLabel={metrics.pctOfBudget < 95 ? "Under budget" : metrics.pctOfBudget <= 105 ? "Near budget" : "Over budget"}
+          secondary={budgetStatus.status}
           icon={budgetStatus.icon}
-          colorClass={budgetStatus.text}
-          borderClass={budgetStatus.border}
-          bgClass={budgetStatus.bg}
+          accent={budgetStatus.accent}
+          helper="Rolling 12-month actual vs budget"
+          tone="translucent"
+          padding="sm"
         />
 
-        {/* Total Budget */}
-        <KPITile
-          label="Total Budget"
+        <ModernMetric
+          label="Total budget"
           value={formatCurrency(metrics.totalBudget)}
-          icon={<Target className="w-4 h-4 text-[var(--accent)]" />}
+          secondary="Rolling 12 months"
+          icon={<Target className="h-4 w-4 text-[var(--accent)]" />}
+          accent="info"
+          tone="translucent"
+          padding="sm"
         />
 
-        {/* Total Plan Cost */}
-        <KPITile
-          label="Plan Cost"
+        <ModernMetric
+          label="Plan cost"
           value={formatCurrency(metrics.totalPlanCost)}
-          icon={<DollarSign className="w-4 h-4 text-[#18BFFF]" />}
+          secondary="Actual spend"
+          icon={<DollarSign className="h-4 w-4 text-[var(--accent)]" />}
+          accent="accent"
+          tone="translucent"
+          padding="sm"
         />
 
-        {/* Surplus/Deficit - with color coding */}
-        <KPITile
-          label="Surplus/Deficit"
+        <ModernMetric
+          label="Surplus / deficit"
           value={formatCurrency(Math.abs(metrics.surplus))}
-          subLabel={isSurplus ? "Surplus" : "Deficit"}
-          icon={isSurplus ? 
-            <TrendingUp className="w-4 h-4 text-[var(--accent)]" /> : 
-            <TrendingDown className="w-4 h-4 text-[var(--danger)]" />
-          }
-          colorClass={isSurplus ? 'text-[var(--accent)]' : 'text-[var(--danger)]'}
-          borderClass={isSurplus ? 'border-l-4 border-[var(--accent)]' : 'border-l-4 border-[var(--danger)]'}
-          bgClass={isSurplus ? 'bg-[var(--accent-soft)]' : 'bg-[var(--surface-muted)]'}
+          secondary={isSurplus ? 'Surplus' : 'Deficit'}
+          icon={isSurplus ? (
+            <TrendingUp className="h-4 w-4 text-[var(--accent)]" />
+          ) : (
+            <TrendingDown className="h-4 w-4 text-[var(--danger)]" />
+          )}
+          accent={isSurplus ? 'accent' : 'danger'}
+          trend={{
+            value: isSurplus ? 'Positive variance vs. budget' : 'Over budget',
+            direction: isSurplus ? 'up' : 'down',
+          }}
+          tone="translucent"
+          padding="sm"
         />
 
-        {/* Plan Cost PEPM */}
-        <KPITile
+        <ModernMetric
           label="Cost PEPM"
           value={formatCurrency(metrics.planCostPEPM, 2)}
-          subLabel="Per member"
-          icon={<Users className="w-4 h-4 text-[#46A3FF]" />}
+          secondary="Per member"
+          icon={<Users className="h-4 w-4 text-[var(--info)]" />}
+          accent="info"
+          tone="translucent"
+          padding="sm"
         />
 
-        {/* Members */}
-        <KPITile
+        <ModernMetric
           label="Members"
           value={formatNumber(metrics.members)}
-          subLabel="Total enrolled"
-          icon={<Users className="w-4 h-4 text-[var(--foreground-muted)]" />}
+          secondary="Total enrolled"
+          icon={<Users className="h-4 w-4 text-[var(--foreground-muted)]" />}
+          accent="neutral"
+          tone="translucent"
+          padding="sm"
         />
       </div>
 
@@ -184,7 +162,7 @@ export default function KPITiles({ metrics, period = "Rolling 12 Months" }: KPIT
       <div className="mt-4 bg-[var(--surface)] border border-[var(--surface-border)] rounded-xl p-3">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-[var(--foreground-muted)]">Budget Utilization</span>
-          <span className={`text-sm font-bold ${budgetStatus.text}`}>
+          <span className={`text-sm font-bold ${accentTextClass[budgetStatus.accent]}`}>
             {formatPercent(metrics.pctOfBudget)}
           </span>
         </div>

@@ -4,8 +4,8 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Upload, FileSpreadsheet, AlertCircle, CheckCircle, XCircle, Loader2, FileUp } from 'lucide-react';
-import { Button } from '@/app/components/ui/button';
 import { useCsvUpload } from '@/app/hooks/useCsvUpload';
+import { ModernButton, ModernTable } from '@components/index';
 
 export interface ParsedCSVData {
   headers: string[];
@@ -13,6 +13,8 @@ export interface ParsedCSVData {
   rawData: string;
   fileName: string;
   rowCount: number;
+  fileSize?: number;
+  lastModified?: number;
 }
 
 export interface CSVLoaderProps {
@@ -97,31 +99,6 @@ const iconVariants: Variants = {
   }
 };
 
-const tableRowVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 20,
-    scale: 0.95
-  },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      delay: i * 0.05,
-      duration: 0.3,
-      ease: 'easeOut'
-    }
-  }),
-  exit: {
-    opacity: 0,
-    scale: 0.95,
-    transition: {
-      duration: 0.2
-    }
-  }
-};
-
 const alertVariants: Variants = {
   hidden: {
     opacity: 0,
@@ -166,6 +143,28 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
     handleFileSelect,
     resetState
   } = useCsvUpload({ maxFileSize, onDataLoaded, onError });
+
+  const previewRows = previewData ? previewData.rows.slice(0, 5) : [];
+  const previewColumns = previewData
+    ? previewData.headers.map((header) => ({ key: header, header }))
+    : [];
+  const previewMetaParts = previewData
+    ? [
+        `Total rows: ${previewData.rowCount.toLocaleString()}`,
+        `Columns: ${previewData.headers.length}`,
+        previewData.fileName ? `File: ${previewData.fileName}` : null,
+        typeof previewData.fileSize === 'number'
+          ? `Size: ${(Math.round((previewData.fileSize / 1024) * 10) / 10).toFixed(1)} KB`
+          : null,
+        typeof previewData.lastModified === 'number'
+          ? `Modified: ${new Date(previewData.lastModified).toLocaleDateString()}`
+          : null,
+      ].filter((part): part is string => Boolean(part))
+    : [];
+  const previewMeta = previewMetaParts.join(' • ');
+  const previewSummary = previewData
+    ? `Showing ${Math.min(5, previewData.rows.length)} of ${previewData.rowCount.toLocaleString()} rows`
+    : '';
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -314,9 +313,15 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
 
             {loadingState !== 'loading' && (
               <div className="pt-2">
-                <Button variant="outline" type="button" onClick={handleClick} className="rounded-full border-slate-200 text-slate-700 bg-white font-semibold shadow-sm hover:bg-slate-50">
-                  Browse Files
-                </Button>
+                <ModernButton
+                  variant="secondary"
+                  size="md"
+                  type="button"
+                  onClick={handleClick}
+                  className="rounded-full border border-[var(--surface-border)] bg-[var(--surface)] text-[var(--foreground)] shadow-subtle hover:bg-[var(--neutral-soft)]"
+                >
+                  Browse files
+                </ModernButton>
               </div>
             )}
           </motion.div>
@@ -366,92 +371,36 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
       </AnimatePresence>
 
       <AnimatePresence mode="wait">
-        {previewData && previewData.rows.length > 0 && (
+        {previewData && previewRows.length > 0 && (
           <motion.div
             key="preview"
-            className="bg-white rounded-xl shadow-lg overflow-hidden"
+            className="space-y-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="bg-slate-50 px-6 py-4 border-b border-slate-200">
-              <h3 className="text-lg font-semibold text-slate-900">
-                Data Preview (First 5 rows)
-              </h3>
-              <div className="text-sm text-slate-600 mt-1 flex flex-wrap gap-3">
-                <span>Total rows: {previewData.rowCount}</span>
-                <span>• Columns: {previewData.headers.length}</span>
-                {previewData.fileName && (
-                  <span>• File: {previewData.fileName}</span>
-                )}
-                {typeof previewData.fileSize === 'number' && (
-                  <span>• Size: {Math.round((previewData.fileSize / 1024) * 10) / 10} KB</span>
-                )}
-                {typeof previewData.lastModified === 'number' && (
-                  <span>• Modified: {new Date(previewData.lastModified).toLocaleDateString()}</span>
-                )}
-              </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-slate-100 border-b border-slate-200 text-slate-700">
-                  <tr>
-                    {previewData.headers.map((header, index) => (
-                      <motion.th
-                        key={index}
-                        className="px-4 py-3 text-left text-xs font-medium uppercase tracking-[0.18em] whitespace-nowrap"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                      >
-                        {header}
-                      </motion.th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-slate-200 text-slate-800">
-                  {previewData.rows.slice(0, 5).map((row, rowIndex) => (
-                    <motion.tr
-                      key={rowIndex}
-                      custom={rowIndex}
-                      variants={tableRowVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50'}
-                      whileHover={{ backgroundColor: 'rgba(125, 211, 252, 0.18)' }}
-                    >
-                      {previewData.headers.map((header, cellIndex) => (
-                      <td
-                        key={cellIndex}
-                        className="px-4 py-3 text-sm whitespace-nowrap"
-                          title={row[header]}
-                        >
-                          <div className="max-w-xs truncate">
-                            {row[header] || <span className="text-gray-400">-</span>}
-                          </div>
-                        </td>
-                      ))}
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ModernTable
+              title="Data Preview"
+              subtitle={previewData.fileName}
+              headerDescription={previewMeta}
+              data={previewRows}
+              columns={previewColumns}
+              padding="md"
+              tone="translucent"
+              rowKey={(_, index) => `preview-${index}`}
+            />
 
             <motion.div
-              className="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-between items-center text-slate-600"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface)]/70 px-4 py-3 text-sm text-[var(--foreground-muted)]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.2 }}
             >
-              <p className="text-sm">
-                Showing {Math.min(5, previewData.rows.length)} of {previewData.rowCount} rows
-              </p>
-              <Button variant="ghost" onClick={resetState} className="text-sky-600 hover:text-sky-800">
-                Replace File
-              </Button>
+              <span>{previewSummary}</span>
+              <ModernButton variant="ghost" size="sm" onClick={resetState} className="text-[var(--accent)] hover:text-[var(--accent-hover)]">
+                Replace file
+              </ModernButton>
             </motion.div>
           </motion.div>
         )}

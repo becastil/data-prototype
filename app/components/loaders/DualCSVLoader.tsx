@@ -8,9 +8,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 const isDev = process.env.NODE_ENV === 'development';
 const devLog = (...args: any[]) => isDev && console.log(...args);
 const devError = (...args: any[]) => isDev && console.error(...args);
-import CSVLoader, { ParsedCSVData } from './CSVLoader';
-import { CheckCircle, Download } from 'lucide-react';
-import Link from 'next/link';
+import type { ParsedCSVData } from './CSVLoader';
+import { CheckCircle, Columns3, FileSpreadsheet, Loader2, Table2 } from 'lucide-react';
+import { ModernCard, ModernMetric, ModernUpload } from '@components/index';
+import { cn } from '@/app/lib/utils';
 import { validateBudgetData, validateClaimsData } from '@/app/utils/schemas';
 import { analyzeHeaders, type HeaderRequirement } from '@/app/utils/headers';
 
@@ -18,6 +19,12 @@ interface DualCSVLoaderProps {
   onBothFilesLoaded: (budgetData: ParsedCSVData, claimsData: ParsedCSVData) => void;
   onError: (error: string) => void;
 }
+
+const toastTone: Record<'error' | 'info' | 'success', string> = {
+  error: 'border-[var(--danger)] bg-[var(--danger-soft)] text-[var(--danger)]',
+  info: 'border-[var(--info)] bg-[var(--info-soft)] text-[var(--info)]',
+  success: 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]',
+};
 
 const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onError }) => {
   const [budgetData, setBudgetData] = React.useState<ParsedCSVData | null>(null);
@@ -132,161 +139,219 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
     setClaimsData(data);
   };
 
+  const waitingFor = budgetData ? 'claims' : 'budget';
+  const bothLoaded = Boolean(budgetData && claimsData);
+
   return (
-    <motion.div 
-      className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 px-6 py-16 text-slate-900"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      {/* Toasts */}
-      <div className="fixed top-4 right-4 z-50 space-y-2">
+    <div className="relative min-h-screen bg-[var(--background)] px-6 py-16 text-[var(--foreground)]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-[var(--accent-soft)]/70 via-transparent to-transparent" />
+
+      <div className="fixed right-6 top-6 z-50 flex flex-col gap-3">
         <AnimatePresence>
-          {toasts.map(t => (
+          {toasts.map((t) => (
             <motion.div
               key={t.id}
-              initial={{ opacity: 0, y: -10, scale: 0.98 }}
+              initial={{ opacity: 0, y: -12, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.98 }}
-              className={`rounded-lg shadow-lg border px-4 py-3 max-w-sm ${t.type === 'error' ? 'bg-red-50 border-red-300' : t.type === 'success' ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-300'}`}
-            >
-              <div className="font-semibold text-sm text-gray-900">{t.title}</div>
-              {t.message && <div className="text-xs text-gray-700 mt-1">{t.message}</div>}
-              {t.details && t.details.length > 0 && (
-                <ul className="mt-2 list-disc list-inside text-[11px] text-gray-600 space-y-1">
-                  {t.details.map((d, i) => <li key={i}>{d}</li>)}
-                </ul>
+              exit={{ opacity: 0, y: -12, scale: 0.96 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className={cn(
+                'max-w-sm rounded-2xl border px-5 py-4 shadow-subtle backdrop-blur-sm',
+                toastTone[t.type]
               )}
+            >
+              <div className="text-sm font-semibold">{t.title}</div>
+              {t.message ? (
+                <div className="mt-1 text-xs text-[var(--foreground-muted)]">{t.message}</div>
+              ) : null}
+              {t.details && t.details.length > 0 ? (
+                <ul className="mt-2 space-y-1 text-[11px] text-[var(--foreground-subtle)]">
+                  {t.details.map((d, i) => (
+                    <li key={i}>• {d}</li>
+                  ))}
+                </ul>
+              ) : null}
             </motion.div>
           ))}
         </AnimatePresence>
       </div>
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          className="text-center mb-14"
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <h1 className="text-4xl font-semibold tracking-tight text-slate-900 mb-4">
-            Healthcare Data Dashboard
-          </h1>
-          <p className="text-base text-slate-600 max-w-2xl mx-auto">
-            Upload claims & enrollment data - budget parameters will be configured next
-          </p>
-        </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          <motion.div
-            initial={{ x: -50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="relative"
-          >
-            <div className="absolute -top-7 left-10 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-sky-100 to-emerald-100 text-slate-800 px-5 py-2 text-sm font-semibold shadow-[0_12px_24px_rgba(148,163,184,0.35)]">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Claims & Enrollment Data
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-12">
+        <ModernCard tone="accent" padding="lg" glow className="space-y-6" eyebrow="Upload Center">
+          <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+            <div className="space-y-3">
+              <h1 className="text-3xl font-semibold tracking-tight text-[var(--foreground)] md:text-4xl">
+                Healthcare Data Intake
+              </h1>
+              <p className="max-w-2xl text-sm leading-relaxed text-[var(--foreground-muted)]">
+                Upload your monthly budget and detailed claims files. We automate PHI scrubbing, numeric validation,
+                and schema checks so financial modeling stays accurate and compliant.
+              </p>
             </div>
-            <div className="bg-white text-slate-800 rounded-3xl shadow-[0_35px_80px_rgba(15,23,42,0.12)] border border-slate-200/60 p-8 pt-14 min-h-[520px] flex flex-col gap-6">
-              <div className="space-y-5">
-                <h3 className="text-xl font-semibold text-slate-900">Required Columns</h3>
-                <ul className="text-sm text-slate-700 space-y-2">
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>month</strong> (or <em>period</em>)</span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Employee Count</strong>, <strong>Member Count</strong> (or <em>Enrollment</em>)</span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Medical Claims</strong> (or <em>medical_claims</em>)</span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Pharmacy Claims</strong> (or <em>pharmacy_claims</em>, Rx Claims)</span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span className="text-slate-600">Optional: Detailed claims breakdown</span></li>
-                </ul>
-                <p className="text-xs leading-relaxed text-slate-600 bg-emerald-50 border border-emerald-100 rounded-2xl px-4 py-3">
-                  💡 <strong>Note:</strong> Budget, fixed costs, and reimbursements will be configured in the next step. Only upload actual claims experience data here to keep the pipeline clean.
-                </p>
-                <div className="pt-1">
-                  <Link href="/sample-budget.csv" className="inline-flex items-center gap-2 text-sky-700 hover:text-sky-900 text-sm font-medium transition-colors">
-                    <Download className="w-4 h-4" /> Download template
-                  </Link>
+            <div className="rounded-2xl border border-[var(--surface-border)] bg-[var(--surface)]/70 px-5 py-4 text-xs leading-relaxed text-[var(--foreground-subtle)]">
+              <p className="mb-2 text-[var(--foreground)] font-semibold">Upload Requirements</p>
+              <ul className="space-y-1">
+                <li>• CSV format up to 10&nbsp;MB per file</li>
+                <li>• Thousands separators and currency symbols are cleaned automatically</li>
+                <li>• Identifiers are pseudonymized in-memory (no PHI persists)</li>
+              </ul>
+            </div>
+          </div>
+        </ModernCard>
+
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+          <motion.div initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4, ease: 'easeOut', delay: 0.1 }}>
+            <ModernUpload
+              tone="accent"
+              title="Budget, Enrollment & Claims Summary"
+              description="Bring in your aggregated monthly totals so the dashboard can benchmark medical, pharmacy, and fixed costs."
+              helper="Include month or period columns plus enrollment, medical, pharmacy, and total claim spend. We'll align headers automatically."
+              sampleLink={{ href: '/sample-budget.csv', label: 'Sample budget CSV' }}
+              icon={<FileSpreadsheet className="h-6 w-6" aria-hidden />}
+              onDataLoaded={handleBudgetLoaded}
+              onError={onError}
+              maxFileSize={10 * 1024 * 1024}
+              footer={(
+                <div className="space-y-3 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface)]/70 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--foreground-subtle)]">Required columns</p>
+                  <ul className="space-y-2 text-sm text-[var(--foreground-muted)]">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="mt-0.5 h-4 w-4 text-[var(--accent)]" aria-hidden />
+                      <span><strong>month</strong> or <strong>period</strong></span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="mt-0.5 h-4 w-4 text-[var(--accent)]" aria-hidden />
+                      <span><strong>Employee Count</strong> and <strong>Member Count</strong></span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="mt-0.5 h-4 w-4 text-[var(--accent)]" aria-hidden />
+                      <span><strong>Medical Claims</strong> and <strong>Pharmacy Claims</strong></span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="mt-0.5 h-4 w-4 text-[var(--accent)]" aria-hidden />
+                      <span><strong>Total Claims</strong> or <strong>Budget</strong> totals</span>
+                    </li>
+                  </ul>
+                  <p className="rounded-xl bg-[var(--accent-soft)]/40 px-3 py-2 text-xs leading-relaxed text-[var(--foreground-subtle)]">
+                    <strong>Tip:</strong> Keep reimbursement and fixed cost fields separate—those feed PEPM and loss ratio metrics.
+                  </p>
                 </div>
-              </div>
-              <CSVLoader
-                onDataLoaded={handleBudgetLoaded}
-                onError={onError}
-                maxFileSize={10 * 1024 * 1024}
-                className="mt-2"
-              />
-              {budgetData && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="mt-6 inline-flex items-center self-center gap-2 px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 text-sm font-semibold"
-                >
-                  <CheckCircle className="w-4 h-4" />
-                  <span>Budget data loaded</span>
-                </motion.div>
               )}
-            </div>
+            />
           </motion.div>
 
-          <motion.div
-            initial={{ x: 50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="relative"
-          >
-            <div className="absolute -top-7 left-10 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-100 to-blue-100 text-slate-900 px-5 py-2 text-sm font-semibold shadow-[0_12px_24px_rgba(148,163,184,0.35)]">
-              <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
-              Detailed Claims Data (Optional)
-            </div>
-            <div className="bg-white text-slate-800 rounded-3xl shadow-[0_35px_80px_rgba(15,23,42,0.12)] border border-slate-200/60 p-8 pt-14 min-h-[520px] flex flex-col gap-6">
-              <div className="space-y-5">
-                <h3 className="text-xl font-semibold text-slate-900">Optional Detailed Breakdown</h3>
-                <ul className="text-sm text-slate-700 space-y-2">
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Claimant Number</strong></span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Service Type</strong>, <strong>ICD-10-CM Code</strong></span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Medical</strong>, <strong>Rx</strong>, <strong>Total</strong> (costs)</span></li>
-                  <li className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5" /> <span><strong>Medical Description</strong>, <strong>Layman's Term</strong></span></li>
-                </ul>
-                <p className="text-xs leading-relaxed text-slate-600 bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3">
-                  ⚠️ <strong>Optional:</strong> This file unlocks granular claims analytics. Feel free to skip it if you only need high-level KPIs.
-                </p>
-                <div className="pt-1">
-                  <Link href="/sample-claims.csv" className="inline-flex items-center gap-2 text-sky-700 hover:text-sky-900 text-sm font-medium transition-colors">
-                    <Download className="w-4 h-4" /> Download template
-                  </Link>
+          <motion.div initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4, ease: 'easeOut', delay: 0.2 }}>
+            <ModernUpload
+              tone="muted"
+              title="Detailed Claims Experience"
+              description="Optional row-level claims unlocks risk stratification, ICD pattern detection, and service line analytics."
+              helper="Include claimant identifiers, service type, ICD-10 codes, and cost fields for medical, Rx, and totals."
+              sampleLink={{ href: '/sample-claims.csv', label: 'Sample claims CSV' }}
+              icon={<Columns3 className="h-6 w-6" aria-hidden />}
+              onDataLoaded={handleClaimsLoaded}
+              onError={onError}
+              maxFileSize={10 * 1024 * 1024}
+              footer={(
+                <div className="space-y-3 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface)]/70 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[var(--foreground-subtle)]">Required columns</p>
+                  <ul className="space-y-2 text-sm text-[var(--foreground-muted)]">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="mt-0.5 h-4 w-4 text-[var(--accent)]" aria-hidden />
+                      <span><strong>Claimant Number</strong> or similar identifier</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="mt-0.5 h-4 w-4 text-[var(--accent)]" aria-hidden />
+                      <span><strong>Service Type</strong> and <strong>ICD-10-CM Code</strong></span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="mt-0.5 h-4 w-4 text-[var(--accent)]" aria-hidden />
+                      <span><strong>Medical</strong>, <strong>Rx</strong> and <strong>Total</strong> cost fields</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="mt-0.5 h-4 w-4 text-[var(--accent)]" aria-hidden />
+                      <span>Descriptive columns (medical description, layman span) as available</span>
+                    </li>
+                  </ul>
+                  <p className="rounded-xl bg-[var(--warning-soft)]/40 px-3 py-2 text-xs leading-relaxed text-[var(--foreground-subtle)]">
+                    <strong>Optional:</strong> Include stop-loss reimbursements or member segments for enhanced cohort analytics.
+                  </p>
                 </div>
-              </div>
-              <CSVLoader
-                onDataLoaded={handleClaimsLoaded}
-                onError={onError}
-                maxFileSize={10 * 1024 * 1024}
-                className="mt-2"
-              />
-              {claimsData && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="mt-6 inline-flex items-center self-center gap-2 px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 text-sm font-semibold"
-                >
-                  <CheckCircle className="w-4 h-4" />
-                  <span>Claims data loaded</span>
-                </motion.div>
               )}
-            </div>
+            />
           </motion.div>
         </div>
 
-        {(budgetData || claimsData) && !(budgetData && claimsData) && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-12 text-center text-slate-600"
-          >
-            <div className="inline-flex items-center space-x-3 rounded-full bg-white px-6 py-3 border border-slate-200 text-slate-600 shadow-sm">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-sky-400"></div>
-              <span className="text-sm tracking-wide">Waiting for {budgetData ? 'claims' : 'budget'} data...</span>
+        {(budgetData || claimsData) && (
+          <ModernCard tone="muted" padding="lg" className="space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-semibold text-[var(--foreground)]">Upload status</h3>
+                <p className="text-sm text-[var(--foreground-muted)]">
+                  {bothLoaded ? 'Both datasets have been validated. You are ready to explore the dashboard.' : `Waiting for ${waitingFor} data to finish ingestion.`}
+                </p>
+              </div>
+              {bothLoaded ? (
+                <motion.span
+                  initial={{ scale: 0.85, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="inline-flex items-center gap-2 rounded-full bg-[var(--accent-soft)] px-4 py-2 text-sm font-semibold text-[var(--accent)]"
+                >
+                  <CheckCircle className="h-4 w-4" aria-hidden />
+                  Ready to analyze
+                </motion.span>
+              ) : (
+                <motion.span
+                  initial={{ scale: 0.85, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="inline-flex items-center gap-2 rounded-full border border-dashed border-[var(--surface-border)] px-4 py-2 text-sm text-[var(--foreground-muted)]"
+                >
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  Awaiting {waitingFor} file
+                </motion.span>
+              )}
             </div>
-          </motion.div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              {budgetData ? (
+                <ModernMetric
+                  label="Budget file"
+                  value={`${budgetData.rowCount.toLocaleString()} rows`}
+                  secondary={`${budgetData.headers.length} columns parsed`}
+                  helper={`File: ${budgetData.fileName}`}
+                  icon={<Table2 className="h-5 w-5" aria-hidden />}
+                  accent="info"
+                  trend={{ value: 'Validated', direction: 'neutral', icon: <CheckCircle className="h-4 w-4" aria-hidden /> }}
+                  tone="translucent"
+                  padding="md"
+                />
+              ) : (
+                <ModernCard tone="translucent" padding="md" className="flex h-full flex-col justify-center text-sm text-[var(--foreground-muted)]">
+                  <p>No budget file yet.</p>
+                </ModernCard>
+              )}
+
+              {claimsData ? (
+                <ModernMetric
+                  label="Claims file"
+                  value={`${claimsData.rowCount.toLocaleString()} rows`}
+                  secondary={`${claimsData.headers.length} columns parsed`}
+                  helper={`File: ${claimsData.fileName}`}
+                  icon={<Columns3 className="h-5 w-5" aria-hidden />}
+                  accent="accent"
+                  trend={{ value: 'Validated', direction: 'neutral', icon: <CheckCircle className="h-4 w-4" aria-hidden /> }}
+                  tone="translucent"
+                  padding="md"
+                />
+              ) : (
+                <ModernCard tone="translucent" padding="md" className="flex h-full flex-col justify-center text-sm text-[var(--foreground-muted)]">
+                  <p>No claims file yet.</p>
+                </ModernCard>
+              )}
+            </div>
+          </ModernCard>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 
