@@ -1,121 +1,62 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-
-interface WebVitalsMetric {
-  id: string;
-  name: 'CLS' | 'FCP' | 'INP' | 'LCP' | 'TTFB';
-  value: number;
-  rating: 'good' | 'needs-improvement' | 'poor';
-  delta: number;
-  navigationType: 'navigate' | 'reload' | 'back_forward' | 'back_forward_cache';
-}
-
-interface PerformanceMetrics {
-  cls?: WebVitalsMetric;
-  fcp?: WebVitalsMetric;
-  inp?: WebVitalsMetric;
-  lcp?: WebVitalsMetric;
-  ttfb?: WebVitalsMetric;
-  bundleSize?: number;
-  renderTime?: number;
-  chartLoadTime?: number;
-}
+import { useEffect, useState } from 'react';
+import { usePerformanceMonitoring } from '@/app/hooks/usePerformanceMonitoring';
+import { performanceMonitoringService } from '@/app/services/performanceMonitoringService';
 
 const PerformanceMonitor = () => {
-  const [metrics, setMetrics] = useState<PerformanceMetrics>({});
   const [isVisible, setIsVisible] = useState(false);
-  const startTime = useRef<number>(performance.now());
+  const [lastReport, setLastReport] = useState<any>(null);
+  
+  const {
+    metrics,
+    getPerformanceScore,
+    getPerformanceWarnings,
+    isPerformanceGood,
+    exportMetrics
+  } = usePerformanceMonitoring();
 
-  // Load web-vitals library dynamically
+  // Subscribe to performance reports
   useEffect(() => {
-    const loadWebVitals = async () => {
-      try {
-        const { onCLS, onFCP, onINP, onLCP, onTTFB } = await import('web-vitals');
+    const unsubscribe = performanceMonitoringService.subscribe((report) => {
+      setLastReport(report);
+    });
 
-        const updateMetric = (metric: WebVitalsMetric) => {
-          setMetrics(prev => ({
-            ...prev,
-            [metric.name.toLowerCase()]: metric
-          }));
-        };
-
-        onCLS(updateMetric as any);
-        onFCP(updateMetric as any);
-        onINP(updateMetric as any);
-        onLCP(updateMetric as any);
-        onTTFB(updateMetric as any);
-      } catch (error) {
-        console.warn('Web Vitals not available:', error);
-      }
-    };
-
-    loadWebVitals();
+    return unsubscribe;
   }, []);
 
-  // Monitor bundle size and render performance
+  // Generate report periodically
   useEffect(() => {
-    const measurePerformance = () => {
-      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-      const paintEntries = performance.getEntriesByType('paint');
-      
-      const firstContentfulPaint = paintEntries.find(entry => entry.name === 'first-contentful-paint');
-      const renderTime = performance.now() - startTime.current;
+    const interval = setInterval(() => {
+      const report = performanceMonitoringService.generateReport(metrics);
+      setLastReport(report);
+    }, 10000); // Every 10 seconds
 
-      // Estimate bundle size from resource entries
-      const resourceEntries = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
-      const jsResources = resourceEntries.filter(entry => 
-        entry.name.includes('.js') && entry.name.includes('/_next/')
-      );
-      const estimatedBundleSize = jsResources.reduce((total, resource) => 
-        total + (resource.transferSize || 0), 0
-      );
+    return () => clearInterval(interval);
+  }, [metrics]);
 
-      setMetrics(prev => ({
-        ...prev,
-        bundleSize: Math.round(estimatedBundleSize / 1024), // Convert to KB
-        renderTime: Math.round(renderTime),
-        chartLoadTime: navigation ? Math.round(navigation.domContentLoadedEventEnd - navigation.responseEnd) : 0
-      }));
-    };
-
-    // Wait for page load
-    if (document.readyState === 'complete') {
-      measurePerformance();
-    } else {
-      window.addEventListener('load', measurePerformance);
-      return () => window.removeEventListener('load', measurePerformance);
-    }
-  }, []);
-
-  const getMetricColor = (rating: string) => {
-    switch (rating) {
-      case 'good': return 'text-[var(--accent)]';
-      case 'needs-improvement': return 'text-[#FFC76A]';
-      case 'poor': return 'text-[#FF8D8D]';
-      default: return 'text-[var(--foreground-muted)]';
-    }
+  const getMetricColor = (score: number) => {
+    if (score >= 80) return 'text-[var(--accent)]';
+    if (score >= 60) return 'text-[#FFC76A]';
+    return 'text-[#FF8D8D]';
   };
 
-  const formatMetricValue = (name: string, value: number) => {
-    switch (name) {
-      case 'CLS':
-        return value.toFixed(3);
-      case 'FCP':
-      case 'LCP':
-      case 'INP':
-      case 'TTFB':
-        return `${Math.round(value)}ms`;
-      default:
-        return value.toString();
-    }
+  const formatMetricValue = (value: number | null, unit: string = 'ms') => {
+    if (value === null) return 'N/A';
+    if (unit === 'ms') return `${Math.round(value)}ms`;
+    if (unit === 'MB') return `${(value / 1024 / 1024).toFixed(1)}MB`;
+    if (unit === 's') return `${(value / 1000).toFixed(1)}s`;
+    return value.toFixed(3);
   };
 
-  const getBundleSizeRating = (size: number) => {
-    if (size < 200) return 'good';
-    if (size < 300) return 'needs-improvement';
-    return 'poor';
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'text-[var(--accent)]';
+    if (score >= 60) return 'text-[#FFC76A]';
+    return 'text-[#FF8D8D]';
   };
+
+  const performanceScore = getPerformanceScore();
+  const warnings = getPerformanceWarnings();
 
   // Only show in development or when explicitly enabled
   if (process.env.NODE_ENV === 'production' && !isVisible) {
@@ -140,115 +81,175 @@ const PerformanceMonitor = () => {
         <div className="fixed bottom-16 right-4 z-40 bg-[var(--surface-elevated)] border border-[var(--surface-border)] rounded-xl shadow-[var(--card-base-shadow)] p-4 max-w-sm w-80 text-[var(--foreground)]">
           <div className="flex justify-between items-center mb-3">
             <h3 className="font-semibold text-[var(--foreground)] text-sm">
-              Performance Metrics
+              Performance Monitor
             </h3>
-            <button
-              onClick={() => setIsVisible(false)}
-              className="text-[var(--foreground-muted)] hover:text-[var(--accent)]"
-            >
-              ×
-            </button>
+            <div className="flex items-center gap-2">
+              <span className={`text-xs font-mono ${getScoreColor(performanceScore.overall)}`}>
+                {performanceScore.overall.toFixed(1)}/100
+              </span>
+              <button
+                onClick={() => setIsVisible(false)}
+                className="text-[var(--foreground-muted)] hover:text-[var(--accent)]"
+              >
+                ×
+              </button>
+            </div>
           </div>
 
           <div className="space-y-2 text-xs">
-            {/* Core Web Vitals */}
+            {/* Performance Score Breakdown */}
             <div className="font-semibold text-[var(--foreground-muted)] border-b border-[var(--surface-border)] pb-1">
-              Core Web Vitals
+              Performance Scores
+            </div>
+            
+            <div className="space-y-1">
+              <div className="flex justify-between items-center">
+                <span className="text-[var(--foreground-subtle)]">Load Time:</span>
+                <span className={`font-mono ${getScoreColor(performanceScore.breakdown.loadTime)}`}>
+                  {performanceScore.breakdown.loadTime.toFixed(0)}/100
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[var(--foreground-subtle)]">Memory:</span>
+                <span className={`font-mono ${getScoreColor(performanceScore.breakdown.memory)}`}>
+                  {performanceScore.breakdown.memory.toFixed(0)}/100
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[var(--foreground-subtle)]">Data Processing:</span>
+                <span className={`font-mono ${getScoreColor(performanceScore.breakdown.dataProcessing)}`}>
+                  {performanceScore.breakdown.dataProcessing.toFixed(0)}/100
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[var(--foreground-subtle)]">Web Vitals:</span>
+                <span className={`font-mono ${getScoreColor(performanceScore.breakdown.webVitals)}`}>
+                  {performanceScore.breakdown.webVitals.toFixed(0)}/100
+                </span>
+              </div>
             </div>
 
-            {Object.entries(metrics).map(([key, metric]) => {
-              if (key === 'bundleSize' || key === 'renderTime' || key === 'chartLoadTime' || !metric) return null;
+            {/* Current Metrics */}
+            <div className="font-semibold text-[var(--foreground-muted)] border-b border-[var(--surface-border)] pb-1 pt-2">
+              Current Metrics
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex justify-between items-center">
+                <span className="text-[var(--foreground-subtle)]">Load Time:</span>
+                <span className={`font-mono ${getMetricColor(metrics.loadTime < 3000 ? 90 : 30)}`}>
+                  {formatMetricValue(metrics.loadTime, 's')}
+                </span>
+              </div>
               
-              const webVitalsMetric = metric as WebVitalsMetric;
-              return (
-                <div key={key} className="flex justify-between items-center">
-                  <span className="text-[var(--foreground-subtle)]">
-                    {webVitalsMetric.name}:
-                  </span>
-                  <span className={`font-mono ${getMetricColor(webVitalsMetric.rating)}`}>
-                    {formatMetricValue(webVitalsMetric.name, webVitalsMetric.value)}
+              {metrics.memory.usedJSHeapSize && (
+                <div className="flex justify-between items-center">
+                  <span className="text-[var(--foreground-subtle)]">Memory Usage:</span>
+                  <span className={`font-mono ${getMetricColor(metrics.memory.usedJSHeapSize < 100 * 1024 * 1024 ? 90 : 30)}`}>
+                    {formatMetricValue(metrics.memory.usedJSHeapSize, 'MB')}
                   </span>
                 </div>
-              );
-            })}
-
-            {/* Bundle & Performance */}
-            <div className="font-semibold text-[var(--foreground-muted)] border-b border-[var(--surface-border)] pb-1 pt-2">
-              Bundle & Performance
+              )}
+              
+              {metrics.webVitals.LCP && (
+                <div className="flex justify-between items-center">
+                  <span className="text-[var(--foreground-subtle)]">LCP:</span>
+                  <span className={`font-mono ${getMetricColor(metrics.webVitals.LCP < 2500 ? 90 : 30)}`}>
+                    {formatMetricValue(metrics.webVitals.LCP)}
+                  </span>
+                </div>
+              )}
+              
+              {metrics.webVitals.CLS && (
+                <div className="flex justify-between items-center">
+                  <span className="text-[var(--foreground-subtle)]">CLS:</span>
+                  <span className={`font-mono ${getMetricColor(metrics.webVitals.CLS < 0.1 ? 90 : 30)}`}>
+                    {metrics.webVitals.CLS.toFixed(3)}
+                  </span>
+                </div>
+              )}
+              
+              {metrics.dataProcessing.csvProcessingTime && (
+                <div className="flex justify-between items-center">
+                  <span className="text-[var(--foreground-subtle)]">CSV Processing:</span>
+                  <span className={`font-mono ${getMetricColor(metrics.dataProcessing.csvProcessingTime < 1000 ? 90 : 30)}`}>
+                    {formatMetricValue(metrics.dataProcessing.csvProcessingTime)}
+                  </span>
+                </div>
+              )}
             </div>
 
-            {metrics.bundleSize && (
-              <div className="flex justify-between items-center">
-                <span className="text-[var(--foreground-subtle)]">Bundle Size:</span>
-                <span className={`font-mono ${getMetricColor(getBundleSizeRating(metrics.bundleSize))}`}>
-                  {metrics.bundleSize}KB
-                </span>
-              </div>
+            {/* Warnings */}
+            {warnings.length > 0 && (
+              <>
+                <div className="font-semibold text-[#FF8D8D] border-b border-[var(--surface-border)] pb-1 pt-2">
+                  Performance Warnings
+                </div>
+                <div className="space-y-1">
+                  {warnings.slice(0, 3).map((warning, index) => (
+                    <div key={index} className="text-[#FF8D8D] text-[10px]">
+                      ⚠ {warning.replace(/^(Warning|Critical): /, '')}
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
 
-            {metrics.renderTime && (
-              <div className="flex justify-between items-center">
-                <span className="text-[var(--foreground-subtle)]">Render Time:</span>
-                <span className="font-mono text-[var(--foreground)]">
-                  {metrics.renderTime}ms
-                </span>
-              </div>
-            )}
-
-            {metrics.chartLoadTime && (
-              <div className="flex justify-between items-center">
-                <span className="text-[var(--foreground-subtle)]">Chart Load:</span>
-                <span className="font-mono text-[var(--foreground)]">
-                  {metrics.chartLoadTime}ms
-                </span>
-              </div>
-            )}
-
-            {/* Optimization Status */}
+            {/* Optimizations Status */}
             <div className="font-semibold text-[var(--foreground-muted)] border-b border-[var(--surface-border)] pb-1 pt-2">
-              Optimizations
+              Optimizations Applied
             </div>
 
             <div className="space-y-1">
+              <div className="flex justify-between items-center">
+                <span className="text-[var(--foreground-subtle)]">Animation Libraries:</span>
+                <span className="text-[var(--accent)] text-xs">✓ Removed</span>
+              </div>
               <div className="flex justify-between items-center">
                 <span className="text-[var(--foreground-subtle)]">Code Splitting:</span>
-                <span className="text-[var(--accent)] text-xs">✓ Enabled</span>
+                <span className="text-[var(--accent)] text-xs">✓ Planned</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[var(--foreground-subtle)]">WebGL:</span>
-                <span className="text-[var(--accent)] text-xs">✓ Active</span>
+                <span className="text-[var(--foreground-subtle)]">Virtualization:</span>
+                <span className="text-[#FFC76A] text-xs">○ Pending</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[var(--foreground-subtle)]">GPU Accel:</span>
-                <span className="text-[var(--accent)] text-xs">✓ Hardware</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[var(--foreground-subtle)]">Lazy Loading:</span>
-                <span className="text-[var(--accent)] text-xs">✓ Charts</span>
+                <span className="text-[var(--foreground-subtle)]">Component Split:</span>
+                <span className="text-[#FFC76A] text-xs">○ Pending</span>
               </div>
             </div>
 
-            {/* Target vs Actual */}
+            {/* Refactoring Targets */}
             <div className="font-semibold text-[var(--foreground-muted)] border-b border-[var(--surface-border)] pb-1 pt-2">
-              Million-Dollar UI Targets
+              Refactoring Targets
             </div>
 
             <div className="space-y-1">
               <div className="flex justify-between items-center">
-                <span className="text-[var(--foreground-subtle)]">Bundle Target:</span>
-                <span className="text-[var(--info)] text-xs">&lt;200KB</span>
+                <span className="text-[var(--foreground-subtle)]">Load Time:</span>
+                <span className="text-[var(--info)] text-xs">&lt;3s</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[var(--foreground-subtle)]">LCP Target:</span>
-                <span className="text-[var(--info)] text-xs">&lt;2.5s</span>
+                <span className="text-[var(--foreground-subtle)]">Memory:</span>
+                <span className="text-[var(--info)] text-xs">&lt;100MB</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[var(--foreground-subtle)]">CLS Target:</span>
-                <span className="text-[var(--info)] text-xs">&lt;0.1</span>
+                <span className="text-[var(--foreground-subtle)]">Data Processing:</span>
+                <span className="text-[var(--info)] text-xs">&lt;1s</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[var(--foreground-subtle)]">FID Target:</span>
-                <span className="text-[var(--info)] text-xs">&lt;100ms</span>
+                <span className="text-[var(--foreground-subtle)]">PDF Generation:</span>
+                <span className="text-[var(--info)] text-xs">&lt;5s</span>
+              </div>
+            </div>
+
+            {/* Status */}
+            <div className="pt-2">
+              <div className="flex items-center gap-1">
+                <div className={`w-2 h-2 rounded-full ${isPerformanceGood ? 'bg-[var(--accent)]' : 'bg-[#FF8D8D]'}`}></div>
+                <span className="text-[10px] text-[var(--foreground-subtle)]">
+                  {isPerformanceGood ? 'Performance targets met' : 'Performance needs optimization'}
+                </span>
               </div>
             </div>
           </div>

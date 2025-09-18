@@ -12,3 +12,6 @@ export { ModernTable } from "./ui/modern-table";
 export type { ModernTableProps, ModernTableColumn, ModernTableEmptyState, CellAlign } from "./ui/modern-table";
 export { ModernUpload } from "./ui/modern-upload";
 export type { ModernUploadProps } from "./ui/modern-upload";
+
+// Shared interfaces for component communication
+export * from './shared/interfaces';
