@@ -4,12 +4,15 @@
 import React, { useMemo, useState } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
-import { Plus, X, Copy } from 'lucide-react';
+import { Plus, X, Copy, ArrowRight, CheckCircle2, Info, ChevronRight } from 'lucide-react';
 import { GlassCard } from '@/app/components/ui/glass-card';
 import BulkApplyModal from './BulkApplyModal';
 import { BulkApplyConfig, MissingMonthStrategy } from '@/app/types/bulkApply';
 import { executeBulkApply, extractEnrollmentData } from '@/app/services/bulkApplyService';
 // import { toast } from 'sonner'; // Optional: Uncomment if sonner is installed
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/app/components/ui/tooltip';
+import { Progress } from '@/app/components/ui/progress';
+import { cn } from '@/app/lib/utils';
 
 export type RateBasis = 'PMPM' | 'PEPM' | 'Monthly' | 'Annual';
 
@@ -126,6 +129,42 @@ function monthlyFromBasis(amount: number, basis: RateBasis, employees: number, m
   }
 }
 
+const FieldLabel: React.FC<{ id: string; label: string; tooltip?: string; helper?: string; className?: string }> = ({
+  id,
+  label,
+  tooltip,
+  helper,
+  className,
+}) => (
+  <label
+    htmlFor={id}
+    className={cn('flex flex-col gap-1 text-sm font-medium text-slate-600', className)}
+  >
+    <span className="flex items-center gap-2">
+      {label}
+      {tooltip ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-slate-200 text-slate-400 transition-colors hover:border-slate-300 hover:text-slate-600"
+              aria-label={tooltip}
+            >
+              <Info className="h-3.5 w-3.5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs border border-slate-700/60 bg-slate-900 px-3 py-2 text-left text-xs font-normal leading-relaxed text-white">
+            {tooltip}
+          </TooltipContent>
+        </Tooltip>
+      ) : null}
+    </span>
+    {helper ? (
+      <span className="text-xs font-normal leading-snug text-slate-500">{helper}</span>
+    ) : null}
+  </label>
+);
+
 export default function FeesConfigurator({
   defaultEmployees = 0,
   defaultMembers = 0,
@@ -230,6 +269,19 @@ export default function FeesConfigurator({
 
   const canContinue = fees.every(f => Number.isFinite(f.amount)) && Number.isFinite(budgetAmount);
 
+  const flowSteps = [
+    { label: 'Upload files', status: 'complete' },
+    { label: 'Configure fees', status: 'active' },
+    { label: 'Launch dashboard', status: 'pending' },
+  ] as const;
+  const totalSteps = flowSteps.length;
+  const currentStepIndex = flowSteps.findIndex((step) => step.status === 'active');
+  const stepProgress = Math.round(((currentStepIndex + 1) / totalSteps) * 100);
+  const budgetAmountId = 'budget-amount';
+  const budgetBasisId = 'budget-basis';
+  const stopLossId = 'stop-loss';
+  const rebatesId = 'rebates';
+
   // Build current fees config for bulk apply
   const buildCurrentFeesConfig = (): FeesConfig => ({
     fees,
@@ -276,315 +328,530 @@ export default function FeesConfigurator({
   const { expandMonths } = require('@/app/services/bulkApplyService');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 px-6 py-16 text-slate-900">
-      <div className="max-w-6xl mx-auto space-y-10">
-        <div className="space-y-4">
-          <h2 className="text-3xl font-semibold tracking-tight">Configure Fees & Budget</h2>
-          <details className="inline-block">
-            <summary className="text-sm cursor-pointer text-slate-600 font-medium inline-flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">?</span>
-              What is this?
-            </summary>
-            <div className="mt-3 text-sm text-slate-700 bg-white border border-slate-200 rounded-2xl px-5 py-4 max-w-xl shadow-sm">
-              <p>Configure budgets, fixed fees, and reimbursements used throughout analytics. Claims uploads only need experience data—financial overrides stay here.</p>
-              <ul className="mt-3 space-y-1 text-xs text-slate-500">
-                <li><strong>PMPM:</strong> Per Member Per Month (multiplies member count)</li>
-                <li><strong>PEPM:</strong> Per Employee Per Month (multiplies employee count)</li>
-                <li><strong>Monthly:</strong> Fixed monthly amount</li>
-                <li><strong>Annual:</strong> Yearly amount distributed across 12 months</li>
-              </ul>
+    <TooltipProvider delayDuration={120}>
+      <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 px-6 py-16 text-slate-900">
+      <div className="mx-auto max-w-6xl space-y-12">
+        <GlassCard
+          variant="elevated"
+          blur="xl"
+          className="space-y-6 border-slate-200/60 bg-white/85 p-6 shadow-[0_26px_70px_rgba(15,23,42,0.12)]"
+        >
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">
+                Step {currentStepIndex + 1} of {totalSteps}
+              </span>
+              <h2 className="text-3xl font-semibold tracking-tight text-slate-900">
+                Configure fees & budget
+              </h2>
+              <p className="text-sm text-slate-600">
+                Tune fixed costs and overrides before launching your analytics workspace.
+              </p>
             </div>
-          </details>
-        </div>
-
-        {/* Data Source Preview (non-editable) */}
-        <GlassCard variant="elevated" blur="xl" className="p-8 border-slate-200/60 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
-          <h3 className="text-lg font-semibold mb-3 text-slate-900">Enrollment Data from CSV</h3>
-          <p className="text-sm text-slate-600">PMPM/PEPM calculations pull from these counts each month. Snapshot from your latest upload:</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Employees</div>
-              <div className="text-2xl font-semibold text-slate-900 mt-2">{employees.toLocaleString()}</div>
-            </div>
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Members</div>
-              <div className="text-2xl font-semibold text-slate-900 mt-2">{members.toLocaleString()}</div>
-            </div>
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Budget Preview</div>
-              <div className="text-2xl font-semibold text-slate-900 mt-2">${defaultBudget.toLocaleString()}</div>
-            </div>
-          </div>
-        </GlassCard>
-
-        {/* Fees */}
-        <GlassCard variant="elevated" blur="xl" className="p-8 border-slate-200/60 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900">Fees</h3>
-              <p className="text-xs text-slate-500 leading-tight mt-1">Create monthly fees and choose whether they scale by members, employees, or stay flat.</p>
-            </div>
-            <Button variant="default" onClick={addFee} className="gap-2 rounded-full bg-gradient-to-r from-sky-400 to-cyan-300 text-slate-900 shadow-[0_12px_30px_rgba(56,189,248,0.45)] hover:opacity-90">
-              <Plus className="w-4 h-4" /> Add Fee
-            </Button>
-          </div>
-
-          <div className="space-y-3">
-            {fees.map((f, i) => (
-              <div key={f.id} className="grid grid-cols-12 gap-4 items-end bg-slate-50 border border-slate-200 p-4 rounded-2xl">
-                <div className="col-span-4">
-                  <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Label</label>
-                  <Input 
-                    className="h-11 text-base rounded-xl border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"
-                    value={f.label} 
-                    placeholder="e.g. Admin Fee"
-                    onChange={(e) => updateFee(i, { label: e.target.value })} 
-                  />
-                </div>
-                <div className="col-span-3">
-                  <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Amount</label>
-                  <Input 
-                    type="number"
-                    className="h-11 text-base rounded-xl border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"
-                    value={f.amount}
-                    onChange={(e) => updateFee(i, { amount: toNumber(e.target.value) })}
-                    placeholder="e.g. 25" 
-                  />
-                </div>
-                <div className="col-span-3">
-                  <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Basis</label>
-                  <select 
-                    className="w-full h-11 border border-slate-200 rounded-xl px-3 py-2 text-base bg-white text-slate-900 focus:outline-none focus:border-sky-400 transition-all"
-                    value={f.basis}
-                    onChange={(e) => updateFee(i, { basis: e.target.value as RateBasis })}
-                  >
-                    <option value="PMPM">Per Member Per Month (PMPM)</option>
-                    <option value="PEPM">Per Employee Per Month (PEPM)</option>
-                    <option value="Monthly">Monthly</option>
-                    <option value="Annual">Annual</option>
-                  </select>
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Monthly</label>
-                  <div className="text-sm font-mono text-slate-800">${(monthlyFromBasis(f.amount, f.basis, employees, members) || 0).toLocaleString()}</div>
-                </div>
-                <div className="col-span-1 flex justify-end pb-2">
-                  <button
-                    type="button"
-                    onClick={() => removeFee(i)}
-                    className="text-slate-400 hover:text-rose-500 transition-colors"
-                    aria-label={`Remove ${f.label}`}
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
+            <div className="w-full max-w-sm space-y-2">
+              <Progress value={stepProgress} className="h-1.5 bg-slate-200/70 [&>div]:bg-sky-500" />
+              <div className="flex items-center justify-between text-xs text-slate-500">
+                <span className="inline-flex items-center gap-1 text-emerald-600">
+                  <CheckCircle2 className="h-3.5 w-3.5" /> Upload complete
+                </span>
+                <span>Next: Dashboard</span>
               </div>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-500">
+            {flowSteps.map((step, index) => (
+              <React.Fragment key={step.label}>
+                <span
+                  className={cn(
+                    'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 transition-colors',
+                    step.status === 'complete' && 'border-emerald-200 bg-emerald-50 text-emerald-700',
+                    step.status === 'active' && 'border-sky-200 bg-sky-50 text-sky-700',
+                    step.status === 'pending' && 'border-slate-200 bg-white text-slate-500'
+                  )}
+                >
+                  {step.status === 'complete' ? (
+                    <CheckCircle2 className="h-4 w-4" aria-hidden />
+                  ) : (
+                    <span
+                      className={cn(
+                        'h-2.5 w-2.5 rounded-full',
+                        step.status === 'active' ? 'bg-sky-500' : 'bg-slate-300'
+                      )}
+                    />
+                  )}
+                  {step.label}
+                </span>
+                {index < flowSteps.length - 1 ? (
+                  <ChevronRight className="h-3.5 w-3.5 text-slate-300" aria-hidden />
+                ) : null}
+              </React.Fragment>
             ))}
           </div>
         </GlassCard>
 
+        <div className="grid gap-6 lg:grid-cols-[1.45fr_1fr]">
+          <GlassCard
+            variant="elevated"
+            blur="xl"
+            className="space-y-4 border-slate-200/60 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]"
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-slate-900">Enrollment snapshot</h3>
+              <span className="text-xs uppercase tracking-[0.2em] text-slate-400">From CSV</span>
+            </div>
+            <p className="text-sm text-slate-600">
+              PMPM and PEPM calculations lean on the latest uploaded counts.
+            </p>
+            <div className="grid gap-3 md:grid-cols-3">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Employees</div>
+                <div className="mt-2 text-2xl font-semibold text-slate-900">{employees.toLocaleString()}</div>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Members</div>
+                <div className="mt-2 text-2xl font-semibold text-slate-900">{members.toLocaleString()}</div>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Budget preview</div>
+                <div className="mt-2 text-2xl font-semibold text-slate-900">${defaultBudget.toLocaleString()}</div>
+              </div>
+            </div>
+          </GlassCard>
+
+          <div className="space-y-4 rounded-2xl border border-slate-200/70 bg-white/70 p-6 shadow-sm">
+            <div className="flex items-start gap-3">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-600">
+                ?
+              </span>
+              <div className="space-y-3 text-sm text-slate-600">
+                <p>
+                  Configure the financial levers that power the dashboard—fees can scale by member or employee counts, while budgets override CSV totals when needed.
+                </p>
+                <div className="flex flex-wrap gap-2 text-xs text-slate-500">
+                  <span className="rounded-full bg-slate-100 px-3 py-1">PMPM × members</span>
+                  <span className="rounded-full bg-slate-100 px-3 py-1">PEPM × employees</span>
+                  <span className="rounded-full bg-slate-100 px-3 py-1">Annual ÷ 12 months</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Fees */}
+        <GlassCard
+          variant="elevated"
+          blur="xl"
+          className="space-y-6 border-slate-200/60 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]"
+        >
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
+              <h3 className="text-lg font-semibold text-slate-900">Base fees</h3>
+              <p className="text-sm text-slate-600">Define recurring costs and choose how each one scales.</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-xs font-semibold text-slate-600">
+                Monthly total ${monthlyFixed.toLocaleString()}
+              </span>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={addFee}
+                className="gap-2 rounded-full border-sky-200 text-sky-700 hover:bg-sky-50"
+              >
+                <Plus className="h-4 w-4" /> Add fee
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {fees.map((f, i) => {
+              const labelId = `fee-label-${f.id}`;
+              const amountId = `fee-amount-${f.id}`;
+              const basisId = `fee-basis-${f.id}`;
+              const monthlyValue = monthlyFromBasis(f.amount, f.basis, employees, members) || 0;
+
+              return (
+                <div
+                  key={f.id}
+                  className="rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm"
+                >
+                  <div className="grid gap-4 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_auto] md:items-end">
+                    <div className="space-y-2">
+                      <FieldLabel
+                        id={labelId}
+                        label="Fee name"
+                        helper="Visible in dashboards"
+                      />
+                      <Input
+                        id={labelId}
+                        className="h-11 rounded-xl border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"
+                        value={f.label}
+                        placeholder="e.g. Admin fee"
+                        onChange={(e) => updateFee(i, { label: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <FieldLabel
+                        id={amountId}
+                        label="Amount"
+                        helper="Enter the raw value"
+                      />
+                      <Input
+                        id={amountId}
+                        type="number"
+                        inputMode="decimal"
+                        className="h-11 rounded-xl border-slate-200 bg-white text-slate-900"
+                        value={f.amount}
+                        onChange={(e) => updateFee(i, { amount: toNumber(e.target.value) })}
+                        placeholder="25"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <FieldLabel
+                        id={basisId}
+                        label="Applied as"
+                        tooltip="Pick how we translate the amount into a monthly figure."
+                        helper="We auto-convert using current headcounts."
+                      />
+                      <select
+                        id={basisId}
+                        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:border-sky-400 focus:outline-none"
+                        value={f.basis}
+                        onChange={(e) => updateFee(i, { basis: e.target.value as RateBasis })}
+                      >
+                        <option value="PMPM">Per member (PMPM)</option>
+                        <option value="PEPM">Per employee (PEPM)</option>
+                        <option value="Monthly">Flat monthly</option>
+                        <option value="Annual">Annual / 12</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <span className="text-xs font-medium text-slate-500">Monthly impact</span>
+                      <div className="rounded-xl bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-800">
+                        ${monthlyValue.toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="flex justify-end pt-6 md:pt-8">
+                      <button
+                        type="button"
+                        onClick={() => removeFee(i)}
+                        className="text-slate-400 transition-colors hover:text-rose-500"
+                        aria-label={`Remove ${f.label}`}
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <p className="text-xs text-slate-500">
+            Monthly impact updates automatically when you adjust amounts, headcounts, or bases.
+          </p>
+        </GlassCard>
+
         {/* Budget, Stop Loss & Rebates (Global Defaults) */}
-        <GlassCard variant="elevated" blur="xl" className="p-8 border-slate-200/60 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
-          <h3 className="text-lg font-semibold mb-4 text-slate-900">Budget, Stop Loss & Rebates</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-            <div>
-              <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">
-                Budget Amount
-                <span className="text-[10px] text-slate-400 font-normal ml-2">(overrides CSV)</span>
-              </label>
-              <Input 
-                type="number" 
-                className="h-11 text-base rounded-xl border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"
+        <GlassCard
+          variant="elevated"
+          blur="xl"
+          className="space-y-6 border-slate-200/60 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]"
+        >
+          <div className="space-y-1">
+            <h3 className="text-lg font-semibold text-slate-900">Budget & reimbursements</h3>
+            <p className="text-sm text-slate-600">Set organization-wide defaults. Per-month overrides layer on top.</p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="space-y-2">
+              <FieldLabel
+                id={budgetAmountId}
+                label="Budget amount"
+                tooltip="Provide a blended monthly or annual budget to benchmark against claims."
+                helper="Overrides CSV totals when present."
+              />
+              <Input
+                id={budgetAmountId}
+                type="number"
+                inputMode="decimal"
+                className="h-11 rounded-xl border-slate-200 bg-white text-slate-900"
                 value={budgetAmount}
                 onChange={(e) => setBudgetAmount(toNumber(e.target.value))}
-                placeholder="e.g. 250000" 
+                placeholder="250000"
               />
             </div>
-            <div>
-              <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Budget Basis</label>
-              <select 
-                className="w-full h-11 border border-slate-200 rounded-xl px-3 py-2 text-base bg-white text-slate-900 focus:outline-none focus:border-sky-400 transition-all"
+            <div className="space-y-2">
+              <FieldLabel
+                id={budgetBasisId}
+                label="Budget basis"
+                tooltip="Select how the budget amount should convert into a monthly value."
+                helper="We normalize before analytics run."
+              />
+              <select
+                id={budgetBasisId}
+                className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:border-sky-400 focus:outline-none"
                 value={budgetBasis}
                 onChange={(e) => setBudgetBasis(e.target.value as RateBasis)}
               >
                 <option value="Monthly">Monthly</option>
                 <option value="Annual">Annual</option>
-                <option value="PMPM">PMPM</option>
-                <option value="PEPM">PEPM</option>
+                <option value="PMPM">Per member (PMPM)</option>
+                <option value="PEPM">Per employee (PEPM)</option>
               </select>
             </div>
-            <div>
-              <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">
-                Stop Loss Reimbursements
-                <span className="text-[10px] text-slate-400 font-normal ml-2">(monthly)</span>
-              </label>
-              <Input 
-                type="number" 
-                className="h-11 text-base rounded-xl border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"
+            <div className="space-y-2">
+              <FieldLabel
+                id={stopLossId}
+                label="Stop loss reimbursements"
+                tooltip="Monthly reimbursements that offset net cost before variance calculations."
+                helper="Enter as a monthly dollar amount."
+              />
+              <Input
+                id={stopLossId}
+                type="number"
+                inputMode="decimal"
+                className="h-11 rounded-xl border-slate-200 bg-white text-slate-900"
                 value={stopLossReimb}
                 onChange={(e) => setStopLossReimb(toNumber(e.target.value))}
-                placeholder="e.g. 50000" 
+                placeholder="50000"
               />
             </div>
-            <div>
-              <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">
-                Rebates Received
-                <span className="text-[10px] text-slate-400 font-normal ml-2">(monthly)</span>
-              </label>
-              <Input 
-                type="number" 
-                className="h-11 text-base rounded-xl border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"
+            <div className="space-y-2">
+              <FieldLabel
+                id={rebatesId}
+                label="Rebates received"
+                tooltip="Monthly rebates or credits that reduce pharmacy cost."
+                helper="Optional but recommended for net cost accuracy."
+              />
+              <Input
+                id={rebatesId}
+                type="number"
+                inputMode="decimal"
+                className="h-11 rounded-xl border-slate-200 bg-white text-slate-900"
                 value={rebates}
                 onChange={(e) => setRebates(toNumber(e.target.value))}
-                placeholder="e.g. 25000" 
+                placeholder="25000"
               />
             </div>
           </div>
         </GlassCard>
 
         {/* Per-Month Overrides */}
-        <GlassCard variant="elevated" blur="xl" className="p-8 border-slate-200/60 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900">Per-Month Overrides</h3>
-              <p className="text-xs text-slate-500 leading-tight mt-1">Target specific months with fee, budget, or reimbursement tweaks.</p>
+        <GlassCard
+          variant="elevated"
+          blur="xl"
+          className="space-y-6 border-slate-200/60 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]"
+        >
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-1">
+              <h3 className="text-lg font-semibold text-slate-900">Per-month overrides</h3>
+              <p className="text-sm text-slate-600">Handle exceptions like one-time credits, renewals, or seasonal stop-loss adjustments.</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button type="button" variant="outline" onClick={handleOpenBulkApply} className="rounded-full border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors">
-                <Copy className="w-4 h-4 mr-2" /> Apply to Multiple Months
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleOpenBulkApply}
+                className="gap-2 rounded-full border-slate-200 text-slate-700 hover:bg-slate-100"
+              >
+                <Copy className="h-4 w-4" /> Bulk apply
               </Button>
-              <Button type="button" variant="outline" onClick={addOverride} className="rounded-full border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors">
-                <Plus className="w-4 h-4 mr-2" /> Add Override
+              <Button
+                type="button"
+                variant="outline"
+                onClick={addOverride}
+                className="gap-2 rounded-full border-sky-200 text-sky-700 hover:bg-sky-50"
+              >
+                <Plus className="h-4 w-4" /> Add override
               </Button>
             </div>
           </div>
           {overrides.length === 0 ? (
-            <p className="text-sm text-slate-500">Add overrides to target specific months (e.g., adjust Admin Fee in May 2025).</p>
+            <div className="rounded-2xl border border-dashed border-slate-200 bg-white/70 p-6 text-sm text-slate-600">
+              Add your first override to adjust a specific month—for example, increase the admin fee in May or capture a one-time rebate.
+            </div>
           ) : (
             <div className="space-y-3">
-              {overrides.map((o) => (
-                <div key={o.id} className="grid grid-cols-12 gap-4 items-end bg-slate-50 border border-slate-200 p-4 rounded-2xl">
-                  <div className="col-span-3">
-                    <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Month</label>
-                    <Input
-                      type="month"
-                      className="h-11 text-base rounded-xl border-slate-200 bg-white text-slate-900"
-                      value={o.month}
-                      onChange={(e) => updateOverride(o.id, { month: e.target.value })}
-                    />
-                  </div>
-                  <div className="col-span-3">
-                    <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Type</label>
-                    <select
-                      className="w-full h-11 border border-slate-200 rounded-xl px-3 py-2 text-base bg-white text-slate-900 focus:outline-none focus:border-sky-400 transition-all"
-                      value={o.type}
-                      onChange={(e) => {
-                        const t = e.target.value as OverrideType;
-                        updateOverride(o.id, { type: t, feeId: t === 'fee' ? fees[0]?.id : undefined, basis: (t === 'fee' || t === 'budget') ? (o.basis || 'Monthly') : undefined });
-                      }}
-                    >
-                      <option value="budget">Budget</option>
-                      <option value="stopLossReimb">Stop Loss Reimb</option>
-                      <option value="rebates">Rebates</option>
-                      <option value="fee">Specific Fee</option>
-                    </select>
-                  </div>
-                  {o.type === 'fee' && (
-                    <div className="col-span-3">
-                      <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Fee</label>
-                      <select
-                        className="w-full h-11 border border-slate-200 rounded-xl px-3 py-2 text-base bg-white text-slate-900 focus:outline-none focus:border-sky-400 transition-all"
-                        value={o.feeId || ''}
-                        onChange={(e) => updateOverride(o.id, { feeId: e.target.value })}
-                      >
-                        {fees.map(f => (
-                          <option key={f.id} value={f.id}>{f.label}</option>
-                        ))}
-                      </select>
+              {overrides.map((o) => {
+                const monthId = `override-month-${o.id}`;
+                const typeId = `override-type-${o.id}`;
+                const feeId = `override-fee-${o.id}`;
+                const amountId = `override-amount-${o.id}`;
+                const basisId = `override-basis-${o.id}`;
+
+                return (
+                  <div
+                    key={o.id}
+                    className="rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm"
+                  >
+                    <div className="flex flex-wrap gap-4">
+                      <div className="flex min-w-[180px] flex-1 flex-col gap-2">
+                        <FieldLabel id={monthId} label="Month" helper="YYYY-MM" />
+                        <Input
+                          id={monthId}
+                          type="month"
+                          className="h-11 rounded-xl border-slate-200 bg-white text-slate-900"
+                          value={o.month}
+                          onChange={(e) => updateOverride(o.id, { month: e.target.value })}
+                        />
+                      </div>
+                      <div className="flex min-w-[180px] flex-1 flex-col gap-2">
+                        <FieldLabel
+                          id={typeId}
+                          label="Applies to"
+                          tooltip="Choose what this override should adjust for the selected month."
+                        />
+                        <select
+                          id={typeId}
+                          className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:border-sky-400 focus:outline-none"
+                          value={o.type}
+                          onChange={(e) => {
+                            const t = e.target.value as OverrideType;
+                            updateOverride(o.id, {
+                              type: t,
+                              feeId: t === 'fee' ? fees[0]?.id : undefined,
+                              basis: t === 'fee' || t === 'budget' ? (o.basis || 'Monthly') : undefined,
+                            });
+                          }}
+                        >
+                          <option value="budget">Budget</option>
+                          <option value="stopLossReimb">Stop loss reimbursement</option>
+                          <option value="rebates">Rebates</option>
+                          <option value="fee">Specific fee</option>
+                        </select>
+                      </div>
+                      {o.type === 'fee' ? (
+                        <div className="flex min-w-[200px] flex-1 flex-col gap-2">
+                          <FieldLabel
+                            id={feeId}
+                            label="Fee to adjust"
+                            helper="Select from the base fees above."
+                          />
+                          <select
+                            id={feeId}
+                            className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:border-sky-400 focus:outline-none"
+                            value={o.feeId || fees[0]?.id || ''}
+                            onChange={(e) => updateOverride(o.id, { feeId: e.target.value })}
+                          >
+                            {fees.map((fee) => (
+                              <option key={fee.id} value={fee.id}>
+                                {fee.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      ) : null}
+                      <div className="flex min-w-[160px] flex-1 flex-col gap-2">
+                        <FieldLabel
+                          id={amountId}
+                          label="Amount"
+                          helper={o.type === 'rebates' ? 'Positive values reduce net cost.' : undefined}
+                        />
+                        <Input
+                          id={amountId}
+                          type="number"
+                          inputMode="decimal"
+                          className="h-11 rounded-xl border-slate-200 bg-white text-slate-900"
+                          value={o.amount}
+                          onChange={(e) => updateOverride(o.id, { amount: toNumber(e.target.value) })}
+                        />
+                      </div>
+                      {(o.type === 'fee' || o.type === 'budget') ? (
+                        <div className="flex min-w-[160px] flex-1 flex-col gap-2">
+                          <FieldLabel
+                            id={basisId}
+                            label="Applied as"
+                            tooltip="Overrides follow the same scaling logic as base fees."
+                          />
+                          <select
+                            id={basisId}
+                            className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:border-sky-400 focus:outline-none"
+                            value={o.basis || 'Monthly'}
+                            onChange={(e) => updateOverride(o.id, { basis: e.target.value as RateBasis })}
+                          >
+                            <option value="PMPM">Per member (PMPM)</option>
+                            <option value="PEPM">Per employee (PEPM)</option>
+                            <option value="Monthly">Flat monthly</option>
+                            <option value="Annual">Annual / 12</option>
+                          </select>
+                        </div>
+                      ) : null}
+                      <div className="flex shrink-0 items-end">
+                        <button
+                          type="button"
+                          onClick={() => removeOverride(o.id)}
+                          className="rounded-full border border-transparent p-2 text-slate-400 transition-colors hover:border-rose-200 hover:text-rose-500"
+                          aria-label="Remove override"
+                        >
+                          <X className="h-5 w-5" />
+                        </button>
+                      </div>
                     </div>
-                  )}
-                  <div className={o.type === 'fee' ? 'col-span-2' : 'col-span-3'}>
-                    <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Amount</label>
-                    <Input
-                      type="number"
-                      className="h-11 text-base rounded-xl border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"
-                      value={o.amount}
-                      onChange={(e) => updateOverride(o.id, { amount: toNumber(e.target.value) })}
-                      placeholder="e.g. 25000"
-                    />
                   </div>
-                  {(o.type === 'budget' || o.type === 'fee') && (
-                    <div className="col-span-2">
-                      <label className="block text-xs uppercase tracking-[0.18em] text-slate-500 mb-2">Basis</label>
-                      <select
-                        className="w-full h-11 border border-slate-200 rounded-xl px-3 py-2 text-base bg-white text-slate-900 focus:outline-none focus:border-sky-400 transition-all"
-                        value={o.basis || 'Monthly'}
-                        onChange={(e) => updateOverride(o.id, { basis: e.target.value as RateBasis })}
-                      >
-                        <option value="Monthly">Monthly</option>
-                        <option value="Annual">Annual</option>
-                        <option value="PMPM">PMPM</option>
-                        <option value="PEPM">PEPM</option>
-                      </select>
-                    </div>
-                  )}
-                  <div className="col-span-1 flex justify-end pb-2">
-                    <button
-                      type="button"
-                      onClick={() => removeOverride(o.id)}
-                      className="text-slate-400 hover:text-rose-400 transition-colors"
-                      aria-label="Remove override"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </GlassCard>
 
         {/* Summary */}
-        <GlassCard variant="elevated" blur="xl" className="p-8 border-slate-200/60 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
-          <h3 className="text-lg font-semibold mb-4 text-slate-900">Summary</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Monthly Fixed Costs</div>
-              <div className="text-2xl font-semibold text-slate-900 mt-2">${monthlyFixed.toLocaleString()}</div>
+        <GlassCard
+          variant="elevated"
+          blur="xl"
+          className="space-y-6 border-slate-200/60 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]"
+        >
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-1">
+              <h3 className="text-lg font-semibold text-slate-900">Review totals</h3>
+              <p className="text-sm text-slate-600">These values are what the dashboard will use once you continue.</p>
             </div>
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Monthly Budget</div>
-              <div className="text-2xl font-semibold text-slate-900 mt-2">${monthlyBudget.toLocaleString()}</div>
+            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">All amounts in USD</span>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+              <div className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">Monthly fixed costs</div>
+              <div className="mt-2 text-2xl font-semibold text-slate-900">${monthlyFixed.toLocaleString()}</div>
             </div>
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Stop Loss Reimb.</div>
-              <div className="text-2xl font-semibold text-slate-900 mt-2">${(stopLossReimb || 0).toLocaleString()}</div>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+              <div className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">Monthly budget</div>
+              <div className="mt-2 text-2xl font-semibold text-slate-900">${monthlyBudget.toLocaleString()}</div>
             </div>
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Rebates</div>
-              <div className="text-2xl font-semibold text-slate-900 mt-2">${(rebates || 0).toLocaleString()}</div>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+              <div className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">Stop loss reimb.</div>
+              <div className="mt-2 text-2xl font-semibold text-slate-900">${(stopLossReimb || 0).toLocaleString()}</div>
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+              <div className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">Rebates</div>
+              <div className="mt-2 text-2xl font-semibold text-slate-900">${(rebates || 0).toLocaleString()}</div>
+            </div>
+          </div>
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <p className="text-sm text-slate-600">Need to tweak something? You can always return after launching the dashboard.</p>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+              <Button
+                type="button"
+                disabled={!canContinue}
+                onClick={() => onSubmit(
+                  {
+                    fees,
+                    budgetOverride: { amount: budgetAmount, basis: budgetBasis },
+                    stopLossReimb,
+                    rebates,
+                    perMonth: toPerMonth(),
+                  },
+                  { monthlyFixed, monthlyBudget }
+                )}
+                className="gap-2 rounded-full bg-gradient-to-r from-emerald-400 via-cyan-300 to-sky-400 px-8 py-3 text-base font-semibold text-slate-900 shadow-[0_18px_40px_rgba(45,212,191,0.45)] transition hover:opacity-90 disabled:cursor-not-allowed"
+              >
+                Launch dashboard
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+              {!canContinue ? (
+                <span className="text-xs text-slate-500">Fill in required amounts to continue.</span>
+              ) : (
+                <span className="text-xs text-emerald-600">Looks good—ready when you are.</span>
+              )}
             </div>
           </div>
         </GlassCard>
-
-        <div className="flex justify-end">
-          <Button
-            onClick={() => onSubmit(
-              {
-                fees,
-                budgetOverride: { amount: budgetAmount, basis: budgetBasis },
-                stopLossReimb,
-                rebates,
-                perMonth: toPerMonth(),
-              },
-              { monthlyFixed, monthlyBudget }
-            )}
-            disabled={!canContinue}
-            className="rounded-full px-8 py-3 text-base font-semibold bg-gradient-to-r from-emerald-400 via-cyan-300 to-sky-400 text-slate-900 shadow-[0_18px_40px_rgba(45,212,191,0.45)] hover:opacity-90"
-          >
-            Continue to Dashboard
-          </Button>
-        </div>
       </div>
       
       {/* Bulk Apply Modal */}
@@ -598,5 +865,6 @@ export default function FeesConfigurator({
         />
       )}
     </div>
+  </TooltipProvider>
   );
 }

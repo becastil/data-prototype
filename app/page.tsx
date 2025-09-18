@@ -21,7 +21,6 @@ import PerformanceMonitor from '@components/PerformanceMonitor';
 import EnterpriseDataExport from '@components/data/EnterpriseDataExport';
 import { ThemeToggle } from '@components/ui/theme-toggle';
 import { GlassCard } from '@components/ui/glass-card';
-import { PremiumDashboardCard } from '@components/ui/premium-dashboard-card';
 import PlanPerformanceTiles from '@components/dashboard/PlanPerformanceTiles';
 import KPITiles from '@components/dashboard/KPITiles';
 
@@ -90,7 +89,6 @@ const normalizeMonthKey = (value: unknown): string | null => {
 
   return null;
 };
-import { AnimatedNumber } from '@components/ui/animated-number';
 import { LottieLoader } from '@components/ui/lottie-loader';
 import { Button } from '@components/ui/button';
 import { DateRangeSelection, filterRowsByRange } from '@/app/utils/dateRange';

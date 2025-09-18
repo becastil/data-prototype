@@ -9,7 +9,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const devLog = (...args: any[]) => isDev && console.log(...args);
 const devError = (...args: any[]) => isDev && console.error(...args);
 import type { ParsedCSVData } from './CSVLoader';
-import { CheckCircle, CloudUpload, Columns3, Loader2, Table2 } from 'lucide-react';
+import { ArrowUpTray, CheckCircle, Columns3, FolderUp, Loader2, Table2 } from 'lucide-react';
 import { ModernCard, ModernMetric, ModernUpload } from '@components/index';
 import { cn } from '@/app/lib/utils';
 import { validateBudgetData, validateClaimsData } from '@/app/utils/schemas';
@@ -143,7 +143,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
   const bothLoaded = Boolean(budgetData && claimsData);
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-white">
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-white py-16 lg:py-24">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-white/80 to-transparent" />
 
       <div className="fixed right-6 top-6 z-50 flex flex-col gap-3">
@@ -176,14 +176,19 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
         </AnimatePresence>
       </div>
 
-      <div className="relative mx-auto w-full max-w-screen-xl px-6 py-16">
-        <div className="space-y-16">
-          <header className="mx-auto max-w-3xl space-y-5 text-center">
-            <h1 className="font-bold text-2xl tracking-tight text-slate-800">
-              Upload Healthcare Data
+      <div className="relative mx-auto w-full max-w-screen-xl px-6">
+        <div className="space-y-20">
+          <header className="mx-auto max-w-2xl space-y-6 text-center">
+            <div className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200/70 bg-white/80 px-4 py-1 text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
+              Intake
+              <span className="opacity-40">•</span>
+              Step 1
+            </div>
+            <h1 className="text-4xl font-semibold tracking-tight text-slate-900">
+              Upload your data with confidence
             </h1>
-            <p className="text-base leading-relaxed text-slate-600">
-              Upload your monthly claims and enrollment data
+            <p className="text-base text-slate-500">
+              Bring in monthly budgets and optional claims files to unlock the analytics workspace.
             </p>
           </header>
 
@@ -196,36 +201,29 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
             >
               <ModernUpload
                 title="Budget & Enrollment Summary"
-                description="Drop in monthly totals with headcounts so we can benchmark spend versus projections."
-                helper="We detect thousands separators, currency symbols, and normalize headers automatically."
+                description="Monthly totals and headcounts keep projections honest and benchmarks current."
+                helper="We auto-clean separators, currency symbols, and header labels as the file lands."
                 sampleLink={{ href: '/sample-budget.csv', label: 'Download sample CSV' }}
-                icon={<CloudUpload className="h-6 w-6 text-blue-600" aria-hidden />}
-                loaderClassName="rounded-xl border-2 border-dashed border-slate-300 hover:border-blue-400 bg-gradient-to-br from-slate-50 to-white shadow-sm hover:shadow-md transition-shadow"
-                cardClassName="space-y-6 bg-white/90 p-8 lg:p-10"
+                icon={<ArrowUpTray className="h-7 w-7 text-sky-600" aria-hidden />}
+                loaderClassName="rounded-3xl border-slate-200/70 hover:border-sky-400/70"
+                cardClassName="space-y-6 bg-white/90 p-8 lg:p-11"
                 onDataLoaded={handleBudgetLoaded}
                 onError={onError}
                 maxFileSize={10 * 1024 * 1024}
                 footer={
-                  <div className="space-y-4 rounded-xl border border-slate-200 bg-slate-50/50 p-6">
-                    <div className="flex items-center gap-2 mb-4">
-                      <CheckCircle className="h-4 w-4 text-blue-600" />
-                      <p className="font-semibold text-sm text-slate-900">Quick checklist</p>
+                  <div className="space-y-4 rounded-2xl bg-white/80 p-6 shadow-[0_12px_32px_-16px_rgba(15,23,42,0.25)] ring-1 ring-slate-200/60">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                      <CheckCircle className="h-4 w-4 text-sky-600" />
+                      Before you upload
                     </div>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs font-medium text-blue-700 mb-4">
-                      .csv only • Max 10MB
-                    </div>
-                    <ul className="space-y-3 text-sm leading-relaxed text-slate-600">
-                      <li className="flex items-start gap-3">
-                        <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                        Month or period column (YYYY-MM or similar)
+                    <ul className="grid gap-3 text-sm text-slate-600">
+                      <li className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 flex-shrink-0 text-sky-500" />
+                        Include a month column (e.g. 2024-01)
                       </li>
-                      <li className="flex items-start gap-3">
-                        <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                        Enrollment counts for employees and members
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                        Medical, pharmacy, and total spend columns
+                      <li className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 flex-shrink-0 text-sky-500" />
+                        Add employee and member counts
                       </li>
                     </ul>
                   </div>
@@ -240,36 +238,29 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
             >
               <ModernUpload
                 title="Detailed Claims Experience"
-                description="Optional row-level files unlock high-cost claimant tracking, service line analytics, and ICD pattern insights."
-                helper="Include identifiers, service categories, ICD-10 codes, and medical/Rx amounts. We'll align naming automatically."
+                description="Optional row-level detail fuels claimant tracking, service mix insights, and ICD spotting."
+                helper="Add identifiers, service categories, ICD-10 codes, plus medical and Rx spend. We align the naming automatically."
                 sampleLink={{ href: '/sample-claims.csv', label: 'Download sample CSV' }}
-                icon={<CloudUpload className="h-6 w-6 text-blue-600" aria-hidden />}
-                loaderClassName="rounded-xl border-2 border-dashed border-slate-300 hover:border-blue-400 bg-gradient-to-br from-slate-50 to-white shadow-sm hover:shadow-md transition-shadow"
-                cardClassName="space-y-6 bg-white/90 p-8 lg:p-10"
+                icon={<FolderUp className="h-7 w-7 text-indigo-600" aria-hidden />}
+                loaderClassName="rounded-3xl border-slate-200/70 hover:border-indigo-400/70"
+                cardClassName="space-y-6 bg-white/90 p-8 lg:p-11"
                 onDataLoaded={handleClaimsLoaded}
                 onError={onError}
                 maxFileSize={10 * 1024 * 1024}
                 footer={
-                  <div className="space-y-4 rounded-xl border border-slate-200 bg-slate-50/50 p-6">
-                    <div className="flex items-center gap-2 mb-4">
-                      <CheckCircle className="h-4 w-4 text-blue-600" />
-                      <p className="font-semibold text-sm text-slate-900">Quick checklist</p>
+                  <div className="space-y-4 rounded-2xl bg-white/80 p-6 shadow-[0_12px_32px_-16px_rgba(15,23,42,0.25)] ring-1 ring-slate-200/60">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                      <CheckCircle className="h-4 w-4 text-indigo-600" />
+                      Helpful details
                     </div>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs font-medium text-blue-700 mb-4">
-                      .csv only • Max 10MB
-                    </div>
-                    <ul className="space-y-3 text-sm leading-relaxed text-slate-600">
-                      <li className="flex items-start gap-3">
-                        <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <ul className="grid gap-3 text-sm text-slate-600">
+                      <li className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 flex-shrink-0 text-indigo-500" />
                         Claimant or subscriber identifier
                       </li>
-                      <li className="flex items-start gap-3">
-                        <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                        Service type and ICD-10-CM code
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                        Medical, pharmacy, and total cost columns
+                      <li className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 flex-shrink-0 text-indigo-500" />
+                        Service type plus ICD-10-CM code
                       </li>
                     </ul>
                   </div>
@@ -279,14 +270,14 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
           </div>
 
           {(budgetData || claimsData) && (
-            <ModernCard tone="surface" padding="lg" className="space-y-8 bg-white/90 shadow-lg">
+            <ModernCard tone="surface" padding="lg" className="space-y-8 bg-white/95 shadow-[0_20px_48px_-28px_rgba(15,23,42,0.4)]">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-xl mb-4 text-slate-900">Upload progress</h3>
-                  <p className="text-base leading-relaxed text-slate-600">
+                  <h3 className="text-xl font-semibold text-slate-900">Upload progress</h3>
+                  <p className="text-sm leading-relaxed text-slate-600">
                     {bothLoaded
-                      ? 'Both files are validated — feel free to navigate the dashboard or refresh analytics.'
-                      : `We are ready as soon as the ${waitingFor} file finishes uploading.`}
+                      ? 'Both files are validated — the dashboard is ready whenever you are.'
+                      : `We will unlock the dashboard as soon as the ${waitingFor} file lands.`}
                   </p>
                 </div>
                 {bothLoaded ? (
@@ -316,7 +307,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
                     padding="md"
                   />
                 ) : (
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-6 text-sm text-slate-500">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-6 text-sm text-slate-500">
                     Drop a budget summary to unlock benchmarks.
                   </div>
                 )}
@@ -334,7 +325,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
                     padding="md"
                   />
                 ) : (
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-6 text-sm text-slate-500">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-6 text-sm text-slate-500">
                     Add detailed claims to unlock granular analytics.
                   </div>
                 )}

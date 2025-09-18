@@ -31,22 +31,22 @@ type DragState = 'idle' | 'hover' | 'active';
 const dropZoneVariants: Variants = {
   idle: {
     scale: 1,
-    borderColor: 'rgba(203, 213, 225, 1)',
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderColor: 'rgba(203, 213, 225, 0.9)',
+    boxShadow: '0 24px 60px -32px rgba(15, 23, 42, 0.45)'
   },
   hover: {
-    scale: 1.02,
-    borderColor: 'rgba(96, 165, 250, 0.8)',
-    backgroundColor: 'rgba(219, 234, 254, 0.85)',
+    scale: 1.015,
+    borderColor: 'rgba(96, 165, 250, 0.85)',
+    boxShadow: '0 28px 70px -28px rgba(30, 64, 175, 0.45)',
     transition: {
       duration: 0.2,
       ease: 'easeInOut'
     }
   },
   active: {
-    scale: 0.98,
+    scale: 0.99,
     borderColor: 'rgba(59, 130, 246, 0.9)',
-    backgroundColor: 'rgba(191, 219, 254, 0.9)',
+    boxShadow: '0 20px 45px -26px rgba(30, 64, 175, 0.55)',
     transition: {
       duration: 0.12
     }
@@ -54,12 +54,12 @@ const dropZoneVariants: Variants = {
   success: {
     scale: 1,
     borderColor: 'rgba(16, 185, 129, 0.9)',
-    backgroundColor: 'rgba(187, 247, 208, 0.85)',
+    boxShadow: '0 30px 75px -26px rgba(16, 185, 129, 0.35)'
   },
   error: {
     scale: 1,
     borderColor: 'rgba(239, 68, 68, 0.9)',
-    backgroundColor: 'rgba(254, 202, 202, 0.85)',
+    boxShadow: '0 26px 70px -28px rgba(239, 68, 68, 0.4)',
     x: [0, -5, 5, -5, 5, 0],
     transition: {
       x: {
@@ -243,6 +243,19 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
     }
   };
 
+  const dropZoneTone = React.useMemo(() => {
+    if (loadingState === 'error') {
+      return 'from-rose-50 via-white to-white';
+    }
+    if (loadingState === 'success') {
+      return 'from-emerald-50 via-white to-white';
+    }
+    if (dragState === 'active' || dragState === 'hover') {
+      return 'from-sky-50 via-white to-white';
+    }
+    return 'from-white via-slate-50 to-slate-100';
+  }, [dragState, loadingState]);
+
   return (
     <div className={`w-full max-w-3xl mx-auto p-0 space-y-6 ${className}`}>
       <motion.div
@@ -261,7 +274,7 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
         />
         
         <motion.div
-          className="border-2 border-dashed rounded-3xl p-12 text-center cursor-pointer transition-all bg-white shadow-[0_20px_45px_rgba(15,23,42,0.1)]"
+          className={`border-2 border-dashed rounded-3xl p-12 text-center cursor-pointer transition-all bg-gradient-to-br ${dropZoneTone} shadow-[0_26px_80px_-30px_rgba(15,23,42,0.45)] ring-1 ring-white/40`}
           onDrop={handleDrop}
           onDragEnter={handleDragEnter}
           onDragOver={handleDragOver}
@@ -281,17 +294,17 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
             
             <div className="space-y-3">
               <p className="text-xl font-semibold text-slate-800">
-                {loadingState === 'loading' && 'Processing CSV file...'}
-                {loadingState === 'success' && 'CSV loaded successfully!'}
-                {loadingState === 'error' && 'Error loading CSV'}
-                {loadingState === 'idle' && 'Drop CSV file here or click to upload'}
+                {loadingState === 'loading' && 'Processing CSV...'}
+                {loadingState === 'success' && 'File ready to analyze'}
+                {loadingState === 'error' && 'Upload error'}
+                {loadingState === 'idle' && 'Drop CSV or click to upload'}
               </p>
-              <div className="text-sm text-slate-500 flex items-center justify-center gap-2">
-                <span className="inline-flex items-center gap-2 bg-slate-100 text-sky-700 px-3 py-1 rounded-full border border-sky-200">
+              <div className="text-sm text-slate-500 flex flex-wrap items-center justify-center gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full border border-sky-200/80 bg-white/70 px-3 py-1 text-sky-700 backdrop-blur">
                   <FileUp className="w-4 h-4" /> .csv only
                 </span>
                 <span className="opacity-50">•</span>
-                <span className="font-medium text-slate-600">Max {Math.round(maxFileSize / 1024 / 1024)}MB</span>
+                <span className="font-medium text-slate-600">Max {Math.round(maxFileSize / 1024 / 1024)} MB</span>
               </div>
             </div>
 
@@ -318,7 +331,7 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
                   size="md"
                   type="button"
                   onClick={handleClick}
-                  className="rounded-full border border-[var(--surface-border)] bg-[var(--surface)] text-[var(--foreground)] shadow-subtle hover:bg-[var(--neutral-soft)]"
+                  className="rounded-full border border-[var(--surface-border)] bg-white/80 text-[var(--foreground)] shadow-subtle hover:bg-slate-50"
                 >
                   Browse files
                 </ModernButton>
