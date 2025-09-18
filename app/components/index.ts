@@ -18,3 +18,4 @@ export * from './shared/interfaces';
 
 // Dashboard components
 export { default as DashboardLayout } from './dashboard/DashboardLayout';
+export { default as DataUploader } from './dashboard/DataUploader';

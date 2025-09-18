@@ -9,7 +9,6 @@ const devLog = (...args: any[]) => isDev && console.log(...args);
 const devError = (...args: any[]) => isDev && console.error(...args);
 const devWarn = (...args: any[]) => isDev && console.warn(...args);
 import { motion, AnimatePresence } from 'framer-motion';
-import DualCSVLoader from '@components/loaders/DualCSVLoader';
 import {
   EChartsEnterpriseChart,
   HCCDataTable,
@@ -21,6 +20,7 @@ import PerformanceMonitor from '@components/PerformanceMonitor';
 import { GlassCard } from '@components/ui/glass-card';
 import PlanPerformanceTiles from '@components/dashboard/PlanPerformanceTiles';
 import KPITiles from '@components/dashboard/KPITiles';
+import DataUploader from '@components/dashboard/DataUploader';
 
 // Helper function for numeric parsing
 const num = (val: unknown): number => {
@@ -99,7 +99,7 @@ import KeyboardShortcuts from '@components/navigation/KeyboardShortcuts';
 import { AccessibleErrorBoundary } from '@components/accessibility/AccessibilityEnhancements';
 import GooeyFilter from '@components/loaders/GooeyFilter';
 import MotionCard from '@components/MotionCard';
-import FeesConfigurator, { FeesConfig } from '@components/forms/FeesConfigurator';
+import { FeesConfig } from '@components/forms/FeesConfigurator';
 import { parseNumericValue } from '@utils/chartDataProcessors';
 import DashboardLayout from '@components/dashboard/DashboardLayout';
 
@@ -117,7 +117,6 @@ const Home: React.FC = () => {
   const [dateRange, setDateRange] = useState<DateRangeSelection>({ preset: '12M' });
   const [emergencyMode, setEmergencyMode] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
-  const [showFeesForm, setShowFeesForm] = useState(false);
   const [feesConfig, setFeesConfig] = useState<FeesConfig | null>(null);
   
   // HIPAA-aligned hydration: use in-memory token reference (no PHI in localStorage)
@@ -134,117 +133,20 @@ const Home: React.FC = () => {
     }
   }, []);
   
-  // Refs for timeout cleanup
-  const timeoutRefs = useRef<{
-    loadingTimeout: ReturnType<typeof setTimeout> | null;
-    successTimeout: ReturnType<typeof setTimeout> | null;
-  }>({
-    loadingTimeout: null,
-    successTimeout: null
-  });
 
-  // Cleanup timeouts on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRefs.current.loadingTimeout) {
-        clearTimeout(timeoutRefs.current.loadingTimeout);
-      }
-      if (timeoutRefs.current.successTimeout) {
-        clearTimeout(timeoutRefs.current.successTimeout);
-      }
-    };
-  }, []);
-
-  const handleBothFilesLoaded = (budget: ParsedCSVData, claims: ParsedCSVData) => {
-    devLog('[CSV FLOW] handleBothFilesLoaded called with:', {
-      budgetHeaders: budget?.headers,
-      budgetRows: budget?.rowCount,
-      claimsHeaders: claims?.headers, 
-      claimsRows: claims?.rowCount
-    });
-    
-    try {
-      setIsLoading(true);
-      
-      // Clear any existing timeouts
-      if (timeoutRefs.current.loadingTimeout) {
-        clearTimeout(timeoutRefs.current.loadingTimeout);
-      }
-      if (timeoutRefs.current.successTimeout) {
-        clearTimeout(timeoutRefs.current.successTimeout);
-      }
-      
-      timeoutRefs.current.loadingTimeout = setTimeout(async () => {
-        try {
-          devLog('[CSV FLOW] Processing data for dashboard...');
-          
-          // Validate data before setting state
-          if (!budget || !budget.rows || budget.rows.length === 0) {
-            throw new Error('Budget data is empty or invalid');
-          }
-          if (!claims || !claims.rows || claims.rows.length === 0) {
-            throw new Error('Claims data is empty or invalid');
-          }
-          
-          devLog('[CSV FLOW] Setting budget data...');
-          setBudgetData(budget);
-          devLog('[CSV FLOW] Setting claims data...');
-          setClaimsData(claims);
-          
-          try {
-            devLog('[SecureHealthcareStorage] Storing data securely...');
-            await secureHealthcareStorage.storeTemporary('dashboardData', {
-              budgetData: budget,
-              claimsData: claims,
-              savedAt: new Date().toISOString(),
-            });
-            devLog('[SecureHealthcareStorage] Data stored successfully');
-          } catch (storageError) {
-            devWarn('[SecureHealthcareStorage] Storage failed (non-critical):', storageError);
-          }
-          
-          setIsLoading(false);
-          setShowSuccess(true);
-          devLog('[CSV FLOW] Success animation started');
-          
-          timeoutRefs.current.successTimeout = setTimeout(() => {
-            try {
-              devLog('[CSV FLOW] Transitioning to fees configuration view...');
-              setShowFeesForm(true);
-              setShowSuccess(false);
-              setError(''); // Clear any previous errors
-              devLog('[CSV FLOW] Dashboard transition complete');
-              timeoutRefs.current.successTimeout = null;
-            } catch (transitionError) {
-              devError('[CSV FLOW] Dashboard transition failed:', transitionError);
-              setError(`Dashboard transition failed: ${transitionError instanceof Error ? transitionError.message : 'Unknown error'}`);
-            }
-          }, 1500);
-          
-          timeoutRefs.current.loadingTimeout = null;
-        } catch (processingError) {
-          devError('[CSV FLOW] Data processing failed:', processingError);
-          setIsLoading(false);
-          setShowSuccess(false);
-          setError(`Data processing failed: ${processingError instanceof Error ? processingError.message : 'Unknown error'}`);
-          timeoutRefs.current.loadingTimeout = null;
-        }
-      }, 1000);
-    } catch (outerError) {
-      devError('[CSV FLOW] Critical error in handleBothFilesLoaded:', outerError);
-      setError(`Critical error: ${outerError instanceof Error ? outerError.message : 'Unknown error'}`);
-      setIsLoading(false);
-    }
+  const handleDataLoaded = (budget: ParsedCSVData, claims: ParsedCSVData) => {
+    setBudgetData(budget);
+    setClaimsData(claims);
+    setShowDashboard(true);
   };
 
-  const handleError = (errorMessage: string) => {
+  const handleDataError = (errorMessage: string) => {
     setError(errorMessage);
     devError(errorMessage);
   };
 
   const handleReset = () => {
     setShowDashboard(false);
-    setShowFeesForm(false);
     setBudgetData(null);
     setClaimsData(null);
     setError('');
@@ -254,14 +156,12 @@ const Home: React.FC = () => {
     } catch {}
   };
 
-  // Handle fees form submit
-  const handleFeesSubmit = async (config: FeesConfig, computed: { monthlyFixed: number; monthlyBudget: number }) => {
+  const handleFeesConfigured = (config: FeesConfig) => {
     setFeesConfig(config);
-    try {
-      await secureHealthcareStorage.storeTemporary('dashboardFees', { config, computed, savedAt: new Date().toISOString() });
-    } catch {}
-    setShowFeesForm(false);
-    setShowDashboard(true);
+  };
+
+  const handleLoadingChange = (loading: boolean) => {
+    setIsLoading(loading);
   };
 
   // Advanced component handlers
@@ -424,79 +324,12 @@ const Home: React.FC = () => {
       <GooeyFilter />
       <AnimatePresence mode="wait">
         {!showDashboard ? (
-          <motion.div
-            key="uploader"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="relative"
-          >
-            {!showFeesForm ? (
-              <DualCSVLoader
-                onBothFilesLoaded={handleBothFilesLoaded}
-                onError={handleError}
-              />
-            ) : (
-              <FeesConfigurator
-                defaultEmployees={parseNumericValue((budgetData?.rows || []).slice(-1)[0]?.['Employee Count'] as any) || 0}
-                defaultMembers={parseNumericValue((budgetData?.rows || []).slice(-1)[0]?.['Member Count'] as any) || parseNumericValue((budgetData?.rows || []).slice(-1)[0]?.['Enrollment'] as any) || 0}
-                defaultBudget={parseNumericValue((budgetData?.rows || []).slice(-1)[0]?.['Budget'] as any) || 0}
-                csvData={budgetData?.rows || []}
-                onSubmit={handleFeesSubmit}
-              />
-            )}
-            
-            {/* Premium Loading Animation */}
-            {isLoading && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center"
-              >
-                <GlassCard variant="elevated" className="p-12 text-center max-w-md">
-                  <LottieLoader type="pulse" size="xl" />
-                  <h3 className="mt-6 text-xl font-semibold text-[var(--foreground)]">
-                    Processing your data
-                  </h3>
-                  <p className="mt-2 text-[var(--foreground-muted)]">
-                    Applying premium analytics transformations...
-                  </p>
-                </GlassCard>
-              </motion.div>
-            )}
-            
-            {/* Premium Success Animation */}
-            {showSuccess && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center"
-              >
-                <GlassCard variant="vibrant" glow className="p-12 text-center max-w-md">
-                  <LottieLoader type="success" size="xl" />
-                  <h3 className="mt-6 text-xl font-semibold text-[var(--foreground)]">
-                    Analytics Ready!
-                  </h3>
-                  <p className="mt-2 text-[var(--foreground-muted)]">
-                    Your premium dashboard is now live
-                  </p>
-                </GlassCard>
-              </motion.div>
-            )}
-            
-            {error && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="fixed bottom-8 right-8 bg-[var(--surface-elevated)] border border-[var(--surface-border)] rounded-xl p-4 max-w-md shadow-[var(--card-base-shadow)]"
-            >
-              <p className="text-[var(--foreground)] font-semibold">Error</p>
-              <p className="text-[var(--foreground-muted)] text-sm mt-1">{error}</p>
-            </motion.div>
-          )}
-        </motion.div>
+          <DataUploader
+            onDataLoaded={handleDataLoaded}
+            onError={handleDataError}
+            onLoadingChange={handleLoadingChange}
+            onFeesConfigured={handleFeesConfigured}
+          />
       ) : (
         <Suspense fallback={<div className="p-8 text-[var(--foreground-muted)]">Loading analytics...</div>}>
           <AccessibleErrorBoundary>
