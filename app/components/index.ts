@@ -15,3 +15,6 @@ export type { ModernUploadProps } from "./ui/modern-upload";
 
 // Shared interfaces for component communication
 export * from './shared/interfaces';
+
+// Dashboard components
+export { default as DashboardLayout } from './dashboard/DashboardLayout';
