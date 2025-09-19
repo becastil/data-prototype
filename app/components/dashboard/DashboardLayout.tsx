@@ -12,6 +12,7 @@ import { Tabs, TabsList, TabsTrigger } from '@components/ui/tabs';
 import DateRangeDropdown from '@components/ui/date-range-dropdown';
 import SoftDropdown from '@components/ui/soft-dropdown';
 import EnterpriseDataExport from '@components/data/EnterpriseDataExport';
+import ProfessionalPDFExporter from '@components/exports/ProfessionalPDFExporter';
 
 // Hooks and utilities
 import { useAutoAnimateCards } from '@/app/hooks/useAutoAnimate';
@@ -177,8 +178,13 @@ const DashboardLayout: React.FC<LayoutProps> = ({
             </TabsList>
           </Tabs>
 
-          {/* Enterprise Data Export */}
-          <div className="flex-shrink-0">
+          {/* Export Controls */}
+          <div className="flex-shrink-0 flex items-center gap-3">
+            <ProfessionalPDFExporter
+              budgetData={budgetData?.rows || []}
+              claimsData={claimsData?.rows || []}
+              dateRange={dateRange}
+            />
             <EnterpriseDataExport 
               data={{
                 budgetData: budgetData?.rows,

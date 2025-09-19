@@ -22,3 +22,6 @@ export { default as DataUploader } from './dashboard/DataUploader';
 
 // Data components
 export { default as VirtualizedFinancialDataTable } from './data/VirtualizedFinancialDataTable';
+
+// Export components
+export { default as ProfessionalPDFExporter } from './exports/ProfessionalPDFExporter';
