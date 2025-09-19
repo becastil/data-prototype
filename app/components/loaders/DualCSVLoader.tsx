@@ -9,7 +9,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const devLog = (...args: any[]) => isDev && console.log(...args);
 const devError = (...args: any[]) => isDev && console.error(...args);
 import type { ParsedCSVData } from './CSVLoader';
-import { ArrowUpTray, CheckCircle, Columns3, FolderUp, Loader2, Table2 } from 'lucide-react';
+import { Upload, CheckCircle, Columns3, FolderUp, Loader2, Table2 } from 'lucide-react';
 import { ModernCard, ModernMetric, ModernUpload } from '@components/index';
 import { cn } from '@/app/lib/utils';
 import { validateBudgetData, validateClaimsData } from '@/app/utils/schemas';
@@ -204,7 +204,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
                 description="Monthly totals and headcounts keep projections honest and benchmarks current."
                 helper="We auto-clean separators, currency symbols, and header labels as the file lands."
                 sampleLink={{ href: '/sample-budget.csv', label: 'Download sample CSV' }}
-                icon={<ArrowUpTray className="h-7 w-7 text-sky-600" aria-hidden />}
+                icon={<Upload className="h-7 w-7 text-sky-600" aria-hidden />}
                 loaderClassName="rounded-3xl border-slate-200/70 hover:border-sky-400/70"
                 cardClassName="space-y-6 bg-white/90 p-8 lg:p-11"
                 onDataLoaded={handleBudgetLoaded}
