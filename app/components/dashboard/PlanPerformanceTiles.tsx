@@ -9,11 +9,13 @@ import { Textarea } from '@/app/components/ui/textarea';
 import { secureHealthcareStorage } from '@/app/lib/SecureHealthcareStorage';
 import PerformanceIndicator from './PerformanceIndicator';
 import { chartPalette, baseAxisStyles, baseChartGrid, baseTooltip } from './chartTheme';
+import HealthcareAnalyticsBoard from './HealthcareAnalyticsBoard';
 
 interface Row extends Record<string, unknown> {}
 
 interface PlanPerformanceTilesProps {
   data: Row[];
+  claims?: Row[];
   commentaryTitle?: string;
 }
 
@@ -166,7 +168,7 @@ function getTimeframeSlice(data: Row[], months: number): Row[] {
   return data.slice(-months);
 }
 
-export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commentary' }: PlanPerformanceTilesProps) {
+export default function PlanPerformanceTiles({ data, claims = [], commentaryTitle = 'Commentary' }: PlanPerformanceTilesProps) {
   const [selectedTimeframe, setSelectedTimeframe] = useState<TimeframeKey>('12M');
   const [viewMode, setViewMode] = useState<ViewKey>('planCost');
   const [commentary, setCommentary] = useState('');
@@ -572,6 +574,8 @@ export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commenta
           ) : null}
         </AnimatePresence>
       </GlassCard>
+
+      <HealthcareAnalyticsBoard budgetRows={current?.rows ?? data} claimsRows={claims} />
     </div>
   );
 }

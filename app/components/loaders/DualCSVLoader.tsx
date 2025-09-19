@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const isDev = process.env.NODE_ENV === 'development';
 const devLog = (...args: any[]) => isDev && console.log(...args);
 const devError = (...args: any[]) => isDev && console.error(...args);
-import type { ParsedCSVData } from './CSVLoader';
+import CSVLoader, { type ParsedCSVData } from './CSVLoader';
 import { CheckCircle, Info, ChevronDown, ChevronUp, Download } from 'lucide-react';
 import { cn } from '@/app/lib/utils';
 import { validateBudgetData, validateClaimsData } from '@/app/utils/schemas';

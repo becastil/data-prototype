@@ -448,6 +448,7 @@ const Home: React.FC = () => {
                     {/* Plan Performance Tiles - Comprehensive Visualizations */}
                     <PlanPerformanceTiles 
                       data={effectiveBudget}
+                      claims={filteredClaims}
                       commentaryTitle="Keenan Reporting Dashboard"
                     />
                   </motion.div>
