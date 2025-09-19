@@ -1,3 +1,4 @@
+import type { SafeParseReturnType } from 'zod';
 import type { BudgetRow, ClaimsRow } from '../domain/types';
 import {
   BUDGET_CANONICAL_FIELDS,
@@ -6,10 +7,7 @@ import {
   CLAIMS_CANONICAL_FIELDS,
   CLAIMS_FIELD_ALIASES,
   CLAIMS_REQUIRED_FIELDS,
-  BooleanResult,
-  IntegerResult,
   MonthResult,
-  NumberResult,
   StringResult,
   budgetRowSchema,
   claimsRowSchema,
@@ -20,6 +18,8 @@ import {
   coerceNumber,
   coerceString,
   normalizeHeader,
+  type BudgetField,
+  type ClaimsField,
 } from '../domain/schema';
 
 export type NormalizationIssueType =
@@ -77,6 +77,60 @@ type CoercionResult = { value: unknown; rawWasPresent: boolean; error?: string }
 
 type CoerceFn<Result extends CoercionResult> = (value: unknown) => Result;
 
+const BUDGET_NUMBER_FIELDS: readonly BudgetField[] = [
+  'budget',
+  'medicalClaims',
+  'pharmacyClaims',
+  'adminFees',
+  'stopLossPremium',
+  'stopLossReimbursements',
+  'rxRebates',
+  'inpatient',
+  'outpatient',
+  'professional',
+  'emergency',
+  'domesticClaims',
+  'nonDomesticClaims',
+  'netPaid',
+  'netCost',
+  'variance',
+  'variancePercent',
+  'lossRatio',
+] as const;
+
+const BUDGET_INTEGER_FIELDS: readonly BudgetField[] = [
+  'employeeCount',
+  'memberCount',
+  'totalEnrollment',
+] as const;
+
+const BUDGET_DATE_FIELDS: readonly BudgetField[] = ['createdAt', 'updatedAt'] as const;
+
+const CLAIMS_STRING_FIELDS: readonly ClaimsField[] = [
+  'claimantNumber',
+  'memberId',
+  'status',
+  'serviceType',
+  'providerId',
+  'diagnosisCode',
+  'diagnosisDescription',
+  'laymanTerm',
+  'planTypeId',
+  'diagnosisCategory',
+  'hccCode',
+] as const;
+
+const CLAIMS_NUMBER_FIELDS: readonly ClaimsField[] = [
+  'medicalAmount',
+  'pharmacyAmount',
+  'totalAmount',
+  'riskScore',
+] as const;
+
+const CLAIMS_BOOLEAN_FIELDS: readonly ClaimsField[] = ['domesticFlag'] as const;
+
+const CLAIMS_DATE_FIELDS: readonly ClaimsField[] = ['paidDate', 'createdAt', 'updatedAt'] as const;
+
 function buildAliasLookup<Field extends string>(
   aliasMap: Record<Field, readonly string[]>
 ): Map<string, AliasMatch<Field>> {
@@ -120,11 +174,14 @@ function buildHeaderLookup<Field extends string>(
       const conflictList = conflicts.get(match.canonical) ?? [];
       conflictList.push(header);
       conflicts.set(match.canonical, conflictList);
+      const message = `Column '${header}' also matches canonical field '${String(
+        match.canonical,
+      )}' (already mapped to '${existing.header}')`;
       issues.push({
         type: 'duplicate_header',
         severity: 'warning',
         column: header,
-        message: `Column '${header}' also matches canonical field '${String(match.canonical)}' (already mapped to '${existing.header}')`,
+        message,
       });
     }
   }
@@ -189,6 +246,45 @@ function ensureRequiredFields<Field extends string>(
   }
 }
 
+function coerceFields<Field extends string, Result extends CoercionResult>(
+  fields: readonly Field[],
+  row: Record<string, unknown>,
+  mapping: LookupMap<Field>,
+  issues: NormalizationIssue[],
+  rowIndex: number,
+  coerce: CoerceFn<Result>,
+  issueType: NormalizationIssueType,
+  severity: NormalizationSeverity = 'warning',
+): Record<Field, Result> {
+  const results = {} as Record<Field, Result>;
+  for (const field of fields) {
+    results[field] = coerceField(field, row, mapping, issues, rowIndex, coerce, issueType, severity);
+  }
+  return results;
+}
+
+function collectSchemaIssues<RowType>(
+  parsed: SafeParseReturnType<RowType, RowType>,
+  issues: NormalizationIssue[],
+  rowIndex: number,
+): RowType | null {
+  if (parsed.success) {
+    return parsed.data;
+  }
+
+  for (const issue of parsed.error.issues) {
+    issues.push({
+      type: 'schema_validation_failed',
+      severity: 'error',
+      column: issue.path.map(String).join('.'),
+      rowIndex,
+      message: issue.message,
+    });
+  }
+
+  return null;
+}
+
 export function normalizeBudgetCSV(dataset: CsvDataset): NormalizationResult<BudgetRow, typeof BUDGET_CANONICAL_FIELDS[number]> {
   const issues: NormalizationIssue[] = [];
   const { lookup, fieldMappings, unmappedHeaders } = buildHeaderLookup(
@@ -202,81 +298,61 @@ export function normalizeBudgetCSV(dataset: CsvDataset): NormalizationResult<Bud
 
   const rows: BudgetRow[] = [];
 
-  dataset.rows.forEach((row, rowIndex) => {
-    const monthResult: MonthResult = coerceField('month', row, lookup, issues, rowIndex, coerceMonth, 'invalid_date', 'error');
+  for (const [rowIndex, row] of dataset.rows.entries()) {
+    const monthResult: MonthResult = coerceField(
+      'month',
+      row,
+      lookup,
+      issues,
+      rowIndex,
+      coerceMonth,
+      'invalid_date',
+      'error',
+    );
 
     if (!monthResult.value) {
       // Without a month we cannot safely keep the row.
-      return;
+      continue;
     }
 
-    const budget: NumberResult = coerceField('budget', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const medical: NumberResult = coerceField('medicalClaims', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const pharmacy: NumberResult = coerceField('pharmacyClaims', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const admin: NumberResult = coerceField('adminFees', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const stopLossPremium: NumberResult = coerceField('stopLossPremium', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const stopLossReimb: NumberResult = coerceField('stopLossReimbursements', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const rebates: NumberResult = coerceField('rxRebates', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const inpatient: NumberResult = coerceField('inpatient', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const outpatient: NumberResult = coerceField('outpatient', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const professional: NumberResult = coerceField('professional', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const emergency: NumberResult = coerceField('emergency', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const domestic: NumberResult = coerceField('domesticClaims', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const nonDomestic: NumberResult = coerceField('nonDomesticClaims', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const netPaid: NumberResult = coerceField('netPaid', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const netCost: NumberResult = coerceField('netCost', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const variance: NumberResult = coerceField('variance', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const variancePercent: NumberResult = coerceField('variancePercent', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const lossRatio: NumberResult = coerceField('lossRatio', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const employees: IntegerResult = coerceField('employeeCount', row, lookup, issues, rowIndex, coerceInteger, 'invalid_number');
-    const members: IntegerResult = coerceField('memberCount', row, lookup, issues, rowIndex, coerceInteger, 'invalid_number');
-    const enrollment: IntegerResult = coerceField('totalEnrollment', row, lookup, issues, rowIndex, coerceInteger, 'invalid_number');
-    const createdAt = coerceField('createdAt', row, lookup, issues, rowIndex, coerceDate, 'invalid_date');
-    const updatedAt = coerceField('updatedAt', row, lookup, issues, rowIndex, coerceDate, 'invalid_date');
+    const numberResults = coerceFields(BUDGET_NUMBER_FIELDS, row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
+    const integerResults = coerceFields(BUDGET_INTEGER_FIELDS, row, lookup, issues, rowIndex, coerceInteger, 'invalid_number');
+    const dateResults = coerceFields(BUDGET_DATE_FIELDS, row, lookup, issues, rowIndex, coerceDate, 'invalid_date');
 
     const candidate: BudgetRow = {
       month: monthResult.value,
       sourceMonthLabel: monthResult.label,
-      budget: budget.value as number | null,
-      medicalClaims: medical.value as number | null,
-      pharmacyClaims: pharmacy.value as number | null,
-      adminFees: admin.value as number | null,
-      stopLossPremium: stopLossPremium.value as number | null,
-      stopLossReimbursements: stopLossReimb.value as number | null,
-      rxRebates: rebates.value as number | null,
-      inpatient: inpatient.value as number | null,
-      outpatient: outpatient.value as number | null,
-      professional: professional.value as number | null,
-      emergency: emergency.value as number | null,
-      domesticClaims: domestic.value as number | null,
-      nonDomesticClaims: nonDomestic.value as number | null,
-      netPaid: netPaid.value as number | null,
-      netCost: netCost.value as number | null,
-      variance: variance.value as number | null,
-      variancePercent: variancePercent.value as number | null,
-      lossRatio: lossRatio.value as number | null,
-      employeeCount: employees.value !== null ? Number(employees.value) : null,
-      memberCount: members.value !== null ? Number(members.value) : null,
-      totalEnrollment: enrollment.value !== null ? Number(enrollment.value) : null,
-      createdAt: createdAt.value as string | null,
-      updatedAt: updatedAt.value as string | null,
+      budget: numberResults.budget.value,
+      medicalClaims: numberResults.medicalClaims.value,
+      pharmacyClaims: numberResults.pharmacyClaims.value,
+      adminFees: numberResults.adminFees.value,
+      stopLossPremium: numberResults.stopLossPremium.value,
+      stopLossReimbursements: numberResults.stopLossReimbursements.value,
+      rxRebates: numberResults.rxRebates.value,
+      inpatient: numberResults.inpatient.value,
+      outpatient: numberResults.outpatient.value,
+      professional: numberResults.professional.value,
+      emergency: numberResults.emergency.value,
+      domesticClaims: numberResults.domesticClaims.value,
+      nonDomesticClaims: numberResults.nonDomesticClaims.value,
+      netPaid: numberResults.netPaid.value,
+      netCost: numberResults.netCost.value,
+      variance: numberResults.variance.value,
+      variancePercent: numberResults.variancePercent.value,
+      lossRatio: numberResults.lossRatio.value,
+      employeeCount: integerResults.employeeCount.value,
+      memberCount: integerResults.memberCount.value,
+      totalEnrollment: integerResults.totalEnrollment.value,
+      createdAt: dateResults.createdAt.value,
+      updatedAt: dateResults.updatedAt.value,
     };
 
     const parsed = budgetRowSchema.safeParse(candidate);
-    if (parsed.success) {
-      rows.push(parsed.data);
-    } else {
-      for (const issue of parsed.error.issues) {
-        issues.push({
-          type: 'schema_validation_failed',
-          severity: 'error',
-          column: issue.path.map(String).join('.'),
-          rowIndex,
-          message: issue.message,
-        });
-      }
+    const validRow = collectSchemaIssues(parsed, issues, rowIndex);
+    if (validRow) {
+      rows.push(validRow);
     }
-  });
+  }
 
   return { rows, fieldMappings, unmappedHeaders, issues };
 }
@@ -294,77 +370,62 @@ export function normalizeClaimsCSV(dataset: CsvDataset): NormalizationResult<Cla
 
   const rows: ClaimsRow[] = [];
 
-  dataset.rows.forEach((row, rowIndex) => {
-    const idResult: StringResult = coerceField('claimId', row, lookup, issues, rowIndex, coerceString, 'invalid_string', 'error');
+  for (const [rowIndex, row] of dataset.rows.entries()) {
+    const idResult: StringResult = coerceField(
+      'claimId',
+      row,
+      lookup,
+      issues,
+      rowIndex,
+      coerceString,
+      'invalid_string',
+      'error',
+    );
     const serviceDate = coerceField('serviceDate', row, lookup, issues, rowIndex, coerceDate, 'invalid_date', 'error');
 
     if (!idResult.value || !serviceDate.value) {
       // Skip entries that cannot provide primary identifiers.
-      return;
+      continue;
     }
 
-    const paidDate = coerceField('paidDate', row, lookup, issues, rowIndex, coerceDate, 'invalid_date');
-    const status = coerceField('status', row, lookup, issues, rowIndex, coerceString, 'invalid_string');
-    const serviceType = coerceField('serviceType', row, lookup, issues, rowIndex, coerceString, 'invalid_string');
-    const provider = coerceField('providerId', row, lookup, issues, rowIndex, coerceString, 'invalid_string');
-    const diagnosisCode = coerceField('diagnosisCode', row, lookup, issues, rowIndex, coerceString, 'invalid_string');
-    const diagnosisDescription = coerceField('diagnosisDescription', row, lookup, issues, rowIndex, coerceString, 'invalid_string');
-    const layman = coerceField('laymanTerm', row, lookup, issues, rowIndex, coerceString, 'invalid_string');
-    const medical: NumberResult = coerceField('medicalAmount', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const pharmacy: NumberResult = coerceField('pharmacyAmount', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const total: NumberResult = coerceField('totalAmount', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const domestic: BooleanResult = coerceField('domesticFlag', row, lookup, issues, rowIndex, coerceBoolean, 'invalid_boolean');
-    const planType = coerceField('planTypeId', row, lookup, issues, rowIndex, coerceString, 'invalid_string');
-    const diagnosisCategory = coerceField('diagnosisCategory', row, lookup, issues, rowIndex, coerceString, 'invalid_string');
-    const hccCode = coerceField('hccCode', row, lookup, issues, rowIndex, coerceString, 'invalid_string');
-    const riskScore: NumberResult = coerceField('riskScore', row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
-    const claimant = coerceField('claimantNumber', row, lookup, issues, rowIndex, coerceString, 'invalid_string');
-    const memberId = coerceField('memberId', row, lookup, issues, rowIndex, coerceString, 'invalid_string');
-    const createdAt = coerceField('createdAt', row, lookup, issues, rowIndex, coerceDate, 'invalid_date');
-    const updatedAt = coerceField('updatedAt', row, lookup, issues, rowIndex, coerceDate, 'invalid_date');
+    const stringResults = coerceFields(CLAIMS_STRING_FIELDS, row, lookup, issues, rowIndex, coerceString, 'invalid_string');
+    const numberResults = coerceFields(CLAIMS_NUMBER_FIELDS, row, lookup, issues, rowIndex, coerceNumber, 'invalid_number');
+    const booleanResults = coerceFields(CLAIMS_BOOLEAN_FIELDS, row, lookup, issues, rowIndex, coerceBoolean, 'invalid_boolean');
+    const dateResults = coerceFields(CLAIMS_DATE_FIELDS, row, lookup, issues, rowIndex, coerceDate, 'invalid_date');
 
-    const serviceMonth = (serviceDate.value as string).slice(0, 7);
+    const serviceMonth = serviceDate.value.slice(0, 7);
 
     const candidate: ClaimsRow = {
       claimId: idResult.value,
-      claimantNumber: claimant.value,
-      memberId: memberId.value,
-      serviceDate: serviceDate.value as string,
+      claimantNumber: stringResults.claimantNumber.value,
+      memberId: stringResults.memberId.value,
+      serviceDate: serviceDate.value,
       serviceMonth,
-      paidDate: paidDate.value as string | null,
-      status: status.value,
-      serviceType: serviceType.value,
-      providerId: provider.value,
-      diagnosisCode: diagnosisCode.value,
-      diagnosisDescription: diagnosisDescription.value,
-      laymanTerm: layman.value,
-      medicalAmount: medical.value as number | null,
-      pharmacyAmount: pharmacy.value as number | null,
-      totalAmount: total.value as number | null,
-      domesticFlag: domestic.value,
-      planTypeId: planType.value,
-      diagnosisCategory: diagnosisCategory.value,
-      hccCode: hccCode.value,
-      riskScore: riskScore.value as number | null,
-      createdAt: createdAt.value as string | null,
-      updatedAt: updatedAt.value as string | null,
+      paidDate: dateResults.paidDate.value,
+      status: stringResults.status.value,
+      serviceType: stringResults.serviceType.value,
+      providerId: stringResults.providerId.value,
+      diagnosisCode: stringResults.diagnosisCode.value,
+      diagnosisDescription: stringResults.diagnosisDescription.value,
+      laymanTerm: stringResults.laymanTerm.value,
+      medicalAmount: numberResults.medicalAmount.value,
+      pharmacyAmount: numberResults.pharmacyAmount.value,
+      totalAmount: numberResults.totalAmount.value,
+      domesticFlag: booleanResults.domesticFlag.value,
+      planTypeId: stringResults.planTypeId.value,
+      diagnosisCategory: stringResults.diagnosisCategory.value,
+      hccCode: stringResults.hccCode.value,
+      riskScore: numberResults.riskScore.value,
+      createdAt: dateResults.createdAt.value,
+      updatedAt: dateResults.updatedAt.value,
     };
 
     const parsed = claimsRowSchema.safeParse(candidate);
-    if (parsed.success) {
-      rows.push(parsed.data);
-    } else {
-      for (const issue of parsed.error.issues) {
-        issues.push({
-          type: 'schema_validation_failed',
-          severity: 'error',
-          column: issue.path.map(String).join('.'),
-          rowIndex,
-          message: issue.message,
-        });
-      }
+    const validRow = collectSchemaIssues(parsed, issues, rowIndex);
+    if (validRow) {
+      rows.push(validRow);
     }
-  });
+  }
 
   return { rows, fieldMappings, unmappedHeaders, issues };
 }
