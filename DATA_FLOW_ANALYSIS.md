@@ -31,12 +31,12 @@ const [debugMode, setDebugMode] = useState(false);
 
 ### 1. Data Ingestion Flow
 ```
-DualCSVLoader → handleBothFilesLoaded() → Validation → State Update → Secure Storage
+DualCSVLoader → handleBothFilesLoaded() → Validation → State Update → Secure Token Issuance
 ```
 
 **Key Functions:**
 - `handleBothFilesLoaded(budget, claims)` - Main data processor
-- `secureHealthcareStorage.storeTemporary()` - HIPAA-compliant storage
+- `persistSecureRecord('dashboardData', payload)` - Server-issued encrypted record + token
 - Data validation and error handling with timeouts
 
 ### 2. Data Transformation Pipeline  

@@ -167,31 +167,23 @@ const nextConfig = {
 **Critical**: Never store PHI in localStorage. It's vulnerable to XSS attacks and persists in plain text. Instead, implement this secure pattern:
 
 ```javascript
-// Secure client-side data handling
-class SecureHealthcareStorage {
-  constructor() {
-    this.memoryCache = new Map();
-  }
-  
-  async storeTemporary(key, data) {
-    // Only store non-PHI identifiers
-    const sessionToken = await generateSecureToken();
-    this.memoryCache.set(sessionToken, data);
-    
-    // Store only the token reference in localStorage
-    localStorage.setItem(key, sessionToken);
-    
-    // Auto-expire after session
-    setTimeout(() => {
-      this.memoryCache.delete(sessionToken);
-      localStorage.removeItem(key);
-    }, 3600000); // 1 hour
-  }
-  
-  async retrieve(key) {
-    const token = localStorage.getItem(key);
-    return this.memoryCache.get(token);
-  }
+// Secure PHI persistence pattern (server-issued tokens)
+const response = await fetch('/api/secure-records', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ category: 'claims', payload: data }),
+});
+
+const { token, expiresAt, sanitized } = await response.json();
+sessionStorage.setItem('claims-token', JSON.stringify({ token, expiresAt }));
+
+// Later, hydrate sanitized data only
+const stored = sessionStorage.getItem('claims-token');
+if (stored) {
+  const { token } = JSON.parse(stored);
+  const res = await fetch(`/api/secure-records/${token}`);
+  const { sanitized } = await res.json();
+  hydrateDashboard(sanitized);
 }
 ```
 
