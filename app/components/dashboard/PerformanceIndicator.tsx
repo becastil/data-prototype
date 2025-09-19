@@ -1,180 +1,194 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Gauge, TrafficCone as Traffic, ChevronRight } from 'lucide-react';
-import GaugeWidget from './GaugeWidget';
-import StoplightWidget from './StoplightWidget';
+import React, { useMemo } from 'react';
+import ReactECharts from 'echarts-for-react';
+import { motion } from 'framer-motion';
+import { ChartNoAxesCombined } from 'lucide-react';
 import { GlassCard } from '@/app/components/ui/glass-card';
-import './widget-animations.css';
+import { chartPalette, gaugeRanges } from './chartTheme';
+
+type TimeframeOption = {
+  key: string;
+  label: string;
+  value: number;
+};
 
 interface PerformanceIndicatorProps {
-  value: number; // Percentage value (0-140)
   title?: string;
-  defaultWidget?: 'gauge' | 'stoplight';
-  showLegend?: boolean;
-  onWidgetChange?: (widget: 'gauge' | 'stoplight') => void;
+  timeframes: TimeframeOption[];
+  selectedTimeframe: string;
+  onTimeframeChange: (key: string) => void;
+  ranges?: typeof gaugeRanges;
 }
 
-export default function PerformanceIndicator({
-  value,
-  title = 'Plan Performance',
-  defaultWidget = 'gauge',
-  showLegend = true,
-  onWidgetChange
-}: PerformanceIndicatorProps) {
-  const [selectedWidget, setSelectedWidget] = useState<'gauge' | 'stoplight'>(defaultWidget);
-  const [isAnimating, setIsAnimating] = useState(false);
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
-  // Load preference from localStorage
-  useEffect(() => {
-    const savedPreference = localStorage.getItem('performance-widget-preference');
-    if (savedPreference === 'gauge' || savedPreference === 'stoplight') {
-      setSelectedWidget(savedPreference);
-    }
+export default function PerformanceIndicator({
+  title = 'Plan Performance',
+  timeframes,
+  selectedTimeframe,
+  onTimeframeChange,
+  ranges = gaugeRanges
+}: PerformanceIndicatorProps) {
+  const current = useMemo(() => {
+    const fallback = timeframes[0];
+    const active = timeframes.find(option => option.key === selectedTimeframe);
+    return active ?? fallback;
+  }, [selectedTimeframe, timeframes]);
+
+  const maxRange = ranges[ranges.length - 1]?.max ?? 130;
+  const minRange = ranges[0]?.min ?? 0;
+  const value = clamp(current.value, minRange, maxRange);
+
+  const axisLineColors = ranges.reduce<Array<[number, string]>>((acc, range, index) => {
+    const prevMax = index === 0 ? minRange : ranges[index - 1].max;
+    const segmentMax = range.max;
+    const end = segmentMax / maxRange;
+    acc.push([end, range.color]);
+    return acc;
   }, []);
 
-  // Save preference to localStorage
-  useEffect(() => {
-    localStorage.setItem('performance-widget-preference', selectedWidget);
-    onWidgetChange?.(selectedWidget);
-  }, [selectedWidget, onWidgetChange]);
+  const tickLabels = ranges.map((range, index) => {
+    const start = index === 0 ? minRange : ranges[index - 1].max;
+    const end = range.max;
+    const midPoint = (start + end) / 2;
+    return {
+      value: midPoint,
+      label: range.label
+    };
+  });
 
-  const handleWidgetChange = (widget: 'gauge' | 'stoplight') => {
-    if (widget === selectedWidget) return;
-    
-    setIsAnimating(true);
-    setTimeout(() => {
-      setSelectedWidget(widget);
-      setIsAnimating(false);
-    }, 150);
-  };
-
-  const widgets = [
-    {
-      id: 'gauge' as const,
-      label: 'Gauge',
-      icon: Gauge,
-      description: 'Segmented arc visualization'
+  const option = useMemo(() => ({
+    tooltip: {
+      show: true,
+      trigger: 'item',
+      formatter: () => `${current.value.toFixed(1)}% of budget`,
+      backgroundColor: chartPalette.tooltipBg,
+      borderWidth: 0,
+      textStyle: {
+        color: chartPalette.tooltipText,
+        fontSize: 12,
+        fontFamily: 'Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif'
+      },
+      padding: [8, 12]
     },
-    {
-      id: 'stoplight' as const,
-      label: 'Stoplight',
-      icon: Traffic,
-      description: 'Traffic light status indicator'
-    }
-  ];
+    series: [
+      {
+        type: 'gauge',
+        startAngle: 220,
+        endAngle: -40,
+        min: minRange,
+        max: maxRange,
+        splitNumber: ranges.length * 4,
+        progress: {
+          show: true,
+          width: 14,
+          itemStyle: {
+            color: chartPalette.accent,
+            shadowBlur: 0
+          }
+        },
+        axisLine: {
+          roundCap: true,
+          lineStyle: {
+            width: 14,
+            color: axisLineColors,
+            cap: 'round'
+          }
+        },
+        axisTick: {
+          show: false
+        },
+        splitLine: {
+          length: 10,
+          lineStyle: {
+            color: 'rgba(17,24,39,0.1)',
+            width: 2
+          }
+        },
+        axisLabel: {
+          distance: 24,
+          color: chartPalette.foregroundMuted,
+          fontSize: 10,
+          fontFamily: 'Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
+          formatter: (val: number) => {
+            const label = tickLabels.find(tick => Math.abs(tick.value - val) < 1);
+            return label ? label.label : '';
+          }
+        },
+        pointer: {
+          show: false
+        },
+        anchor: {
+          show: false
+        },
+        detail: {
+          valueAnimation: true,
+          offsetCenter: [0, '0%'],
+          formatter: (val: number) => `${val.toFixed(1)}%`,
+          fontSize: 32,
+          fontWeight: 600,
+          color: chartPalette.foreground
+        },
+        title: {
+          offsetCenter: [0, '58%'],
+          fontSize: 12,
+          color: chartPalette.foregroundMuted,
+          fontFamily: 'Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif'
+        },
+        data: [
+          {
+            value,
+            name: 'of budget'
+          }
+        ]
+      }
+    ]
+  }), [axisLineColors, current.value, maxRange, minRange, ranges.length, tickLabels, value]);
 
   return (
-    <GlassCard variant="elevated" className="p-4">
-      {/* Header with Widget Selector */}
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-base font-semibold text-[var(--foreground)]">
-          {title}
-        </h3>
-        
-        {/* Widget Selector Pills */}
-        <div className="flex items-center gap-1 bg-[var(--surface)] border border-[var(--surface-border)] p-1 rounded-xl">
-          {widgets.map((widget) => {
-            const Icon = widget.icon;
-            const isSelected = selectedWidget === widget.id;
-            
-            return (
-              <motion.button
-                key={widget.id}
-                onClick={() => handleWidgetChange(widget.id)}
-                className={`
-                  relative flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide uppercase
-                  transition-all duration-200
-                  ${isSelected 
-                    ? 'bg-[var(--accent-soft)] text-[var(--accent)] shadow-[var(--card-hover-shadow)]' 
-                    : 'text-[var(--foreground-muted)] hover:text-[var(--accent)]'
-                  }
-                `}
-                whileHover={{ scale: isSelected ? 1 : 1.04 }}
-                whileTap={{ scale: 0.95 }}
-                title={widget.description}
-              >
-                <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{widget.label}</span>
-                
-                {/* Selection Indicator */}
-                {isSelected && (
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-[var(--accent-soft)] to-[var(--surface-muted)] rounded-lg"
-                    layoutId="widget-selector"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-              </motion.button>
-            );
-          })}
+    <GlassCard variant="elevated" className="flex flex-col gap-4 p-5">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
+          <ChartNoAxesCombined className="h-4 w-4 text-[var(--accent)]" aria-hidden />
+          <span>{title}</span>
         </div>
-      </div>
-      
-      {/* Widget Display Area */}
-      <div className="relative min-h-[320px]">
-        <AnimatePresence mode="wait">
-          {!isAnimating && (
-            <motion.div
-              key={selectedWidget}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
-              className="w-full"
-            >
-              {selectedWidget === 'gauge' ? (
-                <GaugeWidget 
-                  value={value} 
-                  title={title}
-                  showLegend={showLegend}
-                />
-              ) : (
-                <StoplightWidget 
-                  value={value} 
-                  title=""
-                  showLabels={showLegend}
-                />
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-        
-        {/* Loading State */}
-        {isAnimating && (
-          <motion.div
-            className="absolute inset-0 flex items-center justify-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <div className="w-8 h-8 border-3 border-[var(--surface-border)] border-t-[var(--accent)] rounded-full animate-spin" />
-          </motion.div>
-        )}
-      </div>
-      
-      {/* Widget Description */}
-      <div className="mt-3 pt-3 border-t border-[var(--surface-border)]">
-        <div className="flex items-center justify-between text-xs text-[var(--foreground-subtle)]">
-          <div className="flex items-center gap-1">
-            <span>Currently viewing:</span>
-            <span className="font-medium text-[var(--foreground)]">
-              {widgets.find(w => w.id === selectedWidget)?.label}
-            </span>
+        {timeframes.length > 1 ? (
+          <div className="flex items-center gap-1 rounded-full border border-[var(--surface-border)] bg-[var(--surface)] px-2 py-1 text-xs font-medium text-[var(--foreground-muted)]">
+            {timeframes.map(option => {
+              const active = option.key === current.key;
+              return (
+                <motion.button
+                  key={option.key}
+                  type="button"
+                  onClick={() => onTimeframeChange(option.key)}
+                  className={`relative rounded-full px-2.5 py-1 transition-colors ${active ? 'text-[var(--accent)]' : ''}`}
+                  whileHover={{ scale: active ? 1 : 1.05 }}
+                  whileTap={{ scale: 0.94 }}
+                  aria-pressed={active}
+                >
+                  {active && (
+                    <motion.span
+                      layoutId="performance-timeframe"
+                      className="absolute inset-0 rounded-full bg-[var(--accent-soft)]"
+                      transition={{ type: 'spring', stiffness: 360, damping: 30 }}
+                      aria-hidden
+                    />
+                  )}
+                  <span className="relative z-10">{option.label}</span>
+                </motion.button>
+              );
+            })}
           </div>
-          
-          {/* Quick Switch Hint */}
-          <motion.button
-            onClick={() => handleWidgetChange(selectedWidget === 'gauge' ? 'stoplight' : 'gauge')}
-            className="flex items-center gap-1 text-[var(--accent)] hover:text-[var(--accent-hover)]"
-            whileHover={{ x: 2 }}
-          >
-            <span>Try {selectedWidget === 'gauge' ? 'Stoplight' : 'Gauge'}</span>
-            <ChevronRight className="w-3 h-3" />
-          </motion.button>
-        </div>
+        ) : null}
       </div>
+
+      <ReactECharts
+        option={option}
+        style={{ width: '100%', height: 260 }}
+        notMerge
+        lazyUpdate
+      />
     </GlassCard>
   );
 }

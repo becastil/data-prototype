@@ -3,9 +3,10 @@
 
 import React, { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { Upload, FileSpreadsheet, AlertCircle, CheckCircle, XCircle, Loader2, FileUp } from 'lucide-react';
+import { FileSpreadsheet, AlertCircle, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { useCsvUpload } from '@/app/hooks/useCsvUpload';
 import { ModernButton, ModernTable } from '@components/index';
+import { cn } from '@/app/lib/utils';
 
 export interface ParsedCSVData {
   headers: string[];
@@ -30,40 +31,30 @@ type DragState = 'idle' | 'hover' | 'active';
 
 const dropZoneVariants: Variants = {
   idle: {
-    scale: 1,
-    borderColor: 'rgba(203, 213, 225, 0.9)',
-    boxShadow: '0 24px 60px -32px rgba(15, 23, 42, 0.45)'
+    scale: 1
   },
   hover: {
-    scale: 1.015,
-    borderColor: 'rgba(96, 165, 250, 0.85)',
-    boxShadow: '0 28px 70px -28px rgba(30, 64, 175, 0.45)',
+    scale: 1.01,
     transition: {
       duration: 0.2,
-      ease: 'easeInOut'
+      ease: 'easeOut'
     }
   },
   active: {
     scale: 0.99,
-    borderColor: 'rgba(59, 130, 246, 0.9)',
-    boxShadow: '0 20px 45px -26px rgba(30, 64, 175, 0.55)',
     transition: {
       duration: 0.12
     }
   },
   success: {
-    scale: 1,
-    borderColor: 'rgba(16, 185, 129, 0.9)',
-    boxShadow: '0 30px 75px -26px rgba(16, 185, 129, 0.35)'
+    scale: 1
   },
   error: {
     scale: 1,
-    borderColor: 'rgba(239, 68, 68, 0.9)',
-    boxShadow: '0 26px 70px -28px rgba(239, 68, 68, 0.4)',
-    x: [0, -5, 5, -5, 5, 0],
+    x: [0, -4, 4, -3, 3, 0],
     transition: {
       x: {
-        duration: 0.45,
+        duration: 0.4,
         ease: 'easeInOut'
       }
     }
@@ -233,31 +224,33 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
   const getIcon = () => {
     switch (loadingState) {
       case 'loading':
-        return <Loader2 className="w-12 h-12 text-sky-500" />;
+        return <Loader2 className="h-12 w-12 text-[var(--accent)]" />;
       case 'success':
-        return <CheckCircle className="w-12 h-12 text-emerald-500" />;
+        return <CheckCircle className="h-12 w-12 text-emerald-500" />;
       case 'error':
-        return <XCircle className="w-12 h-12 text-rose-500" />;
+        return <XCircle className="h-12 w-12 text-rose-500" />;
       default:
-        return <FileSpreadsheet className="w-12 h-12 text-slate-400" />;
+        return <FileSpreadsheet className="h-12 w-12 text-[var(--foreground-subtle)]" />;
     }
   };
 
-  const dropZoneTone = React.useMemo(() => {
+  const accentActive = dragState === 'active' || dragState === 'hover';
+
+  const dropZoneClasses = React.useMemo(() => {
     if (loadingState === 'error') {
-      return 'from-rose-50 via-white to-white';
+      return 'bg-rose-50 text-rose-700 ring-1 ring-rose-200';
     }
     if (loadingState === 'success') {
-      return 'from-emerald-50 via-white to-white';
+      return 'bg-emerald-50 text-emerald-900 ring-1 ring-emerald-200';
     }
-    if (dragState === 'active' || dragState === 'hover') {
-      return 'from-sky-50 via-white to-white';
+    if (accentActive) {
+      return 'bg-[var(--accent)] text-[var(--button-primary-text)] shadow-[0_32px_72px_-40px_rgba(37,99,235,0.55)] ring-2 ring-[var(--accent)]/40';
     }
-    return 'from-white via-slate-50 to-slate-100';
-  }, [dragState, loadingState]);
+    return 'bg-white text-[var(--foreground)] shadow-[0_30px_80px_-52px_rgba(15,23,42,0.45)] ring-1 ring-[var(--surface-border)]/70';
+  }, [accentActive, loadingState]);
 
   return (
-    <div className={`w-full max-w-3xl mx-auto p-0 space-y-6 ${className}`}>
+    <div className={cn('w-full max-w-3xl mx-auto p-0 space-y-8', className)}>
       <motion.div
         className="relative"
         initial="idle"
@@ -274,7 +267,11 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
         />
         
         <motion.div
-          className={`border-2 border-dashed rounded-3xl p-12 text-center cursor-pointer transition-all bg-gradient-to-br ${dropZoneTone} shadow-[0_26px_80px_-30px_rgba(15,23,42,0.45)] ring-1 ring-white/40`}
+          className={cn(
+            'rounded-3xl p-16 text-center cursor-pointer transition-all duration-200 border border-transparent focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--accent-soft)]',
+            dropZoneClasses,
+            !accentActive && loadingState === 'idle' && 'hover:shadow-[0_36px_88px_-52px_rgba(15,23,42,0.52)]'
+          )}
           onDrop={handleDrop}
           onDragEnter={handleDragEnter}
           onDragOver={handleDragOver}
@@ -293,19 +290,26 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
             {getIcon()}
             
             <div className="space-y-3">
-              <p className="text-xl font-semibold text-slate-800">
+              <p className="text-xl font-semibold tracking-tight">
                 {loadingState === 'loading' && 'Processing CSV...'}
                 {loadingState === 'success' && 'File ready to analyze'}
                 {loadingState === 'error' && 'Upload error'}
-                {loadingState === 'idle' && 'Drop CSV or click to upload'}
+                {loadingState === 'idle' && 'Drag & drop your CSV here'}
               </p>
-              <div className="text-sm text-slate-500 flex flex-wrap items-center justify-center gap-2">
-                <span className="inline-flex items-center gap-2 rounded-full border border-sky-200/80 bg-white/70 px-3 py-1 text-sky-700 backdrop-blur">
-                  <FileUp className="w-4 h-4" /> .csv only
-                </span>
-                <span className="opacity-50">•</span>
-                <span className="font-medium text-slate-600">Max {Math.round(maxFileSize / 1024 / 1024)} MB</span>
-              </div>
+              <p
+                className={cn(
+                  'text-sm font-medium',
+                  loadingState === 'error'
+                    ? 'text-rose-600'
+                    : loadingState === 'success'
+                      ? 'text-emerald-700'
+                      : accentActive
+                        ? 'text-white/80'
+                        : 'text-[var(--foreground-muted)]'
+                )}
+              >
+                CSV only • Max {Math.round(maxFileSize / 1024 / 1024)} MB
+              </p>
             </div>
 
             {loadingState === 'loading' && (
@@ -327,11 +331,15 @@ const CSVLoader: React.FC<CSVLoaderProps> = ({
             {loadingState !== 'loading' && (
               <div className="pt-2">
                 <ModernButton
-                  variant="secondary"
+                  variant="primary"
                   size="md"
                   type="button"
                   onClick={handleClick}
-                  className="rounded-full border border-[var(--surface-border)] bg-white/80 text-[var(--foreground)] shadow-subtle hover:bg-slate-50"
+                  className={cn(
+                    'rounded-full px-6 shadow-none',
+                    accentActive && 'bg-white text-[var(--accent)] hover:bg-white/90',
+                    loadingState === 'success' && 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                  )}
                 >
                   Browse files
                 </ModernButton>

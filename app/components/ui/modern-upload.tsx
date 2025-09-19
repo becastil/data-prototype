@@ -34,9 +34,9 @@ const ModernUpload: React.FC<ModernUploadProps> = ({
   <ModernCard
     tone={tone}
     padding="lg"
-    hoverable
+    hoverable={false}
     className={cn(
-      'flex flex-col gap-8 overflow-hidden bg-gradient-to-br from-white/95 via-white to-slate-50/60',
+      'flex flex-col gap-10 overflow-hidden rounded-[32px] border-0 bg-white/95 shadow-[0_32px_88px_-48px_rgba(15,23,42,0.55)] backdrop-blur',
       cardClassName,
     )}
   >
@@ -62,7 +62,7 @@ const ModernUpload: React.FC<ModernUploadProps> = ({
     <CSVLoader
       {...loaderProps}
       className={cn(
-        'rounded-3xl border border-dashed border-[var(--surface-border)] bg-transparent p-0 shadow-none transition-all duration-300 hover:border-[var(--accent)]',
+        'rounded-3xl bg-white/95 p-0 shadow-none ring-1 ring-slate-100/70 transition-all duration-300 hover:ring-[var(--accent)]/50 hover:shadow-[0_24px_56px_-32px_rgba(15,23,42,0.45)]',
         loaderClassName,
       )}
     />

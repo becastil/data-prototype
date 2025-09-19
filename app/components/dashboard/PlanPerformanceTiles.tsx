@@ -1,333 +1,576 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import * as echarts from 'echarts';
+import React, { useEffect, useMemo, useState } from 'react';
+import ReactECharts from 'echarts-for-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Clipboard, ChevronDown, ChevronUp, Filter } from 'lucide-react';
 import { GlassCard } from '@/app/components/ui/glass-card';
 import { Textarea } from '@/app/components/ui/textarea';
 import { secureHealthcareStorage } from '@/app/lib/SecureHealthcareStorage';
 import PerformanceIndicator from './PerformanceIndicator';
+import { chartPalette, baseAxisStyles, baseChartGrid, baseTooltip } from './chartTheme';
 
-type Row = Record<string, any>;
+interface Row extends Record<string, unknown> {}
 
-function num(val: unknown): number {
-  if (typeof val === 'number') return isFinite(val) ? val : 0;
-  if (val == null) return 0;
-  const n = parseFloat(String(val).replace(/[$,\s]/g, ''));
-  return isFinite(n) ? n : 0;
-}
-
-function fmtCurrency(n: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
-function fmtNumber(n: number) {
-  return new Intl.NumberFormat('en-US').format(n);
-}
-
-export interface PlanPerformanceTilesProps {
-  data: Row[]; // budget rows with fields (Budget, Medical Claims, Pharmacy Claims, Admin Fees, Stop Loss Premium, Stop Loss Reimbursements, Rx Rebates)
+interface PlanPerformanceTilesProps {
+  data: Row[];
   commentaryTitle?: string;
 }
 
+interface Metrics {
+  budget: number;
+  medical: number;
+  pharmacy: number;
+  admin: number;
+  stopLossFees: number;
+  reimburse: number;
+  rebates: number;
+  netPaidClaims: number;
+  netPaidPEPM: number;
+  totalPlanCost: number;
+  planCostPEPM: number;
+  surplus: number;
+  pctOfBudget: number;
+  members: number;
+  employees: number;
+}
+
+interface MonthlySeries {
+  months: string[];
+  budget: number[];
+  actual: number[];
+  paidClaims: number[];
+}
+
+const timeframeOptions = [
+  { key: '6M', label: '6M', months: 6 },
+  { key: '12M', label: '12M', months: 12 }
+] as const;
+
+const viewOptions = [
+  { key: 'planCost', label: 'Plan cost' },
+  { key: 'paidClaims', label: 'Paid claims' }
+] as const;
+
+type TimeframeKey = typeof timeframeOptions[number]['key'];
+type ViewKey = typeof viewOptions[number]['key'];
+
+function num(value: unknown): number {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  if (value == null) return 0;
+  const parsed = parseFloat(String(value).replace(/[$,\s]/g, ''));
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0
+});
+
+const numberFormatter = new Intl.NumberFormat('en-US');
+
+function formatCurrency(value: number) {
+  return currencyFormatter.format(Math.round(value));
+}
+
+function formatPercent(value: number) {
+  return `${value.toFixed(1)}%`;
+}
+
+function computeMetrics(rows: Row[]): Metrics {
+  return rows.reduce<Metrics>((acc, row) => {
+    const budget = num(row['Budget'] ?? row['Computed Budget']);
+    const medical = num(row['Medical Claims'] ?? row['medical_claims'] ?? row['Medical']);
+    const pharmacy = num(row['Pharmacy Claims'] ?? row['pharmacy_claims'] ?? row['Rx']);
+    const admin = num(row['Admin Fees'] ?? row['admin_fees']);
+    const stopLossFees = num(row['Stop Loss Premium'] ?? row['stop_loss_premium']);
+    const reimburse = num(row['Stop Loss Reimbursements'] ?? row['stop_loss_reimb']);
+    const rebates = num(row['Rx Rebates'] ?? row['pharmacy_rebates']);
+    const members = num(row['Member Count'] ?? row['Enrollment'] ?? row['members']);
+    const employees = num(row['Employee Count'] ?? row['employees']);
+
+    acc.budget += budget;
+    acc.medical += medical;
+    acc.pharmacy += pharmacy;
+    acc.admin += admin;
+    acc.stopLossFees += stopLossFees;
+    acc.reimburse += reimburse;
+    acc.rebates += rebates;
+    acc.members += members;
+    acc.employees += employees;
+
+    return acc;
+  }, {
+    budget: 0,
+    medical: 0,
+    pharmacy: 0,
+    admin: 0,
+    stopLossFees: 0,
+    reimburse: 0,
+    rebates: 0,
+    netPaidClaims: 0,
+    netPaidPEPM: 0,
+    totalPlanCost: 0,
+    planCostPEPM: 0,
+    surplus: 0,
+    pctOfBudget: 0,
+    members: 0,
+    employees: 0
+  });
+}
+
+function enrichMetrics(rows: Row[], metrics: Metrics): Metrics {
+  const netPaidClaims = metrics.medical + metrics.pharmacy - metrics.reimburse - metrics.rebates;
+  const totalPlanCost = netPaidClaims + metrics.admin + metrics.stopLossFees;
+  const surplus = metrics.budget - totalPlanCost;
+  const pctOfBudget = metrics.budget > 0 ? (totalPlanCost / metrics.budget) * 100 : 0;
+  const denominator = metrics.members || metrics.employees || rows.length || 1;
+
+  return {
+    ...metrics,
+    reimburse: metrics.reimburse,
+    netPaidClaims,
+    netPaidPEPM: denominator ? netPaidClaims / denominator : 0,
+    totalPlanCost,
+    planCostPEPM: denominator ? totalPlanCost / denominator : 0,
+    surplus,
+    pctOfBudget,
+  };
+}
+
+function computeMonthlySeries(rows: Row[]): MonthlySeries {
+  const months = rows.map(row => String(row.month ?? row.Month ?? row.period ?? row.Period ?? ''));
+  const budget = rows.map(row => num(row['Budget'] ?? row['Computed Budget']));
+
+  const actual = rows.map(row => {
+    const medical = num(row['Medical Claims'] ?? row['medical_claims'] ?? row['Medical']);
+    const pharmacy = num(row['Pharmacy Claims'] ?? row['pharmacy_claims'] ?? row['Rx']);
+    const admin = num(row['Admin Fees'] ?? row['admin_fees']);
+    const stopLossFees = num(row['Stop Loss Premium'] ?? row['stop_loss_premium']);
+    const reimburse = num(row['Stop Loss Reimbursements'] ?? row['stop_loss_reimb']);
+    const rebates = num(row['Rx Rebates'] ?? row['pharmacy_rebates']);
+    return medical + pharmacy + admin + stopLossFees - reimburse - rebates;
+  });
+
+  const paidClaims = rows.map(row => {
+    const medical = num(row['Medical Claims'] ?? row['medical_claims'] ?? row['Medical']);
+    const pharmacy = num(row['Pharmacy Claims'] ?? row['pharmacy_claims'] ?? row['Rx']);
+    return medical + pharmacy;
+  });
+
+  return { months, budget, actual, paidClaims };
+}
+
+function getTimeframeSlice(data: Row[], months: number): Row[] {
+  return data.slice(-months);
+}
+
 export default function PlanPerformanceTiles({ data, commentaryTitle = 'Commentary' }: PlanPerformanceTilesProps) {
-  // Keep last 12 rows
-  const last12 = useMemo(() => (data || []).slice(-12), [data]);
-
-  const totals = useMemo(() => {
-    let budget = 0;
-    let medical = 0;
-    let pharmacy = 0;
-    let admin = 0;
-    let stopLossFees = 0;
-    let reimburse = 0;
-    let rebates = 0;
-    let employees = 0;
-    let members = 0;
-
-    last12.forEach((r) => {
-      budget += num(r['Budget'] ?? r['Computed Budget']);
-      medical += num(r['Medical Claims'] ?? r['medical_claims'] ?? r['Medical']);
-      pharmacy += num(r['Pharmacy Claims'] ?? r['pharmacy_claims'] ?? r['Rx']);
-      admin += num(r['Admin Fees'] ?? r['admin_fees']);
-      stopLossFees += num(r['Stop Loss Premium'] ?? r['stop_loss_premium']);
-      reimburse += num(r['Stop Loss Reimbursements'] ?? r['stop_loss_reimb']);
-      rebates += num(r['Rx Rebates'] ?? r['pharmacy_rebates']);
-      employees += num(r['Employee Count'] ?? r['employees']);
-      members += num(r['Member Count'] ?? r['Enrollment'] ?? r['members']);
-    });
-
-    const totalPaidClaims = medical + pharmacy;
-    const netPaidClaims = totalPaidClaims - reimburse - rebates;
-    const totalPlanCost = netPaidClaims + admin + stopLossFees;
-    const surplus = budget - totalPlanCost;
-    const pctOfBudget = budget > 0 ? (totalPlanCost / budget) * 100 : 0;
-    const pepmBase = members || employees || 1; // fall back to avoid divide-by-zero
-    const netPaidPEPM = pepmBase ? netPaidClaims / pepmBase : 0;
-    const planCostPEPM = pepmBase ? totalPlanCost / pepmBase : 0;
-
-    return {
-      budget,
-      medical,
-      pharmacy,
-      totalPaidClaims,
-      reimburse: -Math.abs(reimburse), // show as negative per screenshot
-      admin,
-      stopLossFees,
-      netPaidClaims,
-      netPaidPEPM,
-      totalPlanCost,
-      planCostPEPM,
-      surplus,
-      pctOfBudget,
-      members,
-      employees,
-    };
-  }, [last12]);
-
-  // Gauge percent
-  const gaugePercent = useMemo(() => {
-    return Math.round((totals.totalPlanCost / Math.max(1, totals.budget)) * 1000) / 10; // one decimal
-  }, [totals]);
-
-  // Build chart series data
-  const monthly = useMemo(() => {
-    const months = last12.map((r) => String(r.month ?? r.Month ?? r.period ?? r.Period ?? ''));
-    const admin = last12.map((r) => num(r['Admin Fees'] ?? r['admin_fees']));
-    const slFees = last12.map((r) => num(r['Stop Loss Premium'] ?? r['stop_loss_premium']));
-    const medical = last12.map((r) => num(r['Medical Claims'] ?? r['medical_claims'] ?? r['Medical']));
-    const pharmacy = last12.map((r) => num(r['Pharmacy Claims'] ?? r['pharmacy_claims'] ?? r['Rx']));
-    const reimb = last12.map((r) => -Math.abs(num(r['Stop Loss Reimbursements'] ?? r['stop_loss_reimb'])));
-    const budget = last12.map((r) => num(r['Budget'] ?? r['Computed Budget']));
-    // net medical + pharmacy
-    const netMedPharm = medical.map((m, i) => m + pharmacy[i]);
-    return { months, admin, slFees, netMedPharm, reimb, budget, medical, pharmacy };
-  }, [last12]);
-
-  // ECharts refs
-  const stackedRef = useRef<HTMLDivElement>(null);
-  const pieRef = useRef<HTMLDivElement>(null);
-
-  // Commentary (editable) with secure persistence (non-PHI text)
-  const defaultCommentary = useMemo(() => {
-    const rollingPct = Math.round((totals.totalPlanCost / Math.max(1, totals.budget)) * 1000) / 10;
-    const currentPct = rollingPct;
-    return [
-      `${commentaryTitle} is running at ${rollingPct.toFixed(1)}% of budget in the rolling 12 month period.`,
-      `In the current plan year, ${commentaryTitle} is running at ${currentPct.toFixed(1)}% of budget.`,
-      'No large claims identified above the stop loss level in the selected period.'
-    ].join('\n\n');
-  }, [commentaryTitle, totals.totalPlanCost, totals.budget]);
-
-  const [commentary, setCommentary] = useState<string>(defaultCommentary);
+  const [selectedTimeframe, setSelectedTimeframe] = useState<TimeframeKey>('12M');
+  const [viewMode, setViewMode] = useState<ViewKey>('planCost');
+  const [commentary, setCommentary] = useState('');
+  const [commentaryOpen, setCommentaryOpen] = useState(false);
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+
+  const timeframeMap = useMemo(() => {
+    const map = new Map<TimeframeKey, { rows: Row[]; metrics: Metrics; series: MonthlySeries }>();
+    timeframeOptions.forEach(option => {
+      const slice = getTimeframeSlice(data, option.months);
+      const metrics = enrichMetrics(slice, computeMetrics(slice));
+      const series = computeMonthlySeries(slice);
+      map.set(option.key, { rows: slice, metrics, series });
+    });
+    return map;
+  }, [data]);
+
+  const current = timeframeMap.get(selectedTimeframe) ?? timeframeMap.get('12M');
+  const currentMetrics = current?.metrics ?? enrichMetrics(data, computeMetrics(data));
+  const currentSeries = current?.series ?? computeMonthlySeries(data);
+
+  const gaugeTimeframes = useMemo(() => timeframeOptions.map(option => {
+    const timeframe = timeframeMap.get(option.key);
+    const value = timeframe ? timeframe.metrics.pctOfBudget : 0;
+    return { key: option.key, label: option.label, value: parseFloat(value.toFixed(1)) };
+  }), [timeframeMap]);
 
   useEffect(() => {
     try {
-      const saved = secureHealthcareStorage.retrieve<{ text: string }>('planCommentary');
-      if (saved?.text) setCommentary(saved.text);
-    } catch {}
+      const stored = secureHealthcareStorage.retrieve<{ text: string }>('planCommentary');
+      if (stored?.text) {
+        setCommentary(stored.text);
+      } else {
+        const baselineValue = gaugeTimeframes.find(tf => tf.key === '12M')?.value ?? 0;
+        setCommentary(`${commentaryTitle} is running at ${baselineValue.toFixed(1)}% of budget over the rolling period.\n\nHighlight notable claim activity or utilisation changes here.`);
+      }
+    } catch {
+      setCommentary(`${commentaryTitle} insights will appear here.`);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSave = async () => {
+  useEffect(() => {
+    if (!commentary) return;
+    const timeout = setTimeout(async () => {
+      try {
+        setSaveState('saving');
+        await secureHealthcareStorage.storeTemporary('planCommentary', { text: commentary, savedAt: new Date().toISOString() }, { ttlMs: 7 * 24 * 60 * 60 * 1000 });
+        setSaveState('saved');
+        setTimeout(() => setSaveState('idle'), 1200);
+      } catch {
+        setSaveState('error');
+        setTimeout(() => setSaveState('idle'), 2000);
+      }
+    }, 600);
+
+    return () => clearTimeout(timeout);
+  }, [commentary]);
+
+  const actualSeries = viewMode === 'planCost' ? currentSeries.actual : currentSeries.paidClaims;
+  const chartTitle = viewMode === 'planCost' ? 'Net plan cost' : 'Paid claims';
+
+  const monthLegend = currentSeries.months.length > 0 ? `Last ${currentSeries.months.length} months` : '';
+
+  const rollingChartOption = useMemo(() => ({
+    color: [chartPalette.accent, '#cbd5f5'],
+    grid: baseChartGrid,
+    tooltip: {
+      ...baseTooltip,
+      formatter: (params: any[]) => {
+        if (!params?.length) return '';
+        const [actual, budget] = params;
+        const month = actual?.axisValue ?? budget?.axisValue;
+        const actualValue = actual ? formatCurrency(actual.data) : '';
+        const budgetValue = budget ? formatCurrency(budget.data) : '';
+        return [
+          `<strong>${month}</strong>`,
+          `${chartTitle}: ${actualValue}`,
+          `Budget: ${budgetValue}`
+        ].join('<br/>');
+      }
+    },
+    legend: {
+      show: true,
+      top: 0,
+      right: 0,
+      itemWidth: 12,
+      itemHeight: 12,
+      textStyle: {
+        color: chartPalette.foregroundMuted,
+        fontSize: 11
+      },
+      data: [chartTitle, 'Budget']
+    },
+    xAxis: {
+      type: 'category',
+      data: currentSeries.months,
+      ...baseAxisStyles,
+      axisLabel: {
+        ...baseAxisStyles.axisLabel,
+        rotate: 0,
+        margin: 12
+      }
+    },
+    yAxis: {
+      type: 'value',
+      ...baseAxisStyles,
+      splitLine: { show: false },
+      axisLabel: {
+        ...baseAxisStyles.axisLabel,
+        formatter: (value: number) => `$${(value / 1000).toFixed(0)}k`
+      }
+    },
+    series: [
+      {
+        name: chartTitle,
+        type: 'bar',
+        barWidth: 18,
+        data: actualSeries,
+        itemStyle: {
+          borderRadius: [6, 6, 0, 0]
+        }
+      },
+      {
+        name: 'Budget',
+        type: 'line',
+        data: currentSeries.budget,
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 8,
+        lineStyle: {
+          width: 3,
+          color: '#aebdff'
+        },
+        itemStyle: {
+          color: '#aebdff'
+        }
+      }
+    ]
+  }), [actualSeries, chartTitle, currentSeries.budget, currentSeries.months]);
+
+  const share = useMemo(() => {
+    const totalClaims = currentMetrics.medical + currentMetrics.pharmacy;
+    if (totalClaims === 0) {
+      return { medical: 0, pharmacy: 0 };
+    }
+    return {
+      medical: (currentMetrics.medical / totalClaims) * 100,
+      pharmacy: (currentMetrics.pharmacy / totalClaims) * 100
+    };
+  }, [currentMetrics.medical, currentMetrics.pharmacy]);
+
+  const shareOption = useMemo(() => ({
+    grid: { left: 0, right: 0, top: 10, bottom: 10 },
+    xAxis: {
+      type: 'value',
+      show: false,
+      max: 100
+    },
+    yAxis: {
+      type: 'category',
+      show: false,
+      data: ['Distribution']
+    },
+    tooltip: {
+      trigger: 'item',
+      formatter: (params: any) => `${params.seriesName}: ${params.value.toFixed(1)}%`,
+      backgroundColor: chartPalette.tooltipBg,
+      borderWidth: 0,
+      textStyle: {
+        color: chartPalette.tooltipText,
+        fontSize: 12
+      },
+      padding: [6, 10]
+    },
+    series: [
+      {
+        name: 'Medical',
+        type: 'bar',
+        stack: 'share',
+        data: [share.medical],
+        itemStyle: {
+          color: chartPalette.medical,
+          borderRadius: [12, 0, 0, 12]
+        },
+        label: {
+          show: true,
+          formatter: `${share.medical.toFixed(0)}%`,
+          color: '#fff',
+          position: 'insideLeft',
+          fontWeight: 600
+        }
+      },
+      {
+        name: 'Pharmacy',
+        type: 'bar',
+        stack: 'share',
+        data: [share.pharmacy],
+        itemStyle: {
+          color: chartPalette.pharmacy,
+          borderRadius: [0, 12, 12, 0]
+        },
+        label: {
+          show: true,
+          formatter: `${share.pharmacy.toFixed(0)}%`,
+          color: '#fff',
+          position: 'insideRight',
+          fontWeight: 600
+        }
+      }
+    ]
+  }), [share.medical, share.pharmacy]);
+
+  const summaryBlocks = useMemo(() => ([
+    {
+      label: 'Total budget',
+      value: formatCurrency(currentMetrics.budget),
+      helper: monthLegend
+    },
+    {
+      label: 'Net plan cost',
+      value: formatCurrency(currentMetrics.totalPlanCost)
+    },
+    {
+      label: 'Surplus / deficit',
+      value: formatCurrency(currentMetrics.surplus),
+      accent: currentMetrics.surplus >= 0 ? 'text-emerald-600' : 'text-rose-600'
+    },
+    {
+      label: 'Net paid claims',
+      value: formatCurrency(currentMetrics.netPaidClaims)
+    },
+    {
+      label: 'Admin & stop-loss',
+      value: formatCurrency(currentMetrics.admin + currentMetrics.stopLossFees)
+    },
+    {
+      label: 'Members covered',
+      value: numberFormatter.format(currentMetrics.members || currentMetrics.employees)
+    }
+  ]), [currentMetrics, monthLegend]);
+
+  const copyCommentary = async () => {
     try {
-      setSaveState('saving');
-      await secureHealthcareStorage.storeTemporary('planCommentary', { text: commentary, savedAt: new Date().toISOString() }, { ttlMs: 7 * 24 * 60 * 60 * 1000 });
+      await navigator.clipboard.writeText(commentary);
       setSaveState('saved');
-      setTimeout(() => setSaveState('idle'), 1500);
+      setTimeout(() => setSaveState('idle'), 1200);
     } catch {
       setSaveState('error');
-      setTimeout(() => setSaveState('idle'), 2000);
+      setTimeout(() => setSaveState('idle'), 1500);
     }
   };
 
-  // Stacked bar + line
-  useEffect(() => {
-    if (!stackedRef.current) return;
-    let chart: echarts.ECharts | null = null;
-    let resizeHandler: (() => void) | null = null;
-    
-    try {
-      chart = echarts.init(stackedRef.current);
-      const option: echarts.EChartsOption = {
-        backgroundColor: 'transparent',
-        tooltip: {
-          trigger: 'axis',
-          backgroundColor: 'rgba(10,18,32,0.95)',
-          borderColor: 'rgba(0,229,137,0.35)',
-          borderWidth: 1,
-          textStyle: { color: '#F2FBFF', fontFamily: 'Space Grotesk' }
-        },
-        legend: {
-          data: ['Admin Fees', 'Stop Loss Fees', 'Reimbursements', 'Net Medical & Pharmacy', 'Budgeted Premium'],
-          textStyle: { color: '#9DB3C3', fontFamily: 'Space Grotesk', fontSize: 12 }
-        },
-        grid: { left: 30, right: 30, top: 40, bottom: 40 },
-        xAxis: {
-          type: 'category',
-          data: monthly.months,
-          axisLine: { lineStyle: { color: 'rgba(255,255,255,0.08)' } },
-          axisLabel: { color: '#9DB3C3', fontFamily: 'Space Grotesk' },
-          splitLine: { show: false }
-        },
-        yAxis: {
-          type: 'value',
-          axisLine: { lineStyle: { color: 'rgba(255,255,255,0.08)' } },
-          axisLabel: { color: '#9DB3C3', fontFamily: 'Space Grotesk' },
-          splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }
-        },
-        series: [
-          { name: 'Admin Fees', type: 'bar', stack: 'total', data: monthly.admin, itemStyle: { color: '#1F7AFA' } },
-          { name: 'Stop Loss Fees', type: 'bar', stack: 'total', data: monthly.slFees, itemStyle: { color: '#4C5A75' } },
-          { name: 'Net Medical & Pharmacy', type: 'bar', stack: 'total', data: monthly.netMedPharm, itemStyle: { color: '#13D8A7' } },
-          { name: 'Reimbursements', type: 'bar', stack: 'total', data: monthly.reimb, itemStyle: { color: '#FF7F83', opacity: 0.7 } },
-          { name: 'Budgeted Premium', type: 'line', data: monthly.budget, smooth: true, lineStyle: { width: 3, color: '#FFE166' }, symbol: 'circle', symbolSize: 8, itemStyle: { color: '#FFE166', borderWidth: 2, borderColor: '#0B1220' } },
-        ],
-      };
-      chart.setOption(option);
-      resizeHandler = () => chart?.resize();
-      window.addEventListener('resize', resizeHandler);
-    } catch (e) {
-      console.error('Failed to initialize stacked chart:', e);
-    }
-    
-    return () => {
-      if (resizeHandler) {
-        window.removeEventListener('resize', resizeHandler);
-      }
-      if (chart) {
-        try {
-          chart.dispose();
-        } catch (e) {
-          console.error('Failed to dispose stacked chart:', e);
-        }
-      }
-    };
-  }, [monthly]);
-
-  // Pie chart
-  useEffect(() => {
-    if (!pieRef.current) return;
-    let chart: echarts.ECharts | null = null;
-    let resizeHandler: (() => void) | null = null;
-    
-    try {
-      chart = echarts.init(pieRef.current);
-      const option: echarts.EChartsOption = {
-        backgroundColor: 'transparent',
-        tooltip: {
-          trigger: 'item',
-          backgroundColor: 'rgba(10,18,32,0.95)',
-          borderColor: 'rgba(0,229,137,0.35)',
-          borderWidth: 1,
-          textStyle: { color: '#F2FBFF', fontFamily: 'Space Grotesk' }
-        },
-        legend: { bottom: 0, textStyle: { color: '#9DB3C3', fontSize: 12, fontFamily: 'Space Grotesk' } },
-        series: [
-          {
-            type: 'pie',
-            radius: ['45%', '70%'],
-            avoidLabelOverlap: true,
-            label: { formatter: '{b}: {d}%', color: '#F2FBFF', fontSize: 12, fontFamily: 'Space Grotesk' },
-            data: [
-              { value: Math.round(totals.medical), name: 'Medical Claims', itemStyle: { color: '#13D8A7' } },
-              { value: Math.round(totals.pharmacy), name: 'Pharmacy Claims', itemStyle: { color: '#1F7AFA' } },
-            ],
-            labelLine: { lineStyle: { color: 'rgba(255,255,255,0.25)' } }
-          }
-        ],
-      };
-      chart.setOption(option);
-      resizeHandler = () => chart?.resize();
-      window.addEventListener('resize', resizeHandler);
-    } catch (e) {
-      console.error('Failed to initialize pie chart:', e);
-    }
-    
-    return () => {
-      if (resizeHandler) {
-        window.removeEventListener('resize', resizeHandler);
-      }
-      if (chart) {
-        try {
-          chart.dispose();
-        } catch (e) {
-          console.error('Failed to dispose pie chart:', e);
-        }
-      }
-    };
-  }, [totals.medical, totals.pharmacy]);
-
-  // Responsive heights for charts
-  const barsHeight = { height: 'clamp(220px, 32vw, 320px)' } as React.CSSProperties;
-  const pieHeight = { height: 'clamp(200px, 28vw, 260px)' } as React.CSSProperties;
-
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      {/* Left: Performance Indicator with widget selector */}
-      <PerformanceIndicator 
-        value={gaugePercent}
-        title="Plan Performance"
-        defaultWidget="gauge"
-        showLegend={true}
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <PerformanceIndicator
+        title="Plan performance"
+        timeframes={gaugeTimeframes}
+        selectedTimeframe={selectedTimeframe}
+        onTimeframeChange={key => setSelectedTimeframe(key as TimeframeKey)}
       />
 
-      {/* Middle: Rolling 12 Month Graph */}
-      <GlassCard variant="elevated" className="p-4 lg:col-span-2">
-        <h3 className="text-base font-semibold text-[var(--foreground)] mb-2">Rolling 12 Month Graph</h3>
-        <div ref={stackedRef} style={{ width: '100%', ...barsHeight }} />
-      </GlassCard>
-
-      {/* Bottom left: Rolling 12 Month Summary */}
-      <GlassCard variant="elevated" className="p-4">
-        <h3 className="text-base font-semibold text-[var(--foreground)] mb-2">Rolling 12 Month Summary</h3>
-        <div className="text-sm text-[var(--foreground)] space-y-1">
-          <div className="flex justify-between"><span className="text-[var(--foreground-muted)]">Total Budgeted Premium</span><span>{fmtCurrency(totals.budget)}</span></div>
-          <div className="flex justify-between"><span className="text-[var(--foreground-muted)]">Medical Paid Claims</span><span>{fmtCurrency(totals.medical)}</span></div>
-          <div className="flex justify-between"><span className="text-[var(--foreground-muted)]">Pharmacy Paid Claims</span><span>{fmtCurrency(totals.pharmacy)}</span></div>
-          <div className="flex justify-between"><span className="text-[var(--foreground-muted)]">Total Paid Claims</span><span>{fmtCurrency(totals.totalPaidClaims)}</span></div>
-          <div className="flex justify-between"><span className="text-[var(--foreground-muted)]">Est. Stop Loss Reimb.</span><span>{fmtCurrency(totals.reimburse)}</span></div>
-          <div className="flex justify-between"><span className="text-[var(--foreground-muted)]">Net Paid Claims</span><span>{fmtCurrency(totals.netPaidClaims)}</span></div>
-          <div className="flex justify-between"><span className="text-[var(--foreground-muted)]">Net Paid Claims PEPM</span><span>{fmtCurrency(Math.round(totals.netPaidPEPM))}</span></div>
-          <div className="flex justify-between"><span className="text-[var(--foreground-muted)]">Stop-Loss Fees</span><span>{fmtCurrency(totals.stopLossFees)}</span></div>
-          <div className="flex justify-between"><span className="text-[var(--foreground-muted)]">Administration Fees</span><span>{fmtCurrency(totals.admin)}</span></div>
-          <div className="flex justify-between font-semibold text-[var(--accent)]"><span>Total Plan Cost</span><span>{fmtCurrency(totals.totalPlanCost)}</span></div>
-          <div className="flex justify-between"><span className="text-[var(--foreground-muted)]">Total Plan Cost PEPM</span><span>{fmtCurrency(Math.round(totals.planCostPEPM))}</span></div>
-          <div className="flex justify-between"><span className="text-[var(--foreground-muted)]">Surplus / Deficit</span><span>{fmtCurrency(totals.surplus)}</span></div>
-          <div className="flex justify-between"><span className="text-[var(--foreground-muted)]">% of Budget</span><span>{totals.pctOfBudget.toFixed(1)}%</span></div>
-        </div>
-      </GlassCard>
-
-      {/* Bottom middle: Pie */}
-      <GlassCard variant="elevated" className="p-4">
-        <h3 className="text-base font-semibold text-[var(--foreground)] mb-2">Medical vs Pharmacy Distribution</h3>
-        <div ref={pieRef} style={{ width: '100%', ...pieHeight }} />
-      </GlassCard>
-
-      {/* Bottom right: Commentary (editable) */}
-      <GlassCard variant="elevated" className="p-4">
-        <h3 className="text-base font-semibold text-[var(--foreground)] mb-2">Commentary</h3>
-        <Textarea
-          value={commentary}
-          onChange={(e) => setCommentary(e.target.value)}
-          className="min-h-[160px] text-sm bg-[var(--surface)] text-[var(--foreground)] border border-[var(--surface-border)] placeholder:text-[var(--foreground-subtle)]"
-          placeholder="Enter commentary..."
-        />
-        <div className="flex items-center gap-3 mt-3">
-          <button
-            onClick={handleSave}
-            className="px-3 py-2 text-sm rounded-md bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] text-[var(--button-primary-text)] font-semibold shadow-[var(--card-elevated-shadow)] hover:shadow-[var(--card-hover-shadow)]"
+      <GlassCard variant="elevated" className="lg:col-span-2 flex flex-col gap-4 p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 className="text-base font-semibold text-[var(--foreground)]">Rolling {selectedTimeframe === '6M' ? '6' : '12'} month trend</h3>
+            <p className="text-xs text-[var(--foreground-subtle)]">{chartTitle} compared with budgeted premium</p>
+          </div>
+          <div className="flex items-center gap-2"
           >
-            {saveState === 'saving' ? 'Saving...' : saveState === 'saved' ? 'Saved' : 'Save'}
-          </button>
-          {saveState === 'error' && (
-            <span className="text-sm text-[var(--danger)]">Could not save. Try again.</span>
-          )}
+            <div className="flex rounded-full border border-[var(--surface-border)] bg-[var(--surface)] px-1 py-1 text-xs font-medium text-[var(--foreground-muted)]">
+              {viewOptions.map(option => {
+                const active = option.key === viewMode;
+                return (
+                  <motion.button
+                    key={option.key}
+                    type="button"
+                    onClick={() => setViewMode(option.key)}
+                    className={`relative rounded-full px-2.5 py-1 transition-colors ${active ? 'text-[var(--accent)]' : ''}`}
+                    whileHover={{ scale: active ? 1 : 1.05 }}
+                    whileTap={{ scale: 0.94 }}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="view-toggle"
+                        className="absolute inset-0 rounded-full bg-[var(--accent-soft)]"
+                        transition={{ type: 'spring', stiffness: 360, damping: 30 }}
+                      />
+                    )}
+                    <span className="relative z-10">{option.label}</span>
+                  </motion.button>
+                );
+              })}
+            </div>
+            <div className="flex rounded-full border border-[var(--surface-border)] bg-[var(--surface)] px-1 py-1 text-xs font-medium text-[var(--foreground-muted)]">
+              {timeframeOptions.map(option => {
+                const active = option.key === selectedTimeframe;
+                return (
+                  <motion.button
+                    key={option.key}
+                    type="button"
+                    onClick={() => setSelectedTimeframe(option.key)}
+                    className={`relative rounded-full px-2.5 py-1 transition-colors ${active ? 'text-[var(--accent)]' : ''}`}
+                    whileHover={{ scale: active ? 1 : 1.05 }}
+                    whileTap={{ scale: 0.94 }}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="timeframe-toggle"
+                        className="absolute inset-0 rounded-full bg-[var(--accent-soft)]"
+                        transition={{ type: 'spring', stiffness: 360, damping: 30 }}
+                      />
+                    )}
+                    <span className="relative z-10">{option.label}</span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
         </div>
+        <ReactECharts option={rollingChartOption} style={{ width: '100%', height: 280 }} notMerge lazyUpdate />
+        <details className="rounded-xl bg-[var(--surface-muted)]/60 p-3 text-xs text-[var(--foreground-muted)]">
+          <summary className="flex cursor-pointer list-none items-center gap-2 text-[var(--foreground)]">
+            <Filter className="h-3.5 w-3.5 text-[var(--accent)]" aria-hidden />
+            Insights
+          </summary>
+          <p className="mt-2 leading-relaxed">
+            {`Plan cost is tracking at ${currentMetrics.pctOfBudget.toFixed(1)}% of budget across the selected period. Switch between metrics or timeframes to surface utilisation swings and seasonality.`}
+          </p>
+        </details>
+      </GlassCard>
+
+      <GlassCard variant="elevated" className="p-5">
+        <h3 className="text-base font-semibold text-[var(--foreground)] mb-3">Rolling summary</h3>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {summaryBlocks.map(block => (
+            <div key={block.label} className="rounded-xl bg-[var(--surface-muted)]/70 p-3">
+              <p className="text-xs uppercase tracking-[0.25em] text-[var(--foreground-subtle)]">{block.label}</p>
+              <p className={`mt-2 text-lg font-semibold text-right text-[var(--foreground)] ${block.accent ?? ''}`}>{block.value}</p>
+              {block.helper ? <p className="text-[10px] text-[var(--foreground-subtle)]">{block.helper}</p> : null}
+            </div>
+          ))}
+        </div>
+      </GlassCard>
+
+      <GlassCard variant="elevated" className="p-5">
+        <h3 className="text-base font-semibold text-[var(--foreground)] mb-3">Medical vs pharmacy share</h3>
+        <ReactECharts option={shareOption} style={{ width: '100%', height: 120 }} notMerge lazyUpdate />
+        <div className="mt-3 flex items-center justify-between text-xs text-[var(--foreground-muted)]">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex h-2.5 w-2.5 rounded-full" style={{ backgroundColor: chartPalette.medical }} />
+            <span>Medical</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex h-2.5 w-2.5 rounded-full" style={{ backgroundColor: chartPalette.pharmacy }} />
+            <span>Pharmacy</span>
+          </div>
+        </div>
+      </GlassCard>
+
+      <GlassCard variant="elevated" className="p-5 lg:col-span-3">
+        <button
+          type="button"
+          onClick={() => setCommentaryOpen(prev => !prev)}
+          className="flex w-full items-center justify-between rounded-xl bg-[var(--surface-muted)]/70 px-4 py-3 text-sm font-semibold text-[var(--foreground)]"
+        >
+          <span>{commentaryTitle}</span>
+          {commentaryOpen ? <ChevronUp className="h-4 w-4" aria-hidden /> : <ChevronDown className="h-4 w-4" aria-hidden />}
+        </button>
+        <AnimatePresence initial={false}>
+          {commentaryOpen ? (
+            <motion.div
+              key="commentary-panel"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className="overflow-hidden"
+            >
+              <div className="mt-4 space-y-3">
+                <Textarea
+                  value={commentary}
+                  onChange={event => setCommentary(event.target.value)}
+                  className="min-h-[160px] resize-vertical border border-[var(--surface-border)] bg-[var(--surface)] text-sm text-[var(--foreground)]"
+                  placeholder="Summarise the rolling results in plain language"
+                />
+                <div className="flex items-center justify-between text-xs text-[var(--foreground-subtle)]">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={copyCommentary}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--surface-border)] bg-[var(--surface)] text-[var(--foreground-muted)] transition-colors hover:text-[var(--foreground)]"
+                      title="Copy to clipboard"
+                    >
+                      <Clipboard className="h-3.5 w-3.5" aria-hidden />
+                    </button>
+                    <span>{saveState === 'saving' ? 'Saving…' : saveState === 'saved' ? 'Saved' : saveState === 'error' ? 'Unable to save' : 'Auto-saves'}</span>
+                  </div>
+                  <span className="text-[var(--foreground-subtle)]">Use natural language. Avoid repeating figures already shown above.</span>
+                </div>
+              </div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
       </GlassCard>
     </div>
   );

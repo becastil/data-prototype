@@ -9,8 +9,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const devLog = (...args: any[]) => isDev && console.log(...args);
 const devError = (...args: any[]) => isDev && console.error(...args);
 import type { ParsedCSVData } from './CSVLoader';
-import { Upload, CheckCircle, Columns3, FolderUp, Loader2, Table2 } from 'lucide-react';
-import { ModernCard, ModernMetric, ModernUpload } from '@components/index';
+import { CheckCircle, Info, ChevronDown, ChevronUp, Download } from 'lucide-react';
 import { cn } from '@/app/lib/utils';
 import { validateBudgetData, validateClaimsData } from '@/app/utils/schemas';
 import { analyzeHeaders, type HeaderRequirement } from '@/app/utils/headers';
@@ -26,10 +25,50 @@ const toastTone: Record<'error' | 'info' | 'success', string> = {
   success: 'border-[#bbf7d0] bg-[#ecfdf5] text-[#047857]',
 };
 
+type UploadType = 'budget' | 'claims';
+
+const uploadConfigs: Record<UploadType, {
+  label: string;
+  helper: string;
+  summary: string;
+  details: string[];
+  sampleHref: string;
+  sampleLabel: string;
+}> = {
+  budget: {
+    label: 'Budget CSV',
+    helper: 'Monthly totals and headcounts keep projections honest.',
+    summary: 'Include a month column plus employee and member counts so trend lines stay accurate.',
+    details: [
+      'Month or period column (e.g., 2024-01)',
+      'Employee and member totals for each row',
+      'Budget or actual spend columns to chart performance',
+    ],
+    sampleHref: '/sample-budget.csv',
+    sampleLabel: 'Download budget sample CSV',
+  },
+  claims: {
+    label: 'Claims CSV',
+    helper: 'Add optional claims detail to unlock granular analytics.',
+    summary: 'Add claimant identifiers, service categories, and spend amounts to map utilization.',
+    details: [
+      'Claimant or subscriber identifier per row',
+      'Service type along with ICD-10 code when available',
+      'Medical and pharmacy spend columns for totals',
+    ],
+    sampleHref: '/sample-claims.csv',
+    sampleLabel: 'Download claims sample CSV',
+  },
+};
+
+const uploadOrder: UploadType[] = ['budget', 'claims'];
+
 const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onError }) => {
   const [budgetData, setBudgetData] = React.useState<ParsedCSVData | null>(null);
   const [claimsData, setClaimsData] = React.useState<ParsedCSVData | null>(null);
   const [toasts, setToasts] = React.useState<Array<{ id: string; type: 'error' | 'info' | 'success'; title: string; message?: string; details?: string[] }>>([]);
+  const [activeUpload, setActiveUpload] = React.useState<UploadType>('budget');
+  const [infoOpen, setInfoOpen] = React.useState(false);
 
   const pushToast = (t: { type: 'error' | 'info' | 'success'; title: string; message?: string; details?: string[] }) => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -40,6 +79,10 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
     }, t.type === 'error' ? 12000 : 6000);
     return () => clearTimeout(timeout);
   };
+
+  React.useEffect(() => {
+    setInfoOpen(false);
+  }, [activeUpload]);
 
   // Call onBothFilesLoaded exactly once when both files are present
   const submittedRef = React.useRef(false);
@@ -109,6 +152,7 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
     }
     
     setBudgetData(data);
+    setActiveUpload('claims');
   };
 
   const handleClaimsLoaded = (data: ParsedCSVData) => {
@@ -135,16 +179,28 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
       onError(`Claims CSV missing required columns: ${missingColumns.join(', ')}`);
       return;
     }
-    
+
     setClaimsData(data);
+  };
+
+  const handleFileLoaded = (data: ParsedCSVData) => {
+    if (activeUpload === 'budget') {
+      handleBudgetLoaded(data);
+      return;
+    }
+    handleClaimsLoaded(data);
   };
 
   const waitingFor = budgetData ? 'claims' : 'budget';
   const bothLoaded = Boolean(budgetData && claimsData);
+  const currentConfig = uploadConfigs[activeUpload];
+  const budgetReady = Boolean(budgetData);
+  const claimsReady = Boolean(claimsData);
+  const waitingLabel = waitingFor === 'budget' ? 'budget CSV' : 'claims CSV';
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-white py-16 lg:py-24">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-white/80 to-transparent" />
+    <div className="relative min-h-screen bg-[var(--background)] py-20 sm:py-28">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-white to-transparent" />
 
       <div className="fixed right-6 top-6 z-50 flex flex-col gap-3">
         <AnimatePresence>
@@ -176,163 +232,149 @@ const DualCSVLoader: React.FC<DualCSVLoaderProps> = ({ onBothFilesLoaded, onErro
         </AnimatePresence>
       </div>
 
-      <div className="relative mx-auto w-full max-w-screen-xl px-6">
-        <div className="space-y-20">
-          <header className="mx-auto max-w-2xl space-y-6 text-center">
-            <div className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200/70 bg-white/80 px-4 py-1 text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
-              Intake
-              <span className="opacity-40">•</span>
-              Step 1
+      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-16 px-6">
+        <section className="mx-auto w-full max-w-3xl space-y-8 text-center sm:text-left">
+          <div className="space-y-5">
+            <div className="space-y-3">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-center gap-3 text-[11px] font-semibold uppercase tracking-[0.32em] text-[var(--foreground-subtle)] sm:justify-between">
+                  <span>Step 1 of 3</span>
+                  <span className="tracking-normal text-[var(--foreground-subtle)]/80">Upload data</span>
+                </div>
+                <div className="h-[3px] w-full rounded-full bg-slate-200">
+                  <div className="h-[3px] w-1/3 rounded-full bg-[var(--accent)]" />
+                </div>
+              </div>
+              <h1 className="text-4xl font-semibold tracking-tight text-[var(--foreground)] sm:text-5xl">
+                Upload budgets & enrollments
+              </h1>
+              <p className="text-base leading-relaxed text-[var(--foreground-muted)] sm:text-lg">
+                Drag & drop your CSVs to get started. We keep the visuals quiet so attention stays on the data.
+              </p>
             </div>
-            <h1 className="text-4xl font-semibold tracking-tight text-slate-900">
-              Upload your data with confidence
-            </h1>
-            <p className="text-base text-slate-500">
-              Bring in monthly budgets and optional claims files to unlock the analytics workspace.
-            </p>
-          </header>
+          </div>
+        </section>
 
-
-          <div className="grid gap-12 xl:grid-cols-2">
-            <motion.div
-              initial={{ opacity: 0, x: -24 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.45, ease: 'easeOut', delay: 0.1 }}
-            >
-              <ModernUpload
-                title="Budget & Enrollment Summary"
-                description="Monthly totals and headcounts keep projections honest and benchmarks current."
-                helper="We auto-clean separators, currency symbols, and header labels as the file lands."
-                sampleLink={{ href: '/sample-budget.csv', label: 'Download sample CSV' }}
-                icon={<Upload className="h-7 w-7 text-sky-600" aria-hidden />}
-                loaderClassName="rounded-3xl border-slate-200/70 hover:border-sky-400/70"
-                cardClassName="space-y-6 bg-white/90 p-8 lg:p-11"
-                onDataLoaded={handleBudgetLoaded}
-                onError={onError}
-                maxFileSize={10 * 1024 * 1024}
-                footer={
-                  <div className="space-y-4 rounded-2xl bg-white/80 p-6 shadow-[0_12px_32px_-16px_rgba(15,23,42,0.25)] ring-1 ring-slate-200/60">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-                      <CheckCircle className="h-4 w-4 text-sky-600" />
-                      Before you upload
-                    </div>
-                    <ul className="grid gap-3 text-sm text-slate-600">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 flex-shrink-0 text-sky-500" />
-                        Include a month column (e.g. 2024-01)
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 flex-shrink-0 text-sky-500" />
-                        Add employee and member counts
-                      </li>
-                    </ul>
-                  </div>
-                }
-              />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 24 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.45, ease: 'easeOut', delay: 0.2 }}
-            >
-              <ModernUpload
-                title="Detailed Claims Experience"
-                description="Optional row-level detail fuels claimant tracking, service mix insights, and ICD spotting."
-                helper="Add identifiers, service categories, ICD-10 codes, plus medical and Rx spend. We align the naming automatically."
-                sampleLink={{ href: '/sample-claims.csv', label: 'Download sample CSV' }}
-                icon={<FolderUp className="h-7 w-7 text-indigo-600" aria-hidden />}
-                loaderClassName="rounded-3xl border-slate-200/70 hover:border-indigo-400/70"
-                cardClassName="space-y-6 bg-white/90 p-8 lg:p-11"
-                onDataLoaded={handleClaimsLoaded}
-                onError={onError}
-                maxFileSize={10 * 1024 * 1024}
-                footer={
-                  <div className="space-y-4 rounded-2xl bg-white/80 p-6 shadow-[0_12px_32px_-16px_rgba(15,23,42,0.25)] ring-1 ring-slate-200/60">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-                      <CheckCircle className="h-4 w-4 text-indigo-600" />
-                      Helpful details
-                    </div>
-                    <ul className="grid gap-3 text-sm text-slate-600">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 flex-shrink-0 text-indigo-500" />
-                        Claimant or subscriber identifier
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 flex-shrink-0 text-indigo-500" />
-                        Service type plus ICD-10-CM code
-                      </li>
-                    </ul>
-                  </div>
-                }
-              />
-            </motion.div>
+        <section className="mx-auto w-full max-w-3xl space-y-10">
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {uploadOrder.map((key) => {
+              const config = uploadConfigs[key];
+              const isActive = activeUpload === key;
+              const isComplete = key === 'budget' ? budgetReady : claimsReady;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setActiveUpload(key)}
+                  className={cn(
+                    'inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--accent-soft)] hover:-translate-y-0.5',
+                    isActive
+                      ? 'bg-[var(--accent)] text-[var(--button-primary-text)] shadow-[0_20px_48px_-28px_rgba(37,99,235,0.6)]'
+                      : 'bg-transparent text-[var(--foreground-muted)] hover:bg-[var(--surface-muted)] hover:text-[var(--foreground)]'
+                  )}
+                  aria-pressed={isActive}
+                >
+                  <span>{config.label}</span>
+                  {isComplete ? <CheckCircle className="h-4 w-4" aria-hidden /> : null}
+                </button>
+              );
+            })}
           </div>
 
-          {(budgetData || claimsData) && (
-            <ModernCard tone="surface" padding="lg" className="space-y-8 bg-white/95 shadow-[0_20px_48px_-28px_rgba(15,23,42,0.4)]">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-2">
-                  <h3 className="text-xl font-semibold text-slate-900">Upload progress</h3>
-                  <p className="text-sm leading-relaxed text-slate-600">
-                    {bothLoaded
-                      ? 'Both files are validated — the dashboard is ready whenever you are.'
-                      : `We will unlock the dashboard as soon as the ${waitingFor} file lands.`}
-                  </p>
-                </div>
-                {bothLoaded ? (
-                  <span className="inline-flex items-center gap-2 rounded-full bg-green-50 border border-green-200 px-4 py-2 text-sm font-semibold text-green-700">
-                    <CheckCircle className="h-4 w-4" aria-hidden />
-                    Ready to analyze
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-dashed border-slate-300 px-4 py-2 text-sm text-slate-500">
-                    <Loader2 className="h-4 w-4 animate-spin text-blue-600" aria-hidden />
-                    Awaiting {waitingFor} file
-                  </span>
-                )}
-              </div>
+          <p className="text-center text-sm text-[var(--foreground-muted)] sm:text-left">
+            {currentConfig.helper}
+          </p>
 
-              <div className="grid gap-6 md:grid-cols-2">
-                {budgetData ? (
-                  <ModernMetric
-                    label="Budget file"
-                    value={`${budgetData.rowCount.toLocaleString()} rows`}
-                    secondary={`${budgetData.headers.length} headers mapped`}
-                    helper={`File: ${budgetData.fileName}`}
-                    icon={<Table2 className="h-5 w-5 text-blue-600" aria-hidden />}
-                    accent="info"
-                    trend={{ value: 'Validated', direction: 'up', label: 'Checks passed' }}
-                    tone="translucent"
-                    padding="md"
-                  />
-                ) : (
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-6 text-sm text-slate-500">
-                    Drop a budget summary to unlock benchmarks.
-                  </div>
-                )}
+          <CSVLoader
+            onDataLoaded={handleFileLoaded}
+            onError={onError}
+            maxFileSize={10 * 1024 * 1024}
+            className="mx-auto max-w-2xl"
+          />
 
-                {claimsData ? (
-                  <ModernMetric
-                    label="Claims file"
-                    value={`${claimsData.rowCount.toLocaleString()} rows`}
-                    secondary={`${claimsData.headers.length} headers mapped`}
-                    helper={`File: ${claimsData.fileName}`}
-                    icon={<Columns3 className="h-5 w-5 text-blue-600" aria-hidden />}
-                    accent="accent"
-                    trend={{ value: 'Validated', direction: 'up', label: 'Checks passed' }}
-                    tone="translucent"
-                    padding="md"
-                  />
-                ) : (
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-6 text-sm text-slate-500">
-                    Add detailed claims to unlock granular analytics.
-                  </div>
-                )}
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <a
+              href={currentConfig.sampleHref}
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--accent-soft)] px-4 py-2 text-sm font-semibold text-[var(--accent)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--accent)] hover:text-[var(--button-primary-text)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--accent-soft)]"
+            >
+              <Download className="h-4 w-4" aria-hidden />
+              {currentConfig.sampleLabel}
+            </a>
+            <button
+              type="button"
+              onClick={() => setInfoOpen((prev) => !prev)}
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-[var(--foreground-muted)] transition-all duration-200 hover:-translate-y-0.5 hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--accent-soft)]"
+              aria-expanded={infoOpen}
+            >
+              <Info className="h-4 w-4" aria-hidden />
+              {infoOpen ? 'Hide details' : 'Need details?'}
+              {infoOpen ? <ChevronUp className="h-4 w-4" aria-hidden /> : <ChevronDown className="h-4 w-4" aria-hidden />}
+            </button>
+          </div>
+
+          <AnimatePresence initial={false} mode="sync">
+            {infoOpen ? (
+              <motion.ul
+                key={`${activeUpload}-details`}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                className="mx-auto max-w-xl space-y-2 text-sm leading-relaxed text-[var(--foreground-muted)]"
+              >
+                {currentConfig.details.map((detail) => (
+                  <li key={detail} className="flex items-start gap-2">
+                    <span className="mt-1 inline-block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--accent)]" />
+                    <span>{detail}</span>
+                  </li>
+                ))}
+              </motion.ul>
+            ) : null}
+          </AnimatePresence>
+        </section>
+
+        <section className="mx-auto w-full max-w-3xl space-y-6">
+          <div className="flex flex-col gap-4 text-center sm:text-left">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.3em] text-[var(--foreground-subtle)]">Upload status</h2>
+            <p className="text-sm text-[var(--foreground-muted)]" role="status" aria-live="polite">
+              {bothLoaded
+                ? 'Both files are validated — the dashboard unlocks on the next step.'
+                : `We will unlock the dashboard as soon as the ${waitingLabel} arrives.`}
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div className="space-y-2 text-left">
+              <div className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
+                <span className={cn('h-2.5 w-2.5 rounded-full transition-colors', budgetReady ? 'bg-[var(--accent)]' : 'bg-slate-300')} aria-hidden />
+                {uploadConfigs.budget.label}
               </div>
-            </ModernCard>
-          )}
-        </div>
+              <p className="text-sm text-[var(--foreground-muted)]">
+                {budgetReady
+                  ? `${budgetData?.rowCount.toLocaleString()} rows • ${budgetData?.headers.length} headers mapped`
+                  : 'Waiting for upload'}
+              </p>
+              {budgetReady ? (
+                <p className="text-xs text-[var(--foreground-subtle)]">File: {budgetData?.fileName}</p>
+              ) : null}
+            </div>
+
+            <div className="space-y-2 text-left">
+              <div className="flex items-center gap-2 text-sm font-semibold text-[var(--foreground)]">
+                <span className={cn('h-2.5 w-2.5 rounded-full transition-colors', claimsReady ? 'bg-[var(--accent)]' : 'bg-slate-300')} aria-hidden />
+                {uploadConfigs.claims.label}
+              </div>
+              <p className="text-sm text-[var(--foreground-muted)]">
+                {claimsReady
+                  ? `${claimsData?.rowCount.toLocaleString()} rows • ${claimsData?.headers.length} headers mapped`
+                  : 'Optional — upload if you want claims-level insight'}
+              </p>
+              {claimsReady ? (
+                <p className="text-xs text-[var(--foreground-subtle)]">File: {claimsData?.fileName}</p>
+              ) : null}
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );
