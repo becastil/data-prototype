@@ -63,6 +63,39 @@ npm run dev
 
 **Step 5: Open your browser** to http://localhost:3005
 
+## Authentication & RBAC
+
+The dashboard now requires authenticated access. Credentials are managed by [NextAuth.js](https://next-auth.js.org/) and are fully driven by environment variables so that no secrets are committed to the repository.
+
+### Required environment variables
+
+| Variable | Description |
+| --- | --- |
+| `AUTH_SECRET` | A 32+ character random string used to sign JSON Web Tokens. Generate one with `openssl rand -hex 32`. |
+| `AUTH_USERS` | JSON array describing the allowed users. Each user includes an `id`, `email`, BCrypt `passwordHash`, `role`, and a list of RBAC `scopes`. |
+
+Example `AUTH_USERS` value:
+
+```json
+[
+  {
+    "id": "admin-1",
+    "email": "admin@example.com",
+    "passwordHash": "$2a$10$EXAMPLEHASHFROMBCRYPT1234567890abcdefghi",
+    "role": "admin",
+    "scopes": ["phi:read", "phi:write"]
+  }
+]
+```
+
+Generate a password hash locally:
+
+```bash
+node -e "require('bcryptjs').hash('super-secret-password', 12).then(console.log)"
+```
+
+After the variables are configured, visit `/auth/signin` to log in. RBAC-protected API routes such as `/api/audit/logs` require the caller to include the appropriate scopes (for example, `phi:read`). Unauthorized requests are rejected with structured JSON error responses.
+
 ## How to Use the Dashboard
 
 ### 1. Upload Your Data Files

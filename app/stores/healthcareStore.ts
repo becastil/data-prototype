@@ -24,6 +24,9 @@ interface HealthcareState {
   budgetData: BudgetData[];
   memberData: MemberData[];
   providerData: ProviderData[];
+
+  // Authenticated context
+  currentUserId: string | null;
   
   // Import tracking
   activeImports: Map<string, HealthcareDataImport>;
@@ -96,10 +99,13 @@ interface HealthcareActions {
   // Compliance utilities
   setComplianceMode: (enabled: boolean) => void;
   getComplianceStatus: () => 'compliant' | 'warning' | 'violation';
-  
+
   // Data synchronization
   syncWithSecureStorage: () => Promise<void>;
   clearHealthcareData: () => void;
+
+  // Auth integration
+  setCurrentUser: (userId: string | null) => void;
 }
 
 // Helper functions for healthcare data transformation
@@ -217,6 +223,7 @@ export const useHealthcareStore = create<HealthcareState & HealthcareActions>()(
         budgetData: [],
         memberData: [],
         providerData: [],
+        currentUserId: null,
         activeImports: new Map(),
         importProgress: {},
         complianceChecks: [],
@@ -499,8 +506,9 @@ export const useHealthcareStore = create<HealthcareState & HealthcareActions>()(
 
         logPHIAccess: (cardId, action, justification) => {
           set((state) => {
+            const userId = state.currentUserId ?? 'anonymous';
             state.phiAccessLog.push({
-              userId: 'current-user', // TODO: Get from auth context
+              userId,
               cardId,
               action,
               timestamp: new Date(),
@@ -598,6 +606,7 @@ export const useHealthcareStore = create<HealthcareState & HealthcareActions>()(
             state.complianceChecks = [];
             state.phiAccessLog = [];
             state.maskedFields.clear();
+            state.currentUserId = null;
             state.metrics = {
               totalClaims: 0,
               totalBudget: 0,
@@ -605,6 +614,12 @@ export const useHealthcareStore = create<HealthcareState & HealthcareActions>()(
               complianceScore: 100,
               lastUpdated: null,
             };
+          });
+        },
+
+        setCurrentUser: (userId) => {
+          set((state) => {
+            state.currentUserId = userId;
           });
         },
       }))

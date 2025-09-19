@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { KeyboardNavigationProvider, AccessibleErrorBoundary } from './components/accessibility/AccessibilityEnhancements';
+import { AuthProvider } from './providers/auth/AuthProvider';
 
 export function ClientProviders({ children }: { children: React.ReactNode }) {
   // Theatre Studio initialization disabled for production stability
@@ -31,11 +32,13 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
   // }, []);
 
   return (
-    <KeyboardNavigationProvider>
-      <AccessibleErrorBoundary>
-        {children}
-      </AccessibleErrorBoundary>
-    </KeyboardNavigationProvider>
+    <AuthProvider>
+      <KeyboardNavigationProvider>
+        <AccessibleErrorBoundary>
+          {children}
+        </AccessibleErrorBoundary>
+      </KeyboardNavigationProvider>
+    </AuthProvider>
   );
 }
 
