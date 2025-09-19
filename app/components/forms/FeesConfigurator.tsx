@@ -1,7 +1,7 @@
 'use client';
 
 // touched by PR-008: UI surface polish for configuration flows
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Plus, X, Copy, ArrowRight, CheckCircle2, Info, ChevronRight } from 'lucide-react';
@@ -13,6 +13,8 @@ import { executeBulkApply, extractEnrollmentData } from '@/app/services/bulkAppl
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/app/components/ui/tooltip';
 import { Progress } from '@/app/components/ui/progress';
 import { cn } from '@/app/lib/utils';
+import { useUndoRedo, useUndoRedoKeyboard } from '@/app/hooks/useUndoRedo';
+import UndoRedoControls from './UndoRedoControls';
 
 export type RateBasis = 'PMPM' | 'PEPM' | 'Monthly' | 'Annual';
 
@@ -181,18 +183,34 @@ export default function FeesConfigurator({
   // Note: employees/members are not editable; we compute per-month from CSV later
   const employees = defaultEmployees || 0;
   const members = defaultMembers || 0;
-  const [fees, setFees] = useState<FeeItem[]>([
-    { id: 'admin', label: 'Admin Fee', amount: 0, basis: 'PEPM' },
-    { id: 'tpa', label: 'TPA Fee', amount: 0, basis: 'PEPM' },
-    { id: 'stoploss', label: 'Stop Loss Premium', amount: 0, basis: 'Monthly' },
-  ]);
-  const [budgetAmount, setBudgetAmount] = useState<number>(defaultBudget || 0);
-  const [budgetBasis, setBudgetBasis] = useState<RateBasis>('Monthly');
-  const [stopLossReimb, setStopLossReimb] = useState<number>(0);
-  const [rebates, setRebates] = useState<number>(0);
-  const [overrides, setOverrides] = useState<OverrideRow[]>([]);
+
+  // Undo/redo enabled configuration state
+  const initialConfigState = {
+    fees: [
+      { id: 'admin', label: 'Admin Fee', amount: 0, basis: 'PEPM' as RateBasis },
+      { id: 'tpa', label: 'TPA Fee', amount: 0, basis: 'PEPM' as RateBasis },
+      { id: 'stoploss', label: 'Stop Loss Premium', amount: 0, basis: 'Monthly' as RateBasis },
+    ],
+    budgetAmount: defaultBudget || 0,
+    budgetBasis: 'Monthly' as RateBasis,
+    stopLossReimb: 0,
+    rebates: 0,
+    overrides: [] as OverrideRow[]
+  };
+
+  const [configState, undoRedoActions] = useUndoRedo(initialConfigState);
+  const { fees, budgetAmount, budgetBasis, stopLossReimb, rebates, overrides } = configState;
+
   const [showBulkApplyModal, setShowBulkApplyModal] = useState(false);
   const [currentFeesConfig, setCurrentFeesConfig] = useState<FeesConfig | null>(null);
+
+  // Set up keyboard shortcuts for undo/redo
+  const handleKeyDown = useUndoRedoKeyboard(undoRedoActions);
+  
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
 
   const monthlyFixed = useMemo(() => {
     return fees.reduce((sum, f) => sum + monthlyFromBasis(f.amount, f.basis, employees, members), 0);
@@ -202,41 +220,77 @@ export default function FeesConfigurator({
     return monthlyFromBasis(budgetAmount, budgetBasis, employees, members);
   }, [budgetAmount, budgetBasis, employees, members]);
 
+  // Helper function to update state with undo/redo tracking
+  const updateConfigState = (updater: (prev: typeof configState) => typeof configState) => {
+    const newState = updater(configState);
+    undoRedoActions.push(newState);
+  };
+
   const updateFee = (index: number, patch: Partial<FeeItem>) => {
-    setFees(prev => {
-      const next = [...prev];
-      next[index] = { ...next[index], ...patch } as FeeItem;
-      return next;
-    });
+    updateConfigState(prev => ({
+      ...prev,
+      fees: prev.fees.map((fee, i) => i === index ? { ...fee, ...patch } : fee)
+    }));
   };
 
   const addFee = () => {
-    setFees(prev => [...prev, { id: `fee-${prev.length + 1}`, label: 'Custom Fee', amount: 0, basis: 'Monthly' }]);
+    updateConfigState(prev => ({
+      ...prev,
+      fees: [...prev.fees, { id: `fee-${prev.fees.length + 1}`, label: 'Custom Fee', amount: 0, basis: 'Monthly' }]
+    }));
   };
 
   const removeFee = (index: number) => {
-    setFees(prev => prev.filter((_, i) => i !== index));
+    updateConfigState(prev => ({
+      ...prev,
+      fees: prev.fees.filter((_, i) => i !== index)
+    }));
+  };
+
+  const setBudgetAmount = (amount: number) => {
+    updateConfigState(prev => ({ ...prev, budgetAmount: amount }));
+  };
+
+  const setBudgetBasis = (basis: RateBasis) => {
+    updateConfigState(prev => ({ ...prev, budgetBasis: basis }));
+  };
+
+  const setStopLossReimb = (amount: number) => {
+    updateConfigState(prev => ({ ...prev, stopLossReimb: amount }));
+  };
+
+  const setRebates = (amount: number) => {
+    updateConfigState(prev => ({ ...prev, rebates: amount }));
   };
 
   const addOverride = () => {
-    setOverrides(prev => [
-      ...prev, 
-      {
-        id: `ovr-${Date.now()}-${prev.length + 1}`,
-        month: '',
-        type: 'budget',
-        amount: 0,
-        basis: 'Monthly',
-      }
-    ]);
+    updateConfigState(prev => ({
+      ...prev,
+      overrides: [
+        ...prev.overrides,
+        {
+          id: `ovr-${Date.now()}-${prev.overrides.length + 1}`,
+          month: '',
+          type: 'budget' as OverrideType,
+          amount: 0,
+          basis: 'Monthly' as RateBasis,
+        }
+      ]
+    }));
   };
 
   const updateOverride = (id: string, patch: Partial<OverrideRow>) => {
-    setOverrides(prev => prev.map(o => o.id === id ? { ...o, ...patch } : o));
+    updateConfigState(prev => ({
+      ...prev,
+      overrides: prev.overrides.map(o => o.id === id ? { ...o, ...patch } : o)
+    }));
   };
 
   const removeOverride = (id: string) => {
-    setOverrides(prev => prev.filter(o => o.id !== id));
+    updateConfigState(prev => ({
+      ...prev,
+      overrides: prev.overrides.filter(o => o.id !== id)
+    }));
   };
 
   const toPerMonth = () => {
@@ -347,6 +401,15 @@ export default function FeesConfigurator({
               <p className="text-sm text-slate-600">
                 Tune fixed costs and overrides before launching your analytics workspace.
               </p>
+              <UndoRedoControls
+                canUndo={undoRedoActions.canUndo}
+                canRedo={undoRedoActions.canRedo}
+                onUndo={undoRedoActions.undo}
+                onRedo={undoRedoActions.redo}
+                onReset={undoRedoActions.reset}
+                historyLength={undoRedoActions.getHistoryLength()}
+                className="mt-3"
+              />
             </div>
             <div className="w-full max-w-sm space-y-2">
               <Progress value={stepProgress} className="h-1.5 bg-slate-200/70 [&>div]:bg-sky-500" />

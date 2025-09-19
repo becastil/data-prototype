@@ -14,6 +14,7 @@ import { Input } from '@/app/components/ui/input';
 import { Calendar, Copy, AlertTriangle, CheckSquare } from 'lucide-react';
 import { GlassCard } from '@/app/components/ui/glass-card';
 import BulkApplyPreview from './BulkApplyPreview';
+import QuarterlyPresets from './QuarterlyPresets';
 import {
   BulkApplyConfig,
   ConflictPolicy,
@@ -120,6 +121,12 @@ export default function BulkApplyModal({
   const handleCancel = () => {
     setShowPreview(false);
     onOpenChange(false);
+  };
+
+  const handleQuarterlySelection = (startMonth: string, endMonth: string, label: string) => {
+    setStartMonth(startMonth);
+    setEndMonth(endMonth);
+    setDurationType('endMonth');
   };
   
   const formatMonthDisplay = (monthStr: string) => {
@@ -244,6 +251,11 @@ export default function BulkApplyModal({
                   </div>
                 )}
               </div>
+            </GlassCard>
+
+            {/* Quarterly Presets */}
+            <GlassCard variant="elevated" blur="xl" className="p-5 border-slate-200 bg-white">
+              <QuarterlyPresets onSelectRange={handleQuarterlySelection} />
             </GlassCard>
             
             {/* Components Selection */}
