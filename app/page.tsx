@@ -14,7 +14,7 @@ import {
   HCCDataTable,
   LazyChartWrapper
 } from '@components/charts/LazyCharts';
-import FinancialDataTable from '@components/data/FinancialDataTable';
+import VirtualizedFinancialDataTable from '@components/data/VirtualizedFinancialDataTable';
 import { Dashboard } from './components/ui/dashboard';
 import PerformanceMonitor from '@components/PerformanceMonitor';
 import { GlassCard } from '@components/ui/glass-card';
@@ -358,7 +358,7 @@ const Home: React.FC = () => {
                     exit={{ opacity: 0, x: 20 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <FinancialDataTable 
+                    <VirtualizedFinancialDataTable 
                       budgetData={effectiveBudget} 
                       claimsData={filteredClaims}
                     />
