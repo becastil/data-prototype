@@ -21,7 +21,7 @@ Perfect for healthcare administrators, benefits managers, and anyone who works w
    Copy and paste this into PowerShell (search for "PowerShell" in Start menu):
    ```
    ```powershell
-   irm https://raw.githubusercontent.com/your-repo/main/scripts/install.ps1 | iex
+   irm https://raw.githubusercontent.com/becastil/data-prototype/main/scripts/install.ps1 | iex
    ```
 
 2. **Wait for everything to install automatically**
@@ -49,7 +49,7 @@ If the quick installer doesn't work, follow these steps:
 
 **Step 2: Download this project**
 - Download as ZIP from GitHub, or
-- If you know Git: `git clone https://github.com/your-repo/data-prototype.git`
+- If you know Git: `git clone https://github.com/becastil/data-prototype.git`
 
 **Step 3: Open PowerShell/Terminal in the project folder**
 - **Windows**: Right-click in the folder → "Open in Terminal" or "Open PowerShell window here"
